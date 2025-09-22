@@ -5,7 +5,7 @@
 <template>
     <div class="navbar">
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/test">Test</RouterLink>
+        <RouterLink to="/login">Login</RouterLink>
     </div>
 </template>
 

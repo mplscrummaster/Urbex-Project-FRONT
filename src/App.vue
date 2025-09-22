@@ -23,7 +23,7 @@
     <NavbarItems />
     <RouterView />
 
-    <button @click.prevent=count>{{ baseStore.counter }}</button>
+    <button @click.prevent=count>{{ baseStore.getCounter }}</button>
 
     <label for="">Modifier le titre (a chaque changement)</label>
     <input type="text" @input=modifyTitle>
