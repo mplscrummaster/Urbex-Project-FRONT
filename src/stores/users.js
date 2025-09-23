@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
     users: [],
-    currentUser: null,
+    currentIdUser: null,
   }),
   actions: {
     async loginUser(email, password) {
@@ -28,6 +28,7 @@ export const useUsersStore = defineStore('storeUsers', {
         if (response.ok) {
           alert('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
+            this.currentIdUser = result[0]._id_user
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {
@@ -39,28 +40,30 @@ export const useUsersStore = defineStore('storeUsers', {
       }
     },
     async registrUser(username, firstname, lastname, email, password) {
-      const data = {
+      const dataUser = {
         username_user: username,
         firstname_user: firstname,
         name_user: lastname,
         password_user: password,
         mail_user: email,
       }
-      console.log(data)
+      console.log(dataUser)
       try {
-        const response = await fetch('http://localhost:80/api/login', {
+        const response = await fetch('http://localhost:80/api/register', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(dataUser),
         })
 
         const result = await response.json()
 
         if (response.ok) {
-          alert('Inscrirtion réussie !')
-          console.log(result) // Traiter la réponse API ici
+          alert('Inscription réussie !')
+          console.log(result)
+          this.currentIdUser = result[0]._id_user
+          // Traiter la réponse API ici
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {
