@@ -1,8 +1,9 @@
 <script setup>
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
+ 
 
-  function togglePassword() {
+  const togglePassword= () => {
+     const passwordInput = document.getElementById('password');
+  const eyeIcon = document.getElementById('eyeIcon');
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       eyeIcon.innerHTML = `
@@ -37,7 +38,7 @@
     };
 
     try {
-      const response = await fetch('http://localhost:81/api/login', { // Remplacez par l'URL de votre API
+      const response = await fetch('http://localhost:81/api/login', { 
         method: 'Post',
         headers: {
           'Content-Type': 'application/json'
