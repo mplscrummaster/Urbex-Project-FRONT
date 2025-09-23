@@ -6,6 +6,7 @@
     <div class="navbar">
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/login">Login</RouterLink>
+        <RouterLink to="/inscrire">Inscrire</RouterLink>
     </div>
 </template>
 

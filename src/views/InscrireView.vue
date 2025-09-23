@@ -21,24 +21,30 @@
   }
 
   // Écoute de la soumission du formulaire
-  const loginUser = async () => {
+  const registrUser = async () => {
     
+    const username = document.querySelector('#username').value;
+    const firstname = document.querySelector('#firstname').value;
+    const lastname = document.querySelector('#lastname').value;
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
 
     // Vérification simple
-    if (!email || !password) {
+    if (!email || !password || !username || !firstname || !lastname) {
       alert("Veuillez remplir tous les champs !");
       return;
     }
 
     // Préparation des données à envoyer
-    storeUsers.loginUser(email, password);
+    storeUsers.loginUser(username, firstname, lastname, email, password);
   };
 </script>
 
 <template>
-  <form class="userForm" id="userForm" @submit.prevent=loginUser>
+  <form class="userForm" id="userForm" @submit.prevent=registrUser>
+    <input type="text" id="username" placeholder="Ecrire votre nickname" name="username" value="" required>
+    <input type="text" id="firstname" placeholder="Ecrire votre prenom" name="firstname" value="" required>
+    <input type="text" id="lastname" placeholder="Ecrire votre nom" name="lastname" value="" required>
     <input type="email" id="email" placeholder="Adresse e-mail" name="email" value="Max@gmail.com" required>
 
     <div class="password-container">
@@ -53,9 +59,7 @@
       </button>
     </div>
 
-    <button type="submit" class="submit-btn">Se connecter</button>
-
-    <div class="forgot-pass">Mot de passe oublié ?</div>
+    <button type="submit" class="submit-btn">S'inscrire</button>
 
   </form>
 </template>
