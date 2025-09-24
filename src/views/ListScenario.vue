@@ -44,11 +44,10 @@ const scenarioClicked = (e) => {
     </div>
 
     <!-- Сценарії -->
-    <div v-for="(scenario, key) in scenarios" :key="key" :id="scenario.id" @click="scenarioClicked($event)"
+    <div v-for="(scenario, key) in scenarios" :key="key" :id="scenario.id"
       :class="(scenario.done === scenario.total) ? 'card completed' : (scenario.done > 0) ? 'card in-progress' : 'card not-started'">
-      <img class="bookmark" src="../images/bookmark_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""
-        @click="scenarioMarked($event)">
-      <h3 class="title">{{ scenario.title }}</h3>
+      <img class="bookmark" src="/icons/bookmark.svg" alt="" @click="scenarioMarked($event)">
+      <h3 class="title" @click="scenarioClicked($event)">{{ scenario.title }}</h3>
 
       <p class="author">Scénario par {{ scenario.author }}</p>
 
@@ -126,6 +125,9 @@ const scenarioClicked = (e) => {
   margin: 0;
   font-size: 16px;
   font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  text-decoration: underline;
 }
 
 .author {
