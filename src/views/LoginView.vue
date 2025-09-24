@@ -1,6 +1,6 @@
 <script setup>
-import { useUsersStore } from '@/stores/users';
-const storeUsers = useUsersStore();
+import { useUsersStore } from '@/stores/users'
+const storeUsers = useUsersStore()
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
@@ -9,50 +9,62 @@ const email = ref('Max@gmail.com')
 const password = ref('Max')
 
 const togglePassword = () => {
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
+  const passwordInput = document.getElementById('password')
+  const eyeIcon = document.getElementById('eyeIcon')
   if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
+    passwordInput.type = 'text'
     eyeIcon.innerHTML = `
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <circle cx="12" cy="12" r="3"></circle>
-    `;
+    `
   } else {
-    passwordInput.type = 'password';
+    passwordInput.type = 'password'
     eyeIcon.innerHTML = `
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <line x1="12" y1="12" x2="12" y2="12"></line>
-    `;
+    `
   }
 }
 
 // Écoute de la soumission du formulaire
 const loginUser = async () => {
-
   // Vérification simple
   if (!email.value || !password.value) {
-    alert("Veuillez remplir tous les champs !");
-    return;
+    alert('Veuillez remplir tous les champs !')
+    return
   }
 
   // Préparation des données à envoyer
-  storeUsers.loginUser(email.value, password.value);
+  storeUsers.loginUser(email.value, password.value)
   email.value = ''
   password.value = ''
   router.replace('/currentmission')
-};
+}
 </script>
 
 <template>
-  <form class="userForm" id="userForm" @submit.prevent=loginUser>
-    <input type="email" v-model="email" placeholder="Adresse e-mail" required>
+  <form class="userForm" id="userForm" @submit.prevent="loginUser">
+    <input type="email" v-model="email" placeholder="Adresse e-mail" required />
 
     <div class="password-container">
-      <input type="password" v-model="password" placeholder="Mot de passe" required>
-      <button type="button" class="toggle-eye" @click.prevent=togglePassword
-        aria-label="Afficher ou masquer le mot de passe">
-        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <input type="password" v-model="password" placeholder="Mot de passe" required />
+      <button
+        type="button"
+        class="toggle-eye"
+        @click.prevent="togglePassword"
+        aria-label="Afficher ou masquer le mot de passe"
+      >
+        <svg
+          id="eyeIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <line x1="12" y1="12" x2="12" y2="12"></line>
         </svg>
@@ -62,7 +74,6 @@ const loginUser = async () => {
     <button type="submit" class="submit-btn">Se connecter</button>
 
     <div class="forgot-pass">Mot de passe oublié ?</div>
-
   </form>
 </template>
 
@@ -87,7 +98,9 @@ form {
   flex-direction: column;
   width: 320px;
   gap: 20px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 form:hover {
@@ -103,7 +116,9 @@ input {
   width: 100%;
   background-color: #f5f5f5;
   color: #333;
-  transition: border 0.2s, background 0.2s;
+  transition:
+    border 0.2s,
+    background 0.2s;
 }
 
 input:focus {
@@ -160,7 +175,9 @@ button.submit-btn {
   border-radius: 12px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition:
+    background 0.3s,
+    transform 0.2s;
 }
 
 button.submit-btn:hover {
@@ -200,7 +217,9 @@ button.submit-btn:hover {
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+  transition:
+    background 0.3s,
+    transform 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
