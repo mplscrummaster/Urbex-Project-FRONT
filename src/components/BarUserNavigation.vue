@@ -6,7 +6,7 @@
   <div class="navbar">
     <RouterLink to="/scenario">Scenario</RouterLink>
     <RouterLink to="/map">Map</RouterLink>
-    <RouterLink to="/">Current</RouterLink>
+    <RouterLink to="/currentmission">Current</RouterLink>
     <RouterLink to="/leaderboard">Leaderboard</RouterLink>
     <RouterLink to="/user">User</RouterLink>
   </div>

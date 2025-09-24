@@ -1,4 +1,8 @@
 <script setup>
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 const scenarios = [
   { id: 1, title: "Les ombres de la ville", author: "Justifit", done: 4, total: 4 },
   { id: 2, title: "Les passages interdits", author: "Aramiss", done: 6, total: 6 },
@@ -6,22 +10,46 @@ const scenarios = [
   { id: 4, title: "Le réseau invisible", author: "Justifit", done: 0, total: 4 },
   { id: 5, title: "Sous la poussière du temps", author: "Sealmon", done: 0, total: 7 },
 ];
+
+
+const changeFilter = (e) => {
+  console.log(`Filter changed to: ${e.target}`);
+  const filters = document.querySelectorAll('.filter');
+  filters.forEach(filter => filter.classList.remove('active'));
+  e.target.classList.add('active');
+};
+
+const scenarioMarked = (e) => {
+  console.log(`Scenario marked: ${e.target}`);
+  e.target.classList.toggle('marked');
+};
+
+const scenarioClicked = (e) => {
+  // const scenarioCard = e.currentTarget;
+  // const scenarioId = scenarioCard.id;
+  //  console.log(`Scenario clicked: ${scenarioId}`);
+  // Навігація до сторінки сценарію
+  router.push(`/scenarioinfo`);
+};
+
 </script>
 
 <template>
   <div class="container">
     <!-- Фільтри -->
-    <div class="filters">
-      <button class="filter active">terminés</button>
+    <div class="filters" @click.prevent="changeFilter($event)">
+      <button class="filter">terminés</button>
       <button class="filter">commencés</button>
       <button class="filter">pas encore</button>
     </div>
 
     <!-- Сценарії -->
-    <div v-for="(scenario, key) in scenarios" :key="key" :id="scenario.id" class="card">
-      <!-- Назва -->
+    <div v-for="(scenario, key) in scenarios" :key="key" :id="scenario.id" @click="scenarioClicked($event)"
+      :class="(scenario.done === scenario.total) ? 'card completed' : (scenario.done > 0) ? 'card in-progress' : 'card not-started'">
+      <img class="bookmark" src="../images/bookmark_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg" alt=""
+        @click="scenarioMarked($event)">
       <h3 class="title">{{ scenario.title }}</h3>
-      <!-- Автор -->
+
       <p class="author">Scénario par {{ scenario.author }}</p>
 
       <!-- Прогрес -->
@@ -34,13 +62,6 @@ const scenarios = [
 </template>
 
 <style scoped>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #121212;
-  color: #fff;
-}
-
 .container {
   padding: 16px;
   display: flex;
@@ -81,6 +102,24 @@ body {
   border-radius: 8px;
   padding: 12px;
   box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
+}
+
+.card.completed {
+  background-color: rgba(105, 105, 105, 0.637);
+}
+
+.card.in-progress {
+  border: 2px solid #5d8ddb;
+}
+
+.bookmark {
+  float: right;
+  cursor: pointer;
+}
+
+.marked {
+  filter: invert(39%) sepia(98%) saturate(749%) hue-rotate(203deg) brightness(91%) contrast(86%);
+  color: yellow;
 }
 
 .title {
