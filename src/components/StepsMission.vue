@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import '../assets/mission-card.css'
 const showInfo = ref(false)
 const props = defineProps({
   name: {
@@ -38,45 +39,9 @@ const props = defineProps({
 
 
 <style scoped>
-.card {
-  background: #bdbdbd;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
-  display: grid;
-  grid-template-columns: 1fr auto;
-}
-
-.arrow {
-  display: flex;
-  align-self: center;
-  width: 2rem;
-  cursor: pointer;
-}
-
 .info {
   img {
     width: 100%;
   }
-}
-
-
-.arrow.rotated {
-  transform: rotate(180deg);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
 }
 </style>

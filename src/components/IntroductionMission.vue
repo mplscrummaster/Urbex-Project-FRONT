@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 const showInfo = ref(false);
+import '../assets/mission-card.css'
 </script>
 
 <template>
@@ -22,46 +23,7 @@ const showInfo = ref(false);
   </div>
 </template>
 <style scoped>
-.card {
-  transition: 0.3s ease-in;
-  background: #bdbdbd;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
-  display: grid;
-  grid-template-columns: 1fr auto;
-
-
-}
-
 .hidden {
   display: none;
-}
-
-
-.arrow {
-  display: flex;
-  align-self: center;
-  width: 2rem;
-  cursor: pointer;
-}
-
-.arrow.rotated {
-  transform: rotate(180deg);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
 }
 </style>
