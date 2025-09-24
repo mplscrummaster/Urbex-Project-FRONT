@@ -1,6 +1,4 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
   <div class="navbar">
@@ -8,9 +6,8 @@
     <RouterLink to="/map">Map</RouterLink>
     <RouterLink to="/">Current</RouterLink>
     <RouterLink to="/leaderboard">Leaderboard</RouterLink>
-    <RouterLink to="/user">User</RouterLink>
+    <RouterLink to="/userProfile">User</RouterLink>
   </div>
-
 </template>
 
 <style lang="scss" scoped>

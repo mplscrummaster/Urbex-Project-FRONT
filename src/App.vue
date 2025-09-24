@@ -1,8 +1,8 @@
 <script setup>
-  import NavbarItems from './components/NavbarItems.vue';
-  import BarUserNavigation from './components/BarUserNavigation.vue';
-  import { useUsersStore } from '@/stores/users';
-const storeUsers = useUsersStore();
+import NavbarItems from './components/NavbarItems.vue'
+import BarUserNavigation from './components/BarUserNavigation.vue'
+import { useUsersStore } from '@/stores/users'
+const storeUsers = useUsersStore()
 /*  import { useBaseStore } from "./stores/base.js";
   import { ref } from "vue";
 
@@ -24,8 +24,8 @@ const storeUsers = useUsersStore();
   <main>
     <NavbarItems />
     <RouterView />
-    <BarUserNavigation v-show="storeUsers.currentIdUser !=null"/>
- <!--
+    <BarUserNavigation v-show="storeUsers.currentIdUser != null" />
+    <!--
     <button @click.prevent=count>{{ baseStore.getCounter }}</button>
 
     <label for="">Modifier le titre (a chaque changement)</label>
@@ -36,9 +36,13 @@ const storeUsers = useUsersStore();
   </main>
 </template>
 
-<style scoped>
-  main {
-    display: flex;
-    flex-direction: column;
-  }
+<style>
+main {
+  display: flex;
+  flex-direction: column;
+}
+body {
+  margin: 0;
+  background-color: #2b2b2b;
+}
 </style>

@@ -5,6 +5,7 @@ import InscrireView from '@/views/InscrireView.vue'
 import ListScenario from '@/views/ListScenario.vue'
 import GlobalMap from '@/views/GlobalMap.vue'
 import CurrentMission from '@/views/CurrentMission.vue'
+import UserProfile from '@/views/UserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/currentmission',
       name: 'current mission',
       component: CurrentMission,
+    },
+    {
+      path: '/userprofile',
+      name: 'user profile',
+      component: UserProfile,
     },
   ],
 })
