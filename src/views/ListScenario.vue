@@ -63,10 +63,11 @@ const scenarioClicked = (e) => {
 
 <style scoped>
 .container {
-  padding: 16px;
+  padding: 4rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background-color: #2a2a2a;
 }
 
 /* Фільтри */
@@ -143,6 +144,8 @@ const scenarioClicked = (e) => {
   height: 6px;
   border-radius: 4px;
   overflow: hidden;
+  grid-column-start: 0;
+  grid-row-start: 3;
 }
 
 .progress-bar {
