@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import '../assets/mission-card.css'
 const showInfo = ref(false)
 const props = defineProps({
   name: {

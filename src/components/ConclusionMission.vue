@@ -1,8 +1,8 @@
 <script setup>
-import '../assets/mission-card.css'
 import { ref } from 'vue'
 const showInfo = ref(false)
 </script>
+
 <template>
   <div class="card">
     <h2 class="titleCard">Conclusion</h2>
@@ -22,3 +22,5 @@ const showInfo = ref(false)
 
   </div>
 </template>
+
+<style scoped></style>

@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 const showInfo = ref(false);
-import '../assets/mission-card.css'
 </script>
 
 <template>
