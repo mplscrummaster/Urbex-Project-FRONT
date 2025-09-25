@@ -83,7 +83,6 @@ form {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  width: 320px;
   gap: 20px;
   transition: transform 0.2s, box-shadow 0.2s;
 }
