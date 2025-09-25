@@ -1,10 +1,9 @@
 <script setup>
 import { useUsersStore } from '@/stores/users';
 const storeUsers = useUsersStore();
-import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
-const router = useRouter()
+
 const email = ref('Max@gmail.com')
 const password = ref('Max')
 
@@ -39,7 +38,6 @@ const loginUser = async () => {
   storeUsers.loginUser(email.value, password.value);
   email.value = ''
   password.value = ''
-  router.replace('/currentmission')
 };
 </script>
 
