@@ -1,75 +1,52 @@
 <script setup>
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
+  import { useUsersStore } from '@/stores/users';
+  const storeUsers = useUsersStore();
+  import { ref } from 'vue'
 
-  function togglePassword() {
+  const email = ref('Max@gmail.com')
+  const password = ref('Max')
+
+  const togglePassword = () => {
+    const passwordInput = document.getElementById('password')
+    const eyeIcon = document.getElementById('eyeIcon')
     if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
+      passwordInput.type = 'text'
       eyeIcon.innerHTML = `
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <circle cx="12" cy="12" r="3"></circle>
-    `;
+    `
     } else {
-      passwordInput.type = 'password';
+      passwordInput.type = 'password'
       eyeIcon.innerHTML = `
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
       <line x1="12" y1="12" x2="12" y2="12"></line>
-    `;
+    `
     }
   }
 
   // Écoute de la soumission du formulaire
   const loginUser = async () => {
-
-    const email = document.querySelector('#email').value;
-    const password = document.querySelector('#password').value;
-
     // Vérification simple
-    if (!email || !password) {
-      alert("Veuillez remplir tous les champs !");
-      return;
+    if (!email.value || !password.value) {
+      alert('Veuillez remplir tous les champs !')
+      return
     }
 
     // Préparation des données à envoyer
-    const data = {
-      mail_user: email,
-      password_user: password
-    };
-
-    try {
-      const response = await fetch('http://localhost:81/api/login', { // Remplacez par l'URL de votre API
-        method: 'Post',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Connexion réussie !");
-        console.log(result); // Traiter la réponse API ici
-        // Par exemple, rediriger vers une autre page
-        // window.location.href = "/dashboard.html";
-      } else {
-        alert(result.message || "Erreur lors de la connexion");
-      }
-
-    } catch (error) {
-      console.error('Erreur:', error);
-      alert("Impossible de contacter le serveur.");
-    }
-  };
+    storeUsers.loginUser(email.value, password.value)
+    email.value = ''
+    password.value = ''
+    router.replace('/currentmission')
+  }
 </script>
 
 <template>
-  <form class="userForm" id="userForm" @submit.prevent=loginUser>
-    <input type="email" id="email" placeholder="Adresse e-mail" name="email" value="Max@gmail.com" required>
+  <form class="userForm" id="userForm" @submit.prevent="loginUser">
+    <input type="email" v-model="email" placeholder="Adresse e-mail" required />
 
     <div class="password-container">
-      <input type="password" name="password" id="password" placeholder="Mot de passe" value="Max" required>
-      <button type="button" class="toggle-eye" @click.prevent=togglePassword
+      <input type="password" v-model="password" placeholder="Mot de passe" required />
+      <button type="button" class="toggle-eye" @click.prevent="togglePassword"
         aria-label="Afficher ou masquer le mot de passe">
         <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -82,7 +59,6 @@
     <button type="submit" class="submit-btn">Se connecter</button>
 
     <div class="forgot-pass">Mot de passe oublié ?</div>
-
   </form>
 </template>
 
@@ -105,9 +81,10 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
-    width: 320px;
     gap: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
   }
 
   form:hover {
@@ -123,7 +100,9 @@
     width: 100%;
     background-color: #f5f5f5;
     color: #333;
-    transition: border 0.2s, background 0.2s;
+    transition:
+      border 0.2s,
+      background 0.2s;
   }
 
   input:focus {
@@ -142,7 +121,6 @@
   .password-container input {
     flex: 1;
     padding: 14px;
-    padding-right: 40px;
     /* місце для кнопки */
     border-radius: 12px;
     border: 1px solid #ccc;
@@ -181,7 +159,9 @@
     border-radius: 12px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition:
+      background 0.3s,
+      transform 0.2s;
   }
 
   button.submit-btn:hover {
@@ -221,7 +201,9 @@
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition:
+      background 0.3s,
+      transform 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
