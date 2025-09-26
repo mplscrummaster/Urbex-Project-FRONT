@@ -43,6 +43,7 @@ const router = createRouter({
       component: CurrentMission,
     },
     {
+
       path: '/scenarioinfo',
       name: 'scenario info',
       component: ScenarioInfo,
