@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
 
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
     users: [],
     currentIdUser: null,
+    router: useRouter(),
   }),
   actions: {
     async loginUser(email, password) {
@@ -28,7 +30,8 @@ export const useUsersStore = defineStore('storeUsers', {
         if (response.ok) {
           alert('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
-            this.currentIdUser = result[0]._id_user
+          this.currentIdUser = result[0]._id_user
+          this.router.replace('/currentmission')
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {

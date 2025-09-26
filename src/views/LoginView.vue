@@ -1,10 +1,9 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
-const storeUsers = useUsersStore()
-import { useRouter } from 'vue-router'
+import { useUsersStore } from '@/stores/users';
+const storeUsers = useUsersStore();
 import { ref } from 'vue'
 
-const router = useRouter()
+
 const email = ref('Max@gmail.com')
 const password = ref('Max')
 
@@ -39,7 +38,6 @@ const loginUser = async () => {
   email.value = ''
   password.value = ''
   router.replace('/currentmission')
-}
 </script>
 
 <template>
@@ -96,7 +94,6 @@ form {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  width: 320px;
   gap: 20px;
   transition:
     transform 0.2s,

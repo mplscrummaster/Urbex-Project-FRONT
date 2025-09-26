@@ -5,6 +5,7 @@ import InscrireView from '@/views/InscrireView.vue'
 import ListScenario from '@/views/ListScenario.vue'
 import GlobalMap from '@/views/GlobalMap.vue'
 import CurrentMission from '@/views/CurrentMission.vue'
+import ScenarioInfo from '@/views/ScenarioInfo.vue'
 import LeaderBoard from '@/views/LeaderBoard.vue'
 import UserAccount from '@/views/UserAccount.vue'
 
@@ -42,8 +43,14 @@ const router = createRouter({
       component: CurrentMission,
     },
     {
+
+      path: '/scenarioinfo',
+      name: 'scenario info',
+      component: ScenarioInfo,
+    },
+    {
       path: '/leaderboard',
-      name: 'leaderboard',
+      name: 'leader board',
       component: LeaderBoard,
     },
     {
