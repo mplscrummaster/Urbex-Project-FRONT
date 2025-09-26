@@ -1,23 +1,23 @@
 <script setup>
-import NavbarItems from './components/NavbarItems.vue';
-import BarUserNavigation from './components/BarUserNavigation.vue';
-import { useUsersStore } from '@/stores/users';
-const storeUsers = useUsersStore();
-/*  import { useBaseStore } from "./stores/base.js";
-  import { ref } from "vue";
-
-  const baseStore = useBaseStore();
-  const title = ref('App');
-
- const count = () => {
-    console.log("count")
-    baseStore.incrementCounter();
-  }
-
-  const modifyTitle = (event) => {
-    title.value = event.target.value;
-  }
-*/
+  import NavbarItems from './components/NavbarItems.vue'
+  import BarUserNavigation from './components/BarUserNavigation.vue'
+  import { useUsersStore } from '@/stores/users'
+  const storeUsers = useUsersStore()
+  /*  import { useBaseStore } from "./stores/base.js";
+    import { ref } from "vue";
+  
+    const baseStore = useBaseStore();
+    const title = ref('App');
+  
+   const count = () => {
+      console.log("count")
+      baseStore.incrementCounter();
+    }
+  
+    const modifyTitle = (event) => {
+      title.value = event.target.value;
+    }
+  */
 </script>
 
 <template>
@@ -37,52 +37,13 @@ const storeUsers = useUsersStore();
 </template>
 
 <style>
-body {
-  margin: 0;
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-}
-
-.navbar {
-  background: #222;
-  color: #fff;
-  padding: 12px 24px;
-  font-size: 18px;
-  display: flex;
-  gap: 1rem;
-  left: 0;
-  right: 0;
-  justify-content: space-around;
-}
-
-.navbar a {
-  all: unset;
-  color: inherit;
-  cursor: pointer;
-  text-decoration: none;
-
-  &:hover {
-    color: aquamarine;
+  main {
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Add any custom styles you want */
-}
-
-.home-bar {
-  position: fixed;
-  top: 0;
-}
-
-.user-bar {
-  position: fixed;
-  /* toujours visible */
-  bottom: 0;
-  /* collée en bas */
-  padding: 1rem;
-  z-index: 1000;
-  /* au-dessus du contenu */
-}
+  body {
+    margin: 0;
+    background-color: #2b2b2b;
+  }
 </style>

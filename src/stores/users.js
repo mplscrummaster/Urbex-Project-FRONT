@@ -17,7 +17,7 @@ export const useUsersStore = defineStore('storeUsers', {
       }
 
       try {
-        const response = await fetch('http://localhost:80/api/login', {
+        const response = await fetch('http://91.134.99.3:81/api/login', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export const useUsersStore = defineStore('storeUsers', {
       }
       console.log(dataUser)
       try {
-        const response = await fetch('http://localhost:80/api/register', {
+        const response = await fetch('http://91.134.99.3:81/api/register', {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
