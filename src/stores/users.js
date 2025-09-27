@@ -9,6 +9,10 @@ export const useUsersStore = defineStore('storeUsers', {
   }),
   actions: {
     async loginUser(email, password) {
+      //A supp les 2 lignes du bas
+      this.router.replace('/scenario')
+      this.currentIdUser = 1
+
       console.log(email + ' ' + password)
 
       const data = {
@@ -31,7 +35,8 @@ export const useUsersStore = defineStore('storeUsers', {
           alert('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
           this.currentIdUser = result[0]._id_user
-          this.router.replace('/currentmission')
+          this.router.replace('/scenario')
+
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {
