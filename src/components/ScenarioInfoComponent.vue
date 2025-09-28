@@ -5,19 +5,31 @@ import StepsMission from './StepsMission.vue';
 
 </script>
 <template>
-  <h1>Title</h1>
-  <h2>Created by: Anonym</h2>
-  <div class="listMissions">
-    <IntroductionMission />
-    <StepsMission name="1" />
-    <StepsMission name="2" />
-    <StepsMission name="3" />
-    <StepsMission name="4" />
-    <StepsMission name="final" />
-    <ConclusionMission />
+  <div class="scenario">
+    <h1 class="title">Title</h1>
+    <h2 class="creator">Created by: Anonym</h2>
+    <div class="listMissions">
+      <IntroductionMission />
+      <StepsMission name="1" />
+      <StepsMission name="2" />
+      <StepsMission name="3" />
+      <StepsMission name="4" />
+      <StepsMission name="final" />
+      <ConclusionMission />
+    </div>
   </div>
 </template>
 <style>
+.scenario {
+  padding-block-start: 2rem;
+  padding-block-end: 4rem;
+}
+
+.title,
+.creator {
+  color: white;
+}
+
 .listMissions {
   display: flex;
   flex-direction: column;

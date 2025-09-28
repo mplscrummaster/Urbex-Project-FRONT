@@ -5,5 +5,13 @@ import BarLeader from '@/components/BarLeader.vue';
 </script>
 
 <template>
-  <BarLeader />
+  <div class="leaderboard">
+    <BarLeader />
+  </div>
 </template>
+
+<style scoped>
+.leaderboard {
+  padding-block: 2rem;
+}
+</style>
