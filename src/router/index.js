@@ -7,6 +7,7 @@ import GlobalMap from '@/views/GlobalMap.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import ScenarioInfo from '@/views/ScenarioInfo.vue'
 import LeaderBoard from '@/views/LeaderBoard.vue'
+import CurrentMission from '@/views/CurrentMission.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,7 +37,11 @@ const router = createRouter({
       name: 'global map',
       component: GlobalMap,
     },
-
+    {
+      path: '/currentmission',
+      name: 'current mission',
+      component: CurrentMission,
+    },
     {
       path: '/userprofile',
       name: 'user profile',

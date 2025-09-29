@@ -2,8 +2,8 @@
 </script>
 
 <template>
-  <div class="globalMap">
-    GlobalMapVue
+  <div class="currentMission">
+    <img src="/public/img/currentmission.png" alt="" />
   </div>
 </template>
 
