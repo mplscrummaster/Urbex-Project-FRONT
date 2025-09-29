@@ -1,9 +1,11 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
-    homeView
+  <main>homeView</main>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+main {
+  margin-block-start: 5rem;
+}
+</style>

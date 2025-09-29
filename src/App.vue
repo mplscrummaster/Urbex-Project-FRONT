@@ -23,7 +23,7 @@ const storeUsers = useUsersStore()
 <template>
   <main>
     <NavbarItems />
-    <RouterView />
+    <RouterView class="content" />
     <BarUserNavigation v-show="storeUsers.currentIdUser != null" />
     <!--
     <button @click.prevent=count>{{ baseStore.getCounter }}</button>
@@ -37,15 +37,18 @@ const storeUsers = useUsersStore()
 </template>
 
 <style lang="scss">
+body {
+  margin: 0;
+  background-color: #2b2b2b;
+}
 main {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
 }
 
-body {
-  margin: 0;
-  background-color: #2b2b2b;
+.content {
+  padding-inline: 2rem;
 }
 
 .navbar {
@@ -72,5 +75,9 @@ body {
     color: #0000ca;
     box-shadow: 0 0 0 1px #0000ca;
   }
+}
+
+.hidden {
+  display: none;
 }
 </style>

@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
-import InscrireView from '@/views/InscrireView.vue'
 import ListScenario from '@/views/ListScenario.vue'
 import GlobalMap from '@/views/GlobalMap.vue'
 import CurrentMission from '@/views/CurrentMission.vue'
@@ -11,6 +10,7 @@ import GlobalScore from '@/views/GlobalScore.vue'
 import FriendScore from '@/views/FriendScore.vue'
 import WeekScore from '@/views/WeekScore.vue'
 import UserProfile from '@/views/UserProfile.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,9 +26,9 @@ const router = createRouter({
       component: LoginView,
     },
     {
-      path: '/inscrire',
+      path: '/register',
       name: 'inscrire',
-      component: InscrireView,
+      component: RegisterView,
     },
     {
       path: '/scenario',
@@ -71,7 +71,7 @@ const router = createRouter({
       component: FriendScore,
     },
     {
-      path: '/user',
+      path: '/userProfile',
       name: 'user',
       component: UserProfile,
     },
