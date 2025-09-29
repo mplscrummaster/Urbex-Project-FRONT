@@ -1,6 +1,12 @@
 @use '/src/assets/ListScenario.scss';
 @use '/src/assets/Navbar.scss';
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }
