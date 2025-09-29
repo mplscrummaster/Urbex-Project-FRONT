@@ -36,15 +36,11 @@ const storeUsers = useUsersStore()
   </main>
 </template>
 
-<style>
+<style lang="scss" scoped>
 main {
   display: flex;
   flex-direction: column;
-  width: 100%;
-
-  >* {
-    width: 100%;
-  }
+  min-height: 100dvh;
 }
 
 body {
@@ -68,29 +64,13 @@ body {
   cursor: pointer;
   text-decoration: none;
   padding: 12px 24px;
+  border-radius: 1rem;
+  background-color: #2b2b2b;
 
   &:hover {
-    color: aquamarine;
-    background-color: gray;
+    transition: 0.3s all;
+    color: #0000ca;
+    box-shadow: 0 0 0 1px #0000ca;
   }
-
-  /* Add any custom styles you want */
-}
-
-.home-bar {
-  position: relative;
-  top: 0;
-}
-
-
-
-.user-bar {
-  position: fixed;
-  /* toujours visible */
-  bottom: 0;
-  /* collée en bas */
-  padding: 1rem;
-  z-index: 1000;
-  /* au-dessus du contenu */
 }
 </style>
