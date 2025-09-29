@@ -1,17 +1,20 @@
 <script setup>
-import { useUsersStore } from '@/stores/users';
-const storeUsers = useUsersStore();
+import { useUsersStore } from '@/stores/users'
+const storeUsers = useUsersStore()
 </script>
 
 <template>
   <div class="navbar home-bar">
     <RouterLink v-if="!storeUsers.currentIdUser" to="/login">Login</RouterLink>
     <RouterLink v-if="!storeUsers.currentIdUser" to="/inscrire">Inscrire</RouterLink>
-    <RouterLink to="/" v-else @click="storeUsers.currentIdUser = null">
-      Se déconnecter
-    </RouterLink>
+    <RouterLink to="/" v-else @click="storeUsers.currentIdUser = null"> Se déconnecter </RouterLink>
   </div>
-
 </template>
 
-<style scoped></style>
+<style scoped>
+.home-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+</style>

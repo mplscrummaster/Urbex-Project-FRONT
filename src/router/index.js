@@ -71,7 +71,7 @@ const router = createRouter({
       component: FriendScore,
     },
     {
-      path: '/user',
+      path: '/userProfile',
       name: 'user',
       component: UserProfile,
     },

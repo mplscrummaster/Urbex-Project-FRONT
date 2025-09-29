@@ -13,5 +13,7 @@
 <style lang="scss" scoped>
 .user-bar {
   width: 100%;
+  position: fixed;
+  bottom: 0;
 }
 </style>
