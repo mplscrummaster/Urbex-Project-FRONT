@@ -4,10 +4,13 @@ import LoginView from '@/views/LoginView.vue'
 import InscrireView from '@/views/InscrireView.vue'
 import ListScenario from '@/views/ListScenario.vue'
 import GlobalMap from '@/views/GlobalMap.vue'
-import UserProfile from '@/views/UserProfile.vue'
+import CurrentMission from '@/views/CurrentMission.vue'
 import ScenarioInfo from '@/views/ScenarioInfo.vue'
 import LeaderBoard from '@/views/LeaderBoard.vue'
-import CurrentMission from '@/views/CurrentMission.vue'
+import GlobalScore from '@/views/GlobalScore.vue'
+import FriendScore from '@/views/FriendScore.vue'
+import WeekScore from '@/views/WeekScore.vue'
+import UserProfile from '@/views/UserProfile.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,11 +46,6 @@ const router = createRouter({
       component: CurrentMission,
     },
     {
-      path: '/userprofile',
-      name: 'user profile',
-      component: UserProfile,
-    },
-    {
       path: '/scenarioinfo',
       name: 'scenario info',
       component: ScenarioInfo,
@@ -56,6 +54,21 @@ const router = createRouter({
       path: '/leaderboard',
       name: 'leader board',
       component: LeaderBoard,
+    },
+    {
+      path: '/globalscore',
+      name: 'global score',
+      component: GlobalScore,
+    },
+    {
+      path: '/weekscore',
+      name: 'week score',
+      component: WeekScore,
+    },
+    {
+      path: '/friendscore',
+      name: 'friend score',
+      component: FriendScore,
     },
     {
       path: '/user',

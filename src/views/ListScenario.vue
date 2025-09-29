@@ -63,11 +63,11 @@ const scenarioClicked = (e) => {
 
 <style scoped>
 .container {
-  padding: 4rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 12px;
   background-color: #2a2a2a;
+  width: 100%;
 }
 
 /* Фільтри */

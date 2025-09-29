@@ -13,3 +13,5 @@ const storeUsers = useUsersStore();
   </div>
 
 </template>
+
+<style scoped></style>

@@ -40,6 +40,11 @@ const storeUsers = useUsersStore()
 main {
   display: flex;
   flex-direction: column;
+  width: 100%;
+
+  >* {
+    width: 100%;
+  }
 }
 
 body {
@@ -50,12 +55,10 @@ body {
 .navbar {
   background: #222;
   color: #fff;
-  padding: 12px 24px;
+  padding-block: 12px;
   font-size: 18px;
   display: flex;
   gap: 1rem;
-  left: 0;
-  right: 0;
   justify-content: space-around;
 }
 
@@ -64,18 +67,22 @@ body {
   color: inherit;
   cursor: pointer;
   text-decoration: none;
+  padding: 12px 24px;
 
   &:hover {
     color: aquamarine;
+    background-color: gray;
   }
 
   /* Add any custom styles you want */
 }
 
 .home-bar {
-  position: fixed;
+  position: relative;
   top: 0;
 }
+
+
 
 .user-bar {
   position: fixed;
