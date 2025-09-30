@@ -6,3 +6,6 @@ import BarLeader from '@/components/NavbarLeaderBoard.vue'
   <BarLeader />
   Week Score
 </template>
+<style lang="scss">
+/* Add your SCSS styles here */
+</style>

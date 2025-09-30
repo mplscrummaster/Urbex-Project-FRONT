@@ -9,10 +9,10 @@ const props = defineProps({
 })
 </script>
 <template>
-  <div class="card">
-    <h2 class="titleCard">Mission {{ props.name }}</h2>
+  <div class="missionCard">
+    <h2 class="missionCard__title">Mission {{ props.name }}</h2>
     <img
-      class="arrow"
+      class="missionCard__arrow"
       :class="{ rotated: showInfo }"
       src="/icons/arrow_drop_down_circle.svg"
       alt="arrow drop down circle"
@@ -20,7 +20,7 @@ const props = defineProps({
     />
 
     <Transition name="fade">
-      <div class="info" v-show="showInfo">
+      <div class="missionCard__info" v-show="showInfo">
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis quisquam aliquam neque
           natus velit rem nulla dolor modi esse, possimus, eos exercitationem sit placeat
@@ -41,9 +41,20 @@ const props = defineProps({
 </template>
 
 <style lang="scss" scoped>
-.info {
-  img {
+.missionCard {
+  background: #bdbdbd;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  &__arrow {
     width: 100%;
+    display: flex;
+    align-self: center;
+    width: 2rem;
+    cursor: pointer;
+    transition: transform 0.3s;
   }
 }
 </style>

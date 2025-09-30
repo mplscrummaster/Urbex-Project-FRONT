@@ -5,3 +5,4 @@ import NavbarLeaderBoard from '@/components/NavbarLeaderBoard.vue'
 <template>
   <NavbarLeaderBoard />
 </template>
+<style lang="scss"></style>

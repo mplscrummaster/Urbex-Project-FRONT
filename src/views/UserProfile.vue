@@ -3,37 +3,34 @@ import UserProfileCard from '@/components/UserProfileCard.vue'
 </script>
 
 <template>
-  <header>
-    <div class="header">
-      <h1>Mon Profil</h1>
-      <img class="settings-icon" src="/icons/settings.svg" alt="params" />
+  <header class="profile">
+    <div class="profile__header">
+      <h1 class="profile__title">Mon Profil</h1>
+      <img class="profile__settings_icon" src="/icons/settings.svg" alt="Paramètres" />
     </div>
     <UserProfileCard />
   </header>
 </template>
 
 <style lang="scss" scoped>
-header {
+.profile {
   padding: 2rem;
   color: white;
 
-  .header {
+  &__header {
     display: flex;
+    align-items: center;
   }
-}
 
-h1 {
-  font-size: 2.5rem;
-  text-align: center;
-  width: 100%;
-}
+  &__title {
+    font-size: 2.5rem;
+    text-align: center;
+    width: 100%;
+  }
 
-.settings-icon {
-  width: 8dvw;
-  display: flex;
-  align-self: center;
-
-  &:hover {
+  &__settings_icon {
+    width: 8vw;
+    align-self: center;
     cursor: pointer;
   }
 }

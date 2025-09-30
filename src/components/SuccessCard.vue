@@ -2,14 +2,18 @@
 
 <template>
   <div class="successCard">
-    <img src="/public/icons/success-placeholder.png" alt="success icon" />
-    <div class="succesInfos">
-      <div class="succesTitle">Tout feu tout flamme</div>
-      <div class="successDescription">Realiser une serie de 7 defis</div>
-      <div class="progress-bar">
-        <div class="progress"></div>
+    <img
+      class="successCard__picture"
+      src="/public/icons/success-placeholder.png"
+      alt="success icon"
+    />
+    <div class="successCard__infos">
+      <div class="successCard__title">Tout feu tout flamme</div>
+      <div class="successCard__description">Realiser une serie de 7 defis</div>
+      <div class="successCard__progress_bar">
+        <div class="successCard__progress"></div>
       </div>
-      <div class="progress-text">2/4 succès</div>
+      <div class="successCard__progress_text">2/4 succès</div>
     </div>
   </div>
 </template>
@@ -23,16 +27,16 @@
   padding: 1rem;
   box-shadow: 0 5px 10px 1px black;
 
-  img {
-
+  &__picture {
     width: 5rem;
     height: 5rem;
+    border-radius: 0.5rem;
     display: flex;
     justify-self: center;
     align-self: center;
   }
 
-  .succesInfos {
+  &__infos {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -41,7 +45,7 @@
     padding: 1rem;
   }
 
-  .progress-bar {
+  &__progress_bar {
     width: 100%;
     height: 10px;
     background: #444;
@@ -49,7 +53,7 @@
     overflow: hidden;
   }
 
-  .progress {
+  &__progress {
     height: 100%;
     background: #3b82f6;
     border-radius: 5px;
