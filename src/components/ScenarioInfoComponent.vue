@@ -1,14 +1,13 @@
 <script setup>
-import ConclusionMission from './ConclusionMission.vue';
-import IntroductionMission from './IntroductionMission.vue';
-import StepsMission from './StepsMission.vue';
-
+import ConclusionMission from './ConclusionMission.vue'
+import IntroductionMission from './IntroductionMission.vue'
+import StepsMission from './StepsMission.vue'
 </script>
 <template>
   <div class="scenario">
-    <h1 class="title">Title</h1>
-    <h2 class="creator">Created by: Anonym</h2>
-    <div class="listMissions">
+    <h1 class="scenario__title">Title</h1>
+    <h2 class="scenario__creator">Created by: Anonym</h2>
+    <div class="scenario__listMissions">
       <IntroductionMission />
       <StepsMission name="1" />
       <StepsMission name="2" />
@@ -19,45 +18,37 @@ import StepsMission from './StepsMission.vue';
     </div>
   </div>
 </template>
-<style>
+<!--Style qui est propre a la vue-->
+<style lang="scss" scoped>
 .scenario {
   padding-block-start: 2rem;
   padding-block-end: 4rem;
-}
+  &__title,
+  &__creator {
+    color: white;
+  }
 
-.title,
-.creator {
-  color: white;
+  &__listMissions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }
-
-.listMissions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card {
-  background: #bdbdbd;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
-  display: grid;
-  grid-template-columns: 1fr auto;
-}
-
+</style>
+<!--Style qui est propre aux 3 composants-->
+<style lang="scss">
 .arrow {
   display: flex;
   align-self: center;
   width: 2rem;
   cursor: pointer;
   transition: transform 0.3s;
+  &.rotated {
+    transform: rotate(180deg);
+  }
 }
 
-.arrow.rotated {
-  transform: rotate(180deg);
-}
-
-.fade-enter-active,
+.arrow .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s;
 }

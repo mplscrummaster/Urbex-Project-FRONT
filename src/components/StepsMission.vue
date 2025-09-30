@@ -12,7 +12,7 @@ const props = defineProps({
   <div class="missionCard">
     <h2 class="missionCard__title">Mission {{ props.name }}</h2>
     <img
-      class="missionCard__arrow"
+      class="arrow"
       :class="{ rotated: showInfo }"
       src="/icons/arrow_drop_down_circle.svg"
       alt="arrow drop down circle"
@@ -27,6 +27,7 @@ const props = defineProps({
           perspiciatis, molestiae dolorum at amet earum?
         </p>
         <img
+          class="missionCard__picture"
           src="https://img.lovepik.com/png/20231129/the-square-of-the-center-for-measurement-vector-centered-isolated_724517_wh860.png"
           alt="photo"
         />
@@ -55,6 +56,9 @@ const props = defineProps({
     width: 2rem;
     cursor: pointer;
     transition: transform 0.3s;
+  }
+  &__picture {
+    width: 100%;
   }
 }
 </style>
