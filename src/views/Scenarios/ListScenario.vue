@@ -108,6 +108,7 @@ const scenarioClicked = (e) => {
 
 .card.completed {
   background-color: rgba(105, 105, 105, 0.366);
+  opacity: 0.4;
 }
 
 .card.in-progress {
