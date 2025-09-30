@@ -1,14 +1,7 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
-  <div class="globalMap">
-    GlobalMapVue
-  </div>
+  <div class="globalMap">GlobalMapVue</div>
 </template>
 
-<style>
-img {
-  width: 100%;
-}
-</style>
+<style lang="scss" scoped></style>
