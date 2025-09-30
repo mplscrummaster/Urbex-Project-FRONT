@@ -39,7 +39,7 @@ const loginUser = async () => {
   storeUsers.loginUser(email.value, password.value)
   email.value = ''
   password.value = ''
-  router.replace('/currentmission')
+  router.replace('/currentmap')
 }
 </script>
 

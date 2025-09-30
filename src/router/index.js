@@ -3,7 +3,7 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import ListScenario from '@/views/Scenarios/ListScenario.vue'
 import GlobalMap from '@/views/Maps/GlobalMap.vue'
-import CurrentMission from '@/views/Maps/CurrentMap.vue'
+import CurrentMap from '@/views/Maps/CurrentMap.vue'
 import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
 import Leaderboard from '@/views/LeaderboardView.vue'
 import LeaderboardGlobal from '@/components/LeaderBoard/LeaderboardGlobal.vue'
@@ -41,9 +41,9 @@ const router = createRouter({
       component: GlobalMap,
     },
     {
-      path: '/currentmission',
-      name: 'current mission',
-      component: CurrentMission,
+      path: '/currentmap',
+      name: 'current map',
+      component: CurrentMap,
     },
     {
       path: '/scenarioinfo',

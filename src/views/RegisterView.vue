@@ -51,7 +51,7 @@ const registrUser = async () => {
   lastname.value = ''
   email.value = ''
   password.value = ''
-  router.replace('/currentmission')
+  router.replace('/currentmap')
 }
 </script>
 
@@ -64,23 +64,10 @@ const registrUser = async () => {
 
     <div class="password-container">
       <input type="password" v-model="password" placeholder="Mot de passe" value="" required />
-      <button
-        type="button"
-        class="toggle-eye"
-        @click.prevent="togglePassword"
-        aria-label="Afficher ou masquer le mot de passe"
-      >
-        <svg
-          id="eyeIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <button type="button" class="toggle-eye" @click.prevent="togglePassword"
+        aria-label="Afficher ou masquer le mot de passe">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <line x1="12" y1="12" x2="12" y2="12"></line>
         </svg>
