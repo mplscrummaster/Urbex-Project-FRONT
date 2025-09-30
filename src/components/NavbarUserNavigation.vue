@@ -2,11 +2,11 @@
 
 <template>
   <div class="navbar user-bar">
-    <RouterLink to="/scenario">Scenario</RouterLink>
-    <RouterLink to="/globalmap">Map</RouterLink>
-    <RouterLink to="/currentmission">Current</RouterLink>
-    <RouterLink to="/leaderboard">Leaderboard</RouterLink>
-    <RouterLink to="/userProfile">User</RouterLink>
+    <RouterLink active-class="active" to="/scenario">Scenario</RouterLink>
+    <RouterLink active-class="active" to="/globalmap">Map</RouterLink>
+    <RouterLink active-class="active" to="/currentmap">Current</RouterLink>
+    <RouterLink active-class="active" to="/leaderboard">Leaderboard</RouterLink>
+    <RouterLink active-class="active" to="/userProfile">User</RouterLink>
   </div>
 </template>
 
@@ -15,5 +15,10 @@
   width: 100%;
   position: fixed;
   bottom: 0;
+}
+
+.active {
+  color: red;
+  border: 2px solid red;
 }
 </style>
