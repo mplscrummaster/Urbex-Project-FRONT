@@ -1,6 +1,8 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
 
+const activeFilter = ref('all')
 const router = useRouter()
 
 const scenarios = [
@@ -12,11 +14,30 @@ const scenarios = [
 ]
 
 const changeFilter = (e) => {
-  console.log(`Filter changed to: ${e.target}`)
+  const filterName = e.target.innerText
+  console.log(`Filter changed to: ${filterName}`)
   const filters = document.querySelectorAll('.filter')
   filters.forEach((filter) => filter.classList.remove('active'))
   e.target.classList.add('active')
+  activeFilter.value = filterName
+
 }
+
+const filteredScenarios = computed(() => {
+  if (activeFilter.value === 'all') {
+    return scenarios
+  }
+  if (activeFilter.value === 'terminés') {
+    return scenarios.filter(s => s.done === s.total)
+  }
+  if (activeFilter.value === 'commencés') {
+    return scenarios.filter(s => s.done > 0 && s.done < s.total)
+  }
+  if (activeFilter.value === 'pas encore') {
+    return scenarios.filter(s => s.done === 0)
+  }
+  return scenarios
+})
 
 const scenarioMarked = (e) => {
   console.log(`Scenario marked: ${e.target}`)
@@ -27,7 +48,6 @@ const scenarioClicked = (e) => {
   // const scenarioCard = e.currentTarget;
   // const scenarioId = scenarioCard.id;
   //  console.log(`Scenario clicked: ${scenarioId}`);
-  // Навігація до сторінки сценарію
   router.push(`/scenarioinfo`)
 }
 </script>
@@ -36,24 +56,19 @@ const scenarioClicked = (e) => {
   <div class="container">
     <!-- Фільтри -->
     <div class="filters" @click.prevent="changeFilter($event)">
+      <button class="filter">all</button>
       <button class="filter">terminés</button>
       <button class="filter">commencés</button>
       <button class="filter">pas encore</button>
     </div>
 
     <!-- Сценарії -->
-    <div
-      v-for="(scenario, key) in scenarios"
-      :key="key"
-      :id="scenario.id"
-      :class="
-        scenario.done === scenario.total
-          ? 'card completed'
-          : scenario.done > 0
-            ? 'card in-progress'
-            : 'card not-started'
-      "
-    >
+    <div v-for="scenario in filteredScenarios" :key="scenario.id" :id="scenario.id" :class="scenario.done === scenario.total
+      ? 'card completed'
+      : scenario.done > 0
+        ? 'card in-progress'
+        : 'card not-started'
+      ">
       <h3 class="title" @click="scenarioClicked($event)">{{ scenario.title }}</h3>
       <img class="bookmark" src="/icons/bookmark.svg" alt="" @click="scenarioMarked($event)" />
 
@@ -61,10 +76,7 @@ const scenarioClicked = (e) => {
 
       <!-- Прогрес -->
       <div class="progress">
-        <div
-          class="progress-bar"
-          :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"
-        ></div>
+        <div class="progress-bar" :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"></div>
       </div>
       <p class="steps">{{ scenario.done }}/{{ scenario.total }}</p>
     </div>
@@ -116,11 +128,11 @@ const scenarioClicked = (e) => {
 }
 
 .card.completed {
-  background-color: rgba(105, 105, 105, 0.637);
+  background-color: rgba(105, 105, 105, 0.366);
 }
 
 .card.in-progress {
-  border: 2px solid #5d8ddb;
+  border: 4px solid #5d8ddb;
 }
 
 .bookmark {
@@ -169,5 +181,9 @@ const scenarioClicked = (e) => {
   margin-top: 4px;
   font-size: 12px;
   color: #ccc;
+}
+
+.hidden {
+  display: none;
 }
 </style>
