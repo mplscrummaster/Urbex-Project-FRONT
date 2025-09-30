@@ -13,23 +13,23 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="userCard" :class="{
+  <div class="leaderCard" :class="{
     'first-place': props.value === 1,
     'second-place': props.value === 2,
     'third-place': props.value === 3
   }">
     <h2>{{ props.value }}</h2>
-    <img class="userImg" src="/public/img/profile-placeholder.png" alt="person icon" />
-    <div class="userInfos">
-      <div class="userName">Name User</div>
-      <div class="userExperience"> 100px </div>
+    <img class="leaderImg" src="/public/img/profile-placeholder.png" alt="person icon" />
+    <div class="leaderInfos">
+      <div class="leaderName">Name User</div>
+      <div class="leaderExperience"> 100px </div>
     </div>
   </div>
 
 </template>
 
-<style lang="scss">
-.userCard {
+<style lang="scss" scoped>
+.leaderCard {
   background-color: gray;
   border-radius: 1rem;
   width: 80%;
@@ -51,7 +51,7 @@ const props = defineProps({
     background-color: #cd7f32;
   }
 
-  .userImg {
+  .leaderImg {
 
     width: 5rem;
     height: 5rem;
@@ -60,7 +60,7 @@ const props = defineProps({
     align-self: center;
   }
 
-  .userInfos {
+  .leaderInfos {
     display: flex;
     width: 100%;
     font-size: x-large;
