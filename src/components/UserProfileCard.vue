@@ -1,23 +1,22 @@
 <script setup>
-import SuccessCard from './SuccessCard.vue';
-
+import SuccessCard from './SuccessCard.vue'
 </script>
 
 <template>
   <div class="userCard">
-    <header>
-      <div class="userInfos">
-        <div class="fullname">
-          <span class="firstname">Jaylo</span>
+    <header class="userCard__header">
+      <div class="userCard__infos">
+        <div class="userCard__fullname">
+          <span class="userCard__firstname">Jaylo</span>
           <span> </span>
-          <span class="lastname">Barot</span>
+          <span class="userCard__lastname">Barot</span>
         </div>
-        <div class="userDescription">Explorateur de grotte</div>
+        <div class="userCard__description">Explorateur de grotte</div>
       </div>
-      <img class="userPicture" src="/public/img/profile-placeholder.png" alt="userImg" />
+      <img class="userCard__picture" src="/public/img/profile-placeholder.png" alt="userImg" />
     </header>
-    <main class="successList">
-      <div class="title">Succès</div>
+    <main class="userCard__successList">
+      <h1 class="userCard__successList--title">Succès</h1>
       <SuccessCard />
       <SuccessCard />
       <SuccessCard />
@@ -28,13 +27,15 @@ import SuccessCard from './SuccessCard.vue';
 </template>
 
 <style lang="scss" scoped>
-header {
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  border-bottom: 1px solid white;
-
-  .userPicture {
+.userCard {
+  border-radius: 1rem;
+  &__header {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    border-bottom: 1px solid white;
+  }
+  &__picture {
     border-radius: 100rem;
     width: 10rem;
 
@@ -43,32 +44,26 @@ header {
       color: red;
     }
   }
-}
-
-.userCard {
-  border-radius: 1rem;
-}
-
-.fullname {
-  font-size: 4rem;
-}
-
-.userDescription {
-  font-size: 2rem;
-  opacity: 0.8;
-}
-
-.successList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding-block-start: 1rem;
-  padding-block-end: 2rem;
-
-  .title {
-    font-size: 3rem;
+  &__fullname {
+    font-size: 4rem;
   }
 
+  &__description {
+    font-size: 2rem;
+    opacity: 0.8;
+  }
+
+  &__successList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-block-start: 1rem;
+    padding-block-end: 2rem;
+
+    &--title {
+      font-size: 3rem;
+    }
+  }
 }
 </style>

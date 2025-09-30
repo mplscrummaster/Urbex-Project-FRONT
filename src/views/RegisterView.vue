@@ -56,30 +56,79 @@ const registrUser = async () => {
 </script>
 
 <template>
-  <form class="userForm" id="userForm" @submit.prevent="registrUser">
-    <input type="text" v-model="username" placeholder="Ecrire votre nickname" value="" required />
-    <input type="text" v-model="firstname" placeholder="Ecrire votre prenom" value="" required />
-    <input type="text" v-model="lastname" placeholder="Ecrire votre nom" value="" required />
-    <input type="email" v-model="email" placeholder="Adresse e-mail" value="" required />
-
-    <div class="password-container">
-      <input type="password" v-model="password" placeholder="Mot de passe" value="" required />
-      <button type="button" class="toggle-eye" @click.prevent="togglePassword"
-        aria-label="Afficher ou masquer le mot de passe">
-        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <form class="register_form" id="registerForm" @submit.prevent="registrUser">
+    <div class="register_form__group">
+      <input
+        class="register_form__input"
+        type="text"
+        v-model="username"
+        placeholder="Ecrire votre nickname"
+        required
+      />
+    </div>
+    <div class="register_form__group">
+      <input
+        class="register_form__input"
+        type="text"
+        v-model="firstname"
+        placeholder="Ecrire votre prenom"
+        required
+      />
+    </div>
+    <div class="register_form__group">
+      <input
+        class="register_form__input"
+        type="text"
+        v-model="lastname"
+        placeholder="Ecrire votre nom"
+        required
+      />
+    </div>
+    <div class="register_form__group">
+      <input
+        class="register_form__input"
+        type="email"
+        v-model="email"
+        placeholder="Adresse e-mail"
+        required
+      />
+    </div>
+    <div class="register_form__group register_form__group--password">
+      <input
+        class="register_form__input"
+        type="password"
+        v-model="password"
+        placeholder="Mot de passe"
+        required
+      />
+      <button
+        type="button"
+        class="register_form__toggle_eye"
+        @click.prevent="togglePassword"
+        aria-label="Afficher ou masquer le mot de passe"
+      >
+        <svg
+          id="eyeIcon"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <line x1="12" y1="12" x2="12" y2="12"></line>
         </svg>
       </button>
     </div>
-
-    <button type="submit" class="submit-btn">S'inscrire</button>
+    <button type="submit" class="register_form__submit">S'inscrire</button>
   </form>
 </template>
 
-<style scoped>
-form {
+<style lang="scss" scoped>
+.register_form {
   background-color: #ffffff;
   padding: 40px;
   margin-block-start: 5rem;
@@ -91,67 +140,56 @@ form {
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-}
 
-input {
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  background-color: #f5f5f5;
-  color: #333;
-  transition:
-    border 0.2s,
-    background 0.2s;
-}
+  &__group {
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    &--password {
+      .register_form__input {
+        flex: 1;
+        padding-right: 2.5rem;
+      }
+    }
+  }
 
-input:focus {
-  outline: none;
-  border-color: #888;
-  background-color: #eaeaea;
-}
+  &__input {
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #f5f5f5;
+    color: #333;
+    width: 100%;
+    transition:
+      border 0.2s,
+      background 0.2s;
+    &:focus {
+      outline: none;
+      border-color: #888;
+      background-color: #eaeaea;
+    }
+  }
 
-.password-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
+  &__toggle-eye {
+    position: absolute;
+    right: 50px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    &:hover svg {
+      stroke: #333;
+    }
+  }
 }
-
-.password-container input {
-  flex: 1;
-  padding: 14px;
-  /* місце для кнопки */
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-.toggle-eye {
-  position: absolute;
-  right: 10px;
-  /* відступ від правого краю input */
-  top: 50%;
-  transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-.toggle-eye:hover svg {
-  transform: scale(1.1);
-  stroke: #333;
-}
-
-button.submit-btn {
+.register_form__submit {
   padding: 14px;
   background-color: #666;
   color: #fff;
@@ -163,8 +201,7 @@ button.submit-btn {
     background 0.3s,
     transform 0.2s;
 }
-
-button.submit-btn:hover {
+.register_form__submit:hover {
   background-color: #555;
   transform: translateY(-2px);
 }

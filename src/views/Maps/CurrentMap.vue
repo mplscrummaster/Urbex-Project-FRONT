@@ -1,14 +1,13 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
   <div class="currentMission">
-    <img src="/public/img/currentmission.png" alt="" />
+    <img class="currentMission__picture" src="/public/img/currentmission.png" alt="" />
   </div>
 </template>
 
-<style>
-img {
+<style lang="scss" scoped>
+.currentMission__picture {
   width: 100%;
 }
 </style>
