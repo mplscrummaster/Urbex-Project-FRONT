@@ -42,18 +42,12 @@ const scenarioClicked = (e) => {
     </div>
 
     <!-- Сценарії -->
-    <div
-      v-for="(scenario, key) in scenarios"
-      :key="key"
-      :id="scenario.id"
-      :class="
-        scenario.done === scenario.total
-          ? 'card completed'
-          : scenario.done > 0
-            ? 'card in-progress'
-            : 'card not-started'
-      "
-    >
+    <div v-for="(scenario, key) in scenarios" :key="key" :id="scenario.id" :class="scenario.done === scenario.total
+      ? 'card completed'
+      : scenario.done > 0
+        ? 'card in-progress'
+        : 'card not-started'
+      ">
       <h3 class="title" @click="scenarioClicked($event)">{{ scenario.title }}</h3>
       <img class="bookmark" src="/icons/bookmark.svg" alt="" @click="scenarioMarked($event)" />
 
@@ -61,10 +55,7 @@ const scenarioClicked = (e) => {
 
       <!-- Прогрес -->
       <div class="progress">
-        <div
-          class="progress-bar"
-          :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"
-        ></div>
+        <div class="progress-bar" :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"></div>
       </div>
       <p class="steps">{{ scenario.done }}/{{ scenario.total }}</p>
     </div>
@@ -116,11 +107,11 @@ const scenarioClicked = (e) => {
 }
 
 .card.completed {
-  background-color: rgba(105, 105, 105, 0.637);
+  background-color: rgba(105, 105, 105, 0.366);
 }
 
 .card.in-progress {
-  border: 2px solid #5d8ddb;
+  border: 4px solid #5d8ddb;
 }
 
 .bookmark {
