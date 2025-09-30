@@ -5,10 +5,10 @@ import ListScenario from '@/views/Scenarios/ListScenario.vue'
 import GlobalMap from '@/views/Maps/GlobalMap.vue'
 import CurrentMission from '@/views/Maps/CurrentMap.vue'
 import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
-import Leaderboard from '@/views/Leaderboard.vue'
-import LeaderboardGlobal from '@/views/LeaderboardGlobal.vue'
-import LeaderboardFriends from '@/views/LeaderboardFriends.vue'
-import LeaderboardWeeks from '@/views/LeaderboardWeek.vue'
+import Leaderboard from '@/views/LeaderboardView.vue'
+import LeaderboardGlobal from '@/components/LeaderBoard/LeaderboardGlobal.vue'
+import LeaderboardFriends from '@/components/LeaderBoard/LeaderboardFriends.vue'
+import LeaderboardWeek from '@/components/LeaderBoard/LeaderboardWeek.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import RegisterView from '@/views/RegisterView.vue'
 
@@ -27,7 +27,7 @@ const router = createRouter({
     },
     {
       path: '/register',
-      name: 'inscrire',
+      name: 'register',
       component: RegisterView,
     },
     {
@@ -54,21 +54,27 @@ const router = createRouter({
       path: '/leaderboard',
       name: 'leader board',
       component: Leaderboard,
-    },
-    {
-      path: '/LeaderboardGlobal',
-      name: 'global score',
-      component: LeaderboardGlobal,
-    },
-    {
-      path: '/LeaderboardWeeks',
-      name: 'week score',
-      component: LeaderboardWeeks,
-    },
-    {
-      path: '/LeaderboardFriends',
-      name: 'friends score',
-      component: LeaderboardFriends,
+      children: [
+        {
+          path: '',
+          component: LeaderboardGlobal,
+        },
+        {
+          path: '/LeaderboardGlobal',
+          name: 'global score',
+          component: LeaderboardGlobal,
+        },
+        {
+          path: '/LeaderboardWeeks',
+          name: 'week score',
+          component: LeaderboardWeek,
+        },
+        {
+          path: '/LeaderboardFriends',
+          name: 'friends score',
+          component: LeaderboardFriends,
+        },
+      ],
     },
     {
       path: '/userProfile',
