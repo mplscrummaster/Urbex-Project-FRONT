@@ -1,5 +1,5 @@
 <script setup>
-import BarLeader from '@/components/BarLeader.vue';
+import BarLeader from '@/components/NavbarLeaderBoard.vue';
 
 </script>
 

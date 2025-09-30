@@ -1,9 +1,7 @@
 <script setup>
-import BarLeader from '@/components/BarLeader.vue';
-
-
+import NavbarLeaderBoard from '@/components/NavbarLeaderBoard.vue'
 </script>
 
 <template>
-  <BarLeader />
+  <NavbarLeaderBoard />
 </template>

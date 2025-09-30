@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
-import ListScenario from '@/views/ListScenario.vue'
-import GlobalMap from '@/views/GlobalMap.vue'
-import CurrentMission from '@/views/CurrentMission.vue'
-import ScenarioInfo from '@/views/ScenarioInfo.vue'
-import LeaderBoard from '@/views/LeaderBoard.vue'
-import GlobalScore from '@/views/GlobalScore.vue'
-import FriendScore from '@/views/FriendScore.vue'
-import WeekScore from '@/views/WeekScore.vue'
+import ListScenario from '@/views/Scenarios/ListScenario.vue'
+import GlobalMap from '@/views/Maps/GlobalMap.vue'
+import CurrentMission from '@/views/Maps/CurrentMap.vue'
+import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
+import Leaderboard from '@/views/Leaderboard.vue'
+import LeaderboardGlobal from '@/views/LeaderboardGlobal.vue'
+import LeaderboardFriends from '@/views/LeaderboardFriends.vue'
+import LeaderboardWeeks from '@/views/LeaderboardWeek.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import RegisterView from '@/views/RegisterView.vue'
 
@@ -53,22 +53,22 @@ const router = createRouter({
     {
       path: '/leaderboard',
       name: 'leader board',
-      component: LeaderBoard,
+      component: Leaderboard,
     },
     {
-      path: '/globalscore',
+      path: '/LeaderboardGlobal',
       name: 'global score',
-      component: GlobalScore,
+      component: LeaderboardGlobal,
     },
     {
-      path: '/weekscore',
+      path: '/LeaderboardWeeks',
       name: 'week score',
-      component: WeekScore,
+      component: LeaderboardWeeks,
     },
     {
-      path: '/friendscore',
-      name: 'friend score',
-      component: FriendScore,
+      path: '/LeaderboardFriends',
+      name: 'friends score',
+      component: LeaderboardFriends,
     },
     {
       path: '/userProfile',

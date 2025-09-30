@@ -1,6 +1,6 @@
 <script setup>
 import NavbarItems from './components/NavbarItems.vue'
-import BarUserNavigation from './components/BarUserNavigation.vue'
+import BarUserNavigation from './components/NavbarUserNavigation.vue'
 import { useUsersStore } from '@/stores/users'
 const storeUsers = useUsersStore()
 /*  import { useBaseStore } from "./stores/base.js";

@@ -77,6 +77,7 @@ const scenarioClicked = (e) => {
   flex-direction: column;
   gap: 12px;
   background-color: #2a2a2a;
+  padding-block: 1rem 5rem;
 }
 
 /* Фільтри */
