@@ -29,15 +29,15 @@ export const useScenariosStore = defineStore('scenarios', {
         // For now no author or mission counts — placeholder fields can be enriched later.
         this.items = data.map((row) => ({
           id: row.id,
-            title: row.title,
-            status: row.status,
-            bookmarked: !!row.bookmarked,
-            started_at: row.started_at || null,
-            completed_at: row.completed_at || null,
-            // temp progression ratio heuristic (completed => 1, started => 0.4, else 0)
-            progressRatio: row.status === 'completed' ? 1 : row.status === 'started' ? 0.4 : 0,
-            author: '—', // backend doesn't send yet
-          }))
+          title: row.title,
+          status: row.status,
+          bookmarked: !!row.bookmarked,
+          started_at: row.started_at || null,
+          completed_at: row.completed_at || null,
+          // temp progression ratio heuristic (completed => 1, started => 0.4, else 0)
+          progressRatio: row.status === 'completed' ? 1 : row.status === 'started' ? 0.4 : 0,
+          author: '—', // backend doesn't send yet
+        }))
         this.lastLoadedAt = Date.now()
       } catch (e) {
         this.error = e.message
@@ -94,24 +94,26 @@ export const useScenariosStore = defineStore('scenarios', {
       }
     },
     async toggleBookmark(id, opts = { confirmCallback: null }) {
-      const item = this.items.find(i => i.id === id)
+      const item = this.items.find((i) => i.id === id)
       const full = this.fullCache[id]
       const isBookmarked = item?.bookmarked || full?.progress?.scenario.bookmarked
       // If unbookmarking & scenario has progress beyond not_started -> need confirmation
       if (isBookmarked) {
-        const hasProgress = (item && item.status !== 'not_started') || (full && full.progress && full.progress.scenario.status !== 'not_started')
+        const hasProgress =
+          (item && item.status !== 'not_started') ||
+          (full && full.progress && full.progress.scenario.status !== 'not_started')
         if (hasProgress && opts.confirmCallback) {
           const ok = await opts.confirmCallback()
           if (!ok) return false
         }
         await ScenariosAPI.unbookmark(id)
-        this.items = this.items.filter(s => s.id !== id)
+        this.items = this.items.filter((s) => s.id !== id)
         delete this.fullCache[id]
       } else {
         await ScenariosAPI.bookmark(id)
         await this.fetchMine(true)
       }
       return true
-    }
+    },
   },
 })
