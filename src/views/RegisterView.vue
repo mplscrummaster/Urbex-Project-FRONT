@@ -29,7 +29,7 @@
   }
 
   // Écoute de la soumission du formulaire
-  const registrUser = async () => {
+  const registerUser = async () => {
     // Vérification simple
     if (!email.value || !password.value || !username.value || !nickname.value || !bio.value) {
       alert('Veuillez remplir tous les champs !')
@@ -37,7 +37,7 @@
     }
 
     // Préparation des données à envoyer
-    storeUsers.registrUser({
+    storeUsers.registerUser({
       username: username.value,
       nickname: nickname.value,
       bio: bio.value,
@@ -53,7 +53,7 @@
 </script>
 
 <template>
-  <form class="register_form" id="registerForm" @submit.prevent="registrUser">
+  <form class="register_form" id="registerForm" @submit.prevent="registerUser">
     <div class="register_form__group">
       <input class="register_form__input" type="text" v-model="username" placeholder="Ecrire votre username" required />
     </div>

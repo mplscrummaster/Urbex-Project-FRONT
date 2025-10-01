@@ -8,7 +8,7 @@ export const useUsersStore = defineStore('storeUsers', {
     users: [],
     currentIdUser: null,
     router: useRouter(),
-    tokenUser: null,
+    tokenUser: localStorage.getItem('tokenUser'),
   }),
   actions: {
     async loginUser(email, password) {
@@ -31,7 +31,7 @@ export const useUsersStore = defineStore('storeUsers', {
         const result = await response.json()
 
         if (response.ok) {
-          // alert('Connexion réussie !')
+          // console.log('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
           this.currentIdUser = result.id
           this.tokenUser = result.token
@@ -42,14 +42,14 @@ export const useUsersStore = defineStore('storeUsers', {
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {
-          alert(result || 'Erreur lors de la connexion')
+          console.log(result || 'Erreur lors de la connexion')
         }
       } catch (error) {
         console.error('Erreur:', error)
-        // alert('Impossible de contacter le serveur.')
+        // console.log('Impossible de contacter le serveur.')
       }
     },
-    async registrUser(username, nickname, bio, email, password) {
+    async registerUser({ username, nickname, bio, email, password }) {
       const dataUser = {
         username_user: username,
         password_user: password,
@@ -59,16 +59,16 @@ export const useUsersStore = defineStore('storeUsers', {
         nickname: nickname,
         bio: bio,
       }
-      console.log(dataUser)
-      const requestDataUserValidation = this.requestDataUser(dataUser)
-      const requestDataPlayerValidation = this.requestDataPlayer(dataPlayer)
+      console.log('dataUser', dataUser)
+      const requestDataUserValidation = await this.requestDataUser(dataUser)
+      const requestDataPlayerValidation = await this.requestDataPlayer(dataPlayer)
 
       if (requestDataUserValidation && requestDataPlayerValidation) this.router.replace('/scenario')
       else console.log('Enregistrement impossible')
     },
     async requestDataUser(dataUser) {
       try {
-        const response = await fetch(`${Api_Link}/api/register`, {
+        const responseUser = await fetch(`${Api_Link}/api/register`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -76,10 +76,10 @@ export const useUsersStore = defineStore('storeUsers', {
           body: JSON.stringify(dataUser),
         })
 
-        const result = await response.json()
+        const result = await responseUser.json()
 
-        if (response.ok) {
-          // alert('Inscription réussie !')
+        if (responseUser.ok) {
+          // console.log('Inscription réussie !')
           console.log(result)
           this.currentIdUser = result.id
           this.tokenUser = result.token
@@ -87,40 +87,41 @@ export const useUsersStore = defineStore('storeUsers', {
           //  console.log(this.currentIdUser)
           return true
         } else {
-          alert(result || `Erreur lors de l'inscription`)
+          console.log(result || `Erreur lors de l'inscription`)
           return false
         }
       } catch (error) {
         console.error('Erreur:', error)
         return false
-        // alert('Impossible de contacter le serveur')
+        // console.log('Impossible de contacter le serveur')
       }
     },
     async requestDataPlayer(dataPlayer) {
       try {
-        const response = await fetch(`${Api_Link}/api/me/player`, {
+        const responsePlayer = await fetch(`${Api_Link}/api/me/player`, {
           method: 'put',
           headers: {
             'Content-Type': 'application/json',
+            "Authorization": 'Bearer ' + this.tokenUser,
           },
           body: JSON.stringify(dataPlayer),
         })
 
-        const result = await response.json()
+        const result = await responsePlayer.json()
 
-        if (response.ok) {
-          // alert('Inscription réussie !')
+        if (responsePlayer.ok) {
+          // console.log('Inscription réussie !')
           console.log(result)
           //  console.log(this.currentIdUser)
           return true
         } else {
-          alert(result || `Erreur lors de l'inscription`)
+          console.log(result || `Erreur lors de l'inscription`)
           return false
         }
       } catch (error) {
         console.error('Erreur:', error)
         return false
-        // alert('Impossible de contacter le serveur')
+        // console.log('Impossible de contacter le serveur')
       }
     },
   },

@@ -2,15 +2,15 @@
   import { useUsersStore } from '@/stores/users'
   const storeUsers = useUsersStore()
   const decconectUser = () => {
-    storeUsers.token = null
+    storeUsers.tokenUser = null
     localStorage.clear()
   }
 </script>
 
 <template>
   <div class="navbar home-bar">
-    <RouterLink v-if="!storeUsers.token" to="/login">Login</RouterLink>
-    <RouterLink v-if="!storeUsers.token" to="/register">Inscrire</RouterLink>
+    <RouterLink v-if="!storeUsers.tokenUser" to="/login">Login</RouterLink>
+    <RouterLink v-if="!storeUsers.tokenUser" to="/register">Inscrire</RouterLink>
     <RouterLink to="/" v-else @click="decconectUser"> Se déconnecter
     </RouterLink>
   </div>
