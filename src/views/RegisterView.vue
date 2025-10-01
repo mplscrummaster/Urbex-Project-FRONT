@@ -1,10 +1,8 @@
 <script setup>
 import { useUsersStore } from '@/stores/users'
-import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const storeUsers = useUsersStore()
-const router = useRouter()
 
 const username = ref('')
 const firstname = ref('')
@@ -51,73 +49,29 @@ const registrUser = async () => {
   lastname.value = ''
   email.value = ''
   password.value = ''
-  router.replace('/currentmap')
 }
 </script>
 
 <template>
   <form class="register_form" id="registerForm" @submit.prevent="registrUser">
     <div class="register_form__group">
-      <input
-        class="register_form__input"
-        type="text"
-        v-model="username"
-        placeholder="Ecrire votre nickname"
-        required
-      />
+      <input class="register_form__input" type="text" v-model="username" placeholder="Ecrire votre nickname" required />
     </div>
     <div class="register_form__group">
-      <input
-        class="register_form__input"
-        type="text"
-        v-model="firstname"
-        placeholder="Ecrire votre prenom"
-        required
-      />
+      <input class="register_form__input" type="text" v-model="firstname" placeholder="Ecrire votre prenom" required />
     </div>
     <div class="register_form__group">
-      <input
-        class="register_form__input"
-        type="text"
-        v-model="lastname"
-        placeholder="Ecrire votre nom"
-        required
-      />
+      <input class="register_form__input" type="text" v-model="lastname" placeholder="Ecrire votre nom" required />
     </div>
     <div class="register_form__group">
-      <input
-        class="register_form__input"
-        type="email"
-        v-model="email"
-        placeholder="Adresse e-mail"
-        required
-      />
+      <input class="register_form__input" type="email" v-model="email" placeholder="Adresse e-mail" required />
     </div>
     <div class="register_form__group register_form__group--password">
-      <input
-        class="register_form__input"
-        type="password"
-        v-model="password"
-        placeholder="Mot de passe"
-        required
-      />
-      <button
-        type="button"
-        class="register_form__toggle_eye"
-        @click.prevent="togglePassword"
-        aria-label="Afficher ou masquer le mot de passe"
-      >
-        <svg
-          id="eyeIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <input class="register_form__input" type="password" v-model="password" placeholder="Mot de passe" required />
+      <button type="button" class="register_form__toggle_eye" @click.prevent="togglePassword"
+        aria-label="Afficher ou masquer le mot de passe">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <line x1="12" y1="12" x2="12" y2="12"></line>
         </svg>
@@ -146,6 +100,7 @@ const registrUser = async () => {
     display: flex;
     align-items: center;
     width: 100%;
+
     &--password {
       .register_form__input {
         flex: 1;
@@ -165,6 +120,7 @@ const registrUser = async () => {
     transition:
       border 0.2s,
       background 0.2s;
+
     &:focus {
       outline: none;
       border-color: #888;
@@ -184,11 +140,13 @@ const registrUser = async () => {
     align-items: center;
     justify-content: center;
     padding: 0;
+
     &:hover svg {
       stroke: #333;
     }
   }
 }
+
 .register_form__submit {
   padding: 14px;
   background-color: #666;
@@ -201,6 +159,7 @@ const registrUser = async () => {
     background 0.3s,
     transform 0.2s;
 }
+
 .register_form__submit:hover {
   background-color: #555;
   transform: translateY(-2px);

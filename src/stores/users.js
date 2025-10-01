@@ -8,10 +8,11 @@ export const useUsersStore = defineStore('storeUsers', {
     users: [],
     currentIdUser: null,
     router: useRouter(),
+    tokenUser: null,
   }),
   actions: {
     async loginUser(email, password) {
-      console.log(email + ' ' + password)
+      // console.log(email + ' ' + password)
 
       const data = {
         mail_user: email,
@@ -30,11 +31,12 @@ export const useUsersStore = defineStore('storeUsers', {
         const result = await response.json()
 
         if (response.ok) {
-          alert('Connexion réussie !')
+          // alert('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
-          this.currentIdUser = result[0]._id_user
-          localStorage.setItem('tokenUser', this.currentIdUser)
-          console.log(this.currentIdUser)
+          this.currentIdUser = result.id
+          this.tokenUser = result.token
+          localStorage.setItem('tokenUser', this.tokenUser)
+          //  console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
           // Par exemple, rediriger vers une autre page
@@ -57,7 +59,7 @@ export const useUsersStore = defineStore('storeUsers', {
       }
       console.log(dataUser)
       try {
-        const response = await fetch('http://91.134.99.3:81/api/register', {
+        const response = await fetch(`${Api_Link}/api/register`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -70,10 +72,11 @@ export const useUsersStore = defineStore('storeUsers', {
         if (response.ok) {
           // alert('Inscription réussie !')
           console.log(result)
-          this.currentIdUser = result[0]._id_user
-          // Traiter la réponse API ici
-          // Par exemple, rediriger vers une autre page
-          // window.location.href = "/dashboard.html";
+          this.currentIdUser = result.id
+          this.tokenUser = result.token
+          localStorage.setItem('tokenUser', this.tokenUser)
+          //  console.log(this.currentIdUser)
+          this.router.replace('/scenario')
         } else {
           alert(result || `Erreur lors de l'inscription`)
         }
