@@ -1,85 +1,80 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
+import { AuthAPI } from '@/services/api'
 
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
-    users: [],
-    currentIdUser: null,
-    router: useRouter(),
+    user: null, // { id, username_user, mail_user, role_user }
+    token: localStorage.getItem('auth_token') || null,
+    loading: false,
+    error: null,
+    router: useRouter(), // NOTE: could be moved to composables later
   }),
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+  },
   actions: {
     async loginUser(email, password) {
-      //A supp les 2 lignes du bas
-      this.router.replace('/scenario')
-      this.currentIdUser = 1
-
-      console.log(email + ' ' + password)
-
-      const data = {
-        mail_user: email,
-        password_user: password,
-      }
-
+      this.error = null
+      this.loading = true
       try {
-        const response = await fetch('http://91.134.99.3:81/api/login', {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        })
-
-        const result = await response.json()
-
-        if (response.ok) {
-          alert('Connexion réussie !')
-          console.log(result) // Traiter la réponse API ici
-          this.currentIdUser = result[0]._id_user
-          this.router.replace('/scenario')
-
-          // Par exemple, rediriger vers une autre page
-          // window.location.href = "/dashboard.html";
-        } else {
-          alert(result || 'Erreur lors de la connexion')
+        const result = await AuthAPI.login(email, password)
+        // result shape: { token, id, username_user, mail_user, role_user }
+        this.token = result.token
+        localStorage.setItem('auth_token', result.token)
+        this.user = {
+          id: result.id,
+          username_user: result.username_user,
+          mail_user: result.mail_user,
+          role_user: result.role_user,
         }
-      } catch (error) {
-        console.error('Erreur:', error)
-        // alert('Impossible de contacter le serveur.')
+        // Redirect minimal (temp): adapt route name later
+        this.router.replace('/currentmap')
+        return true
+      } catch (err) {
+        this.error = err.message
+        return false
+      } finally {
+        this.loading = false
       }
     },
-    async registrUser(username, firstname, lastname, email, password) {
-      const dataUser = {
-        username_user: username,
-        firstname_user: firstname,
-        name_user: lastname,
-        password_user: password,
-        mail_user: email,
-      }
-      console.log(dataUser)
+    async registrUser({ username, email, password }) {
+      this.error = null
+      this.loading = true
       try {
-        const response = await fetch('http://91.134.99.3:81/api/register', {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dataUser),
-        })
-
-        const result = await response.json()
-
-        if (response.ok) {
-          // alert('Inscription réussie !')
-          console.log(result)
-          this.currentIdUser = result[0]._id_user
-          // Traiter la réponse API ici
-          // Par exemple, rediriger vers une autre page
-          // window.location.href = "/dashboard.html";
-        } else {
-          alert(result || `Erreur lors de l'inscription`)
+        const result = await AuthAPI.register(username, email, password)
+        this.token = result.token
+        localStorage.setItem('auth_token', result.token)
+        this.user = {
+          id: result.id,
+          username_user: result.username_user,
+          mail_user: result.mail_user,
+          role_user: result.role_user,
         }
-      } catch (error) {
-        console.error('Erreur:', error)
-        // alert('Impossible de contacter le serveur')
+        this.router.replace('/currentmap')
+        return true
+      } catch (err) {
+        this.error = err.message
+        return false
+      } finally {
+        this.loading = false
+      }
+    },
+    logout() {
+      this.token = null
+      this.user = null
+      localStorage.removeItem('auth_token')
+      this.router.replace('/login')
+    },
+    async hydrate() {
+      // Optional: call on app start if token exists
+      if (!this.token || this.user) return
+      try {
+        const me = await AuthAPI.me()
+        this.user = me
+      } catch {
+        // token invalid → purge
+        this.logout()
       }
     },
   },

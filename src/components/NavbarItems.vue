@@ -4,9 +4,9 @@ const storeUsers = useUsersStore()
 </script>
 
 <template>
-  <div class="navbar home-bar" :class="{ hidden: storeUsers.currentIdUser }">
-    <RouterLink v-if="!storeUsers.currentIdUser" to="/login">Login</RouterLink>
-    <RouterLink v-if="!storeUsers.currentIdUser" to="/register">Inscrire</RouterLink>
+  <div class="navbar home-bar" v-if="!storeUsers.isAuthenticated">
+    <RouterLink to="/login">Login</RouterLink>
+    <RouterLink to="/register">Inscrire</RouterLink>
   </div>
 </template>
 

@@ -1,10 +1,8 @@
 <script setup>
 import { useUsersStore } from '@/stores/users'
-import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const storeUsers = useUsersStore()
-const router = useRouter()
 
 const username = ref('')
 const firstname = ref('')
@@ -32,26 +30,25 @@ const togglePassword = () => {
 
 // Écoute de la soumission du formulaire
 const registrUser = async () => {
-  // Vérification simple
   if (!email.value || !password.value || !username.value || !firstname.value || !lastname.value) {
     alert('Veuillez remplir tous les champs !')
     return
   }
-
-  // Préparation des données à envoyer
-  storeUsers.registrUser({
+  const ok = await storeUsers.registrUser({
     username: username.value,
-    firstname: firstname.value,
-    lastname: lastname.value,
     email: email.value,
     password: password.value,
   })
+  if (!ok) {
+    alert(storeUsers.error || "Échec de l'inscription")
+    return
+  }
   username.value = ''
   firstname.value = ''
   lastname.value = ''
   email.value = ''
   password.value = ''
-  router.replace('/currentmap')
+  // Redirection déjà effectuée par le store
 }
 </script>
 

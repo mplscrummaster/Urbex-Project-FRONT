@@ -24,7 +24,7 @@ const storeUsers = useUsersStore()
   <main>
     <NavbarItems />
     <RouterView class="content" />
-    <BarUserNavigation v-show="storeUsers.currentIdUser != null" />
+    <BarUserNavigation v-if="storeUsers.isAuthenticated" />
     <!--
     <button @click.prevent=count>{{ baseStore.getCounter }}</button>
 

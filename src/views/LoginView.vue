@@ -1,9 +1,6 @@
 <script setup>
 import { useUsersStore } from '@/stores/users'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
 const storeUsers = useUsersStore()
 
 const email = ref('Max@gmail.com')
@@ -29,17 +26,18 @@ const togglePassword = () => {
 
 // Écoute de la soumission du formulaire
 const loginUser = async () => {
-  // Vérification simple
   if (!email.value || !password.value) {
     alert('Veuillez remplir tous les champs !')
     return
   }
-
-  // Préparation des données à envoyer
-  storeUsers.loginUser(email.value, password.value)
+  const ok = await storeUsers.loginUser(email.value, password.value)
+  if (!ok) {
+    alert(storeUsers.error || 'Échec de connexion')
+    return
+  }
+  // Succès: le store redirige déjà. Nettoyage des champs.
   email.value = ''
   password.value = ''
-  router.replace('/currentmap')
 }
 </script>
 
