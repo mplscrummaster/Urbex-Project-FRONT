@@ -6,7 +6,7 @@ const Api_Link = 'http://91.134.99.3:3000'
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
     users: [],
-    currentIdUser: null,
+    currentIdUser: getcurrentIdUser(),
     router: useRouter(),
     tokenUser: localStorage.getItem('tokenUser'),
   }),
@@ -124,5 +124,6 @@ export const useUsersStore = defineStore('storeUsers', {
         // console.log('Impossible de contacter le serveur')
       }
     },
+    async
   },
 })
