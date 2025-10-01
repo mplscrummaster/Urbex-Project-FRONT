@@ -44,7 +44,7 @@ export const useUsersStore = defineStore('storeUsers', {
         }
       } catch (error) {
         console.error('Erreur:', error)
-        alert('Impossible de contacter le serveur.')
+        // alert('Impossible de contacter le serveur.')
       }
     },
     async registrUser(username, firstname, lastname, email, password) {
@@ -68,7 +68,7 @@ export const useUsersStore = defineStore('storeUsers', {
         const result = await response.json()
 
         if (response.ok) {
-          alert('Inscription réussie !')
+          // alert('Inscription réussie !')
           console.log(result)
           this.currentIdUser = result[0]._id_user
           // Traiter la réponse API ici
@@ -79,7 +79,7 @@ export const useUsersStore = defineStore('storeUsers', {
         }
       } catch (error) {
         console.error('Erreur:', error)
-        alert('Impossible de contacter le serveur')
+        // alert('Impossible de contacter le serveur')
       }
     },
   },

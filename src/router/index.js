@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
-import InscrireView from '@/views/InscrireView.vue'
-import ListScenario from '@/views/ListScenario.vue'
-import GlobalMap from '@/views/GlobalMap.vue'
-import CurrentMission from '@/views/CurrentMission.vue'
-import ScenarioInfo from '@/views/ScenarioInfo.vue'
-import LeaderBoard from '@/views/LeaderBoard.vue'
-import GlobalScore from '@/views/GlobalScore.vue'
-import FriendScore from '@/views/FriendScore.vue'
-import WeekScore from '@/views/WeekScore.vue'
+import ListScenario from '@/views/Scenarios/ListScenario.vue'
+import GlobalMap from '@/views/Maps/GlobalMap.vue'
+import CurrentMap from '@/views/Maps/CurrentMap.vue'
+import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
+import Leaderboard from '@/views/LeaderboardView.vue'
+import LeaderboardGlobal from '@/components/LeaderBoard/LeaderboardGlobal.vue'
+import LeaderboardFriends from '@/components/LeaderBoard/LeaderboardFriends.vue'
+import LeaderboardWeek from '@/components/LeaderBoard/LeaderboardWeek.vue'
 import UserProfile from '@/views/UserProfile.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,9 +26,9 @@ const router = createRouter({
       component: LoginView,
     },
     {
-      path: '/inscrire',
-      name: 'inscrire',
-      component: InscrireView,
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
     },
     {
       path: '/scenario',
@@ -41,9 +41,9 @@ const router = createRouter({
       component: GlobalMap,
     },
     {
-      path: '/currentmission',
-      name: 'current mission',
-      component: CurrentMission,
+      path: '/currentmap',
+      name: 'current map',
+      component: CurrentMap,
     },
     {
       path: '/scenarioinfo',
@@ -53,9 +53,31 @@ const router = createRouter({
     {
       path: '/leaderboard',
       name: 'leader board',
-      component: LeaderBoard,
+      component: Leaderboard,
+      children: [
+        {
+          path: '',
+          component: LeaderboardGlobal,
+        },
+        {
+          path: '/LeaderboardGlobal',
+          name: 'global score',
+          component: LeaderboardGlobal,
+        },
+        {
+          path: '/LeaderboardWeeks',
+          name: 'week score',
+          component: LeaderboardWeek,
+        },
+        {
+          path: '/LeaderboardFriends',
+          name: 'friends score',
+          component: LeaderboardFriends,
+        },
+      ],
     },
     {
+<<<<<<< HEAD
       path: '/globalscore',
       name: 'global score',
       component: GlobalScore,
@@ -71,6 +93,8 @@ const router = createRouter({
       component: FriendScore,
     },
     {
+=======
+>>>>>>> 9e1ffe85685f73fd35a6760a8ead893b3f626712
       path: '/userProfile',
       name: 'user',
       component: UserProfile,
