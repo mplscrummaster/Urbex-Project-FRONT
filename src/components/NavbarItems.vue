@@ -10,7 +10,7 @@ const decconectUser = () => {
 <template>
   <div class="navbar home-bar">
     <RouterLink v-if="!storeUsers.token" to="/login">Login</RouterLink>
-    <RouterLink v-if="!storeUsers.token" to="/inscrire">Inscrire</RouterLink>
+    <RouterLink v-if="!storeUsers.token" to="/register">Inscrire</RouterLink>
     <RouterLink to="/" v-else @click="decconectUser"> Se déconnecter
     </RouterLink>
   </div>
