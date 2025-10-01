@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { useUsersStore } from '@/stores/users'
+import '@/styles/theme.scss'
 
 const app = createApp(App)
 const pinia = createPinia()

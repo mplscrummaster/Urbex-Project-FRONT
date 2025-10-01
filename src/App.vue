@@ -23,7 +23,11 @@ const storeUsers = useUsersStore()
 <template>
   <main>
     <NavbarItems />
-    <RouterView class="content" />
+    <div class="app-shell">
+      <div class="app-container">
+        <RouterView class="content" />
+      </div>
+    </div>
     <BarUserNavigation v-if="storeUsers.isAuthenticated" />
     <!--
     <button @click.prevent=count>{{ baseStore.getCounter }}</button>
@@ -41,15 +45,10 @@ body {
   margin: 0;
   background-color: #2b2b2b;
 }
-main {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-}
-
-.content {
-  padding-inline: 2rem;
-}
+main { display:flex; flex-direction:column; min-height:100dvh; }
+.app-shell { flex:1 1 auto; width:100%; }
+.app-container { width:100%; max-width:1180px; margin:0 auto; padding:1.2rem clamp(1rem,3vw,2.2rem) 3.5rem; box-sizing:border-box; }
+.content { padding:0; }
 
 .navbar {
   background: #222;

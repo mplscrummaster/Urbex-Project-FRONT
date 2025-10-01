@@ -1,53 +1,57 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useScenariosStore } from '@/stores/scenarios'
 
 const activeFilter = ref('all')
 const router = useRouter()
+const scenariosStore = useScenariosStore()
 
-const scenarios = [
-  { id: 1, title: 'Les ombres de la ville', author: 'Justifit', done: 4, total: 4 },
-  { id: 2, title: 'Les passages interdits', author: 'Aramiss', done: 6, total: 6 },
-  { id: 3, title: 'Les ruines oubliées', author: 'Sally Go', done: 1, total: 4 },
-  { id: 4, title: 'Le réseau invisible', author: 'Justifit', done: 0, total: 4 },
-  { id: 5, title: 'Sous la poussière du temps', author: 'Sealmon', done: 0, total: 7 },
-]
+onMounted(async () => {
+  await scenariosStore.fetchMine()
+  // lancer enrichissement précis en arrière-plan
+  scenariosStore.enrichProgress()
+})
+
+// Possibilité: relancer enrichissement si items changent (ex: après un toggle futur)
+watch(
+  () => scenariosStore.items.length,
+  () => {
+    scenariosStore.enrichProgress()
+  }
+)
 
 const changeFilter = (e) => {
-  const filterName = e.target.innerText
-  console.log(`Filter changed to: ${filterName}`)
+  const txt = e.target.innerText
   const filters = document.querySelectorAll('.container__filter')
-  filters.forEach((filter) => filter.classList.remove('active'))
+  filters.forEach((f) => f.classList.remove('active'))
   e.target.classList.add('active')
-  activeFilter.value = filterName
+  activeFilter.value = txt
 }
 
 const filteredScenarios = computed(() => {
-  if (activeFilter.value === 'all') {
-    return scenarios
-  }
-  if (activeFilter.value === 'terminés') {
-    return scenarios.filter((s) => s.done === s.total)
-  }
-  if (activeFilter.value === 'commencés') {
-    return scenarios.filter((s) => s.done > 0 && s.done < s.total)
-  }
-  if (activeFilter.value === 'pas encore') {
-    return scenarios.filter((s) => s.done === 0)
-  }
-  return scenarios
+  const list = scenariosStore.items
+  if (activeFilter.value === 'all') return list
+  if (activeFilter.value === 'terminés') return list.filter((s) => s.status === 'completed')
+  if (activeFilter.value === 'commencés') return list.filter((s) => s.status === 'started')
+  if (activeFilter.value === 'pas encore') return list.filter((s) => s.status === 'not_started')
+  return list
 })
 
-const scenarioMarked = (e) => {
-  console.log(`Scenario marked: ${e.target}`)
-  e.target.classList.toggle('marked')
+const scenarioClicked = (scenario) => {
+  router.push(`/scenario/${scenario.id}`)
 }
 
-const scenarioClicked = (e) => {
-  // const scenarioCard = e.currentTarget;
-  // const scenarioId = scenarioCard.id;
-  //  console.log(`Scenario clicked: ${scenarioId}`);
-  router.push(`/scenarioinfo`)
+async function toggleBookmark(e, scenario) {
+  e.stopPropagation()
+  const confirmCallback = async () => {
+    return window.confirm('En retirant ce scénario, toute votre progression sera définitivement effacée. Confirmer ?')
+  }
+  try {
+    await scenariosStore.toggleBookmark(scenario.id, { confirmCallback })
+  } catch (err) {
+    alert(err.message)
+  }
 }
 </script>
 
@@ -62,137 +66,99 @@ const scenarioClicked = (e) => {
     </div>
 
     <!-- Сценарії -->
+    <div v-if="scenariosStore.loading" style="color:#aaa;">Chargement...</div>
+    <div v-else-if="!filteredScenarios.length" style="color:#aaa;">Aucun scénario bookmarké pour l'instant.</div>
     <div
+      v-else
       v-for="scenario in filteredScenarios"
       :key="scenario.id"
       :id="scenario.id"
-      :class="
-        scenario.done === scenario.total
-          ? 'card completed'
-          : scenario.done > 0
-            ? 'card in-progress'
-            : 'card not-started'
-      "
+      :class="['card', scenario.status === 'completed' ? 'completed' : scenario.status === 'started' ? 'in-progress' : 'not-started']"
+      @click="scenarioClicked(scenario)"
     >
-      <h3 class="card__title" @click="scenarioClicked($event)">{{ scenario.title }}</h3>
-      <img
-        class="card__bookmark"
-        src="/icons/bookmark.svg"
-        alt=""
-        @click="scenarioMarked($event)"
-      />
-
+      <button class="bookmark-btn" :class="{ active: scenario.bookmarked }" @click="(e) => toggleBookmark(e, scenario)" :title="scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+        <span class="material-symbols-outlined" :class="{ fill: scenario.bookmarked }">{{ scenario.bookmarked ? 'bookmark' : 'bookmark_add' }}</span>
+      </button>
+      <h3 class="card__title">{{ scenario.title }}</h3>
       <p class="card__author">Scénario par {{ scenario.author }}</p>
-
       <div class="card__progress">
         <div
           class="card__progress-bar"
-          :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"
+          :style="{ width: Math.round(scenario.progressRatio * 100) + '%' }"
         ></div>
       </div>
-      <p class="card__steps">{{ scenario.done }}/{{ scenario.total }}</p>
+      <p class="card__steps">
+        <span v-if="scenario._preciseProgressLoaded">
+          {{ scenario._completedMissions }}/{{ scenario._totalMissions }} ({{ Math.round(scenario.progressRatio * 100) }}%)
+        </span>
+        <span v-else>
+          {{ Math.round(scenario.progressRatio * 100) }}%
+        </span>
+      </p>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@/styles/theme.scss' as *;
+
 .container {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background-color: #2a2a2a;
+  gap: 1.1rem;
   padding-block: 1rem 5rem;
+  position: relative;
 
   &__filters {
     display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: .6rem;
+    margin-bottom: .5rem;
+    flex-wrap: wrap;
   }
-
   &__filter {
-    background: #1e1e1e;
-    border: none;
-    border-radius: 16px;
-    padding: 6px 14px;
-    font-size: 14px;
-    color: #aaa;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: 999px;
+    padding: .45rem 1.1rem;
+    font-size: .7rem;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: $color-text-dim;
     cursor: pointer;
-    transition: background 0.2s ease;
-
-    &:hover {
-      background: #2a2a2a;
-    }
-
-    &.active {
-      background: #3b82f6;
-      color: #fff;
-    }
+    font-weight:600;
+    display:inline-flex; align-items:center; gap:.35rem;
+    transition: background $transition, color $transition, border-color $transition;
+    &:hover { background:$color-surface-alt; color:$color-text; }
+    &.active { background:$color-accent; color:#fff; border-color:$color-accent; box-shadow:0 0 0 1px rgba(59,130,246,.4); }
   }
 }
+
 .card {
-  background: #bdbdbd;
-  border-radius: 8px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
-
-  &__bookmark {
-    float: right;
-    cursor: pointer;
-  }
-
-  &__marked {
-    filter: invert(39%) sepia(98%) saturate(749%) hue-rotate(203deg) brightness(91%) contrast(86%);
-    color: yellow;
-  }
-
-  &__title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #fff;
-    text-decoration: underline;
-  }
-
-  &__author {
-    margin: 4px 0;
-    font-size: 13px;
-    color: #aaa;
-  }
-
-  &__progress {
-    margin-top: 6px;
-    background: #333;
-    height: 6px;
-    border-radius: 4px;
-    overflow: hidden;
-    grid-column-start: 0;
-    grid-row-start: 3;
-  }
-
-  &__progress-bar {
-    background: #3b82f6;
-    /* синій */
-    height: 100%;
-    transition: width 0.3s ease;
-  }
-
-  &__steps {
-    margin-top: 4px;
-    font-size: 12px;
-    color: #ccc;
-  }
-
-  &.completed {
-    background-color: rgba(105, 105, 105, 0.637);
-  }
-
-  &.in-progress {
-    border: 2px solid #5d8ddb;
-  }
+  @extend .elevated;
+  position: relative;
+  padding: 1rem 1rem .9rem;
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+  cursor:pointer;
+  border:1px solid $color-border;
+  transition: border-color $transition, transform $transition, background $transition;
+  &:hover { border-color:$color-accent; transform:translateY(-3px); background:$color-surface-alt; }
+  &.completed { box-shadow:0 0 0 1px rgba($color-success,.4); }
+  &.in-progress { box-shadow:0 0 0 1px rgba(255,200,60,.35); }
+  &__title { margin:0; font-size:1rem; font-weight:600; color:$color-text; letter-spacing:.3px; }
+  &__author { margin:0; font-size:.65rem; text-transform:uppercase; letter-spacing:1px; color:$color-text-dim; font-weight:500; }
+  &__progress { @extend .progress-bar-shell; margin-top:.25rem; }
+  &__progress-bar { @extend .progress-bar-fill; }
+  &__steps { margin:0; font-size:.6rem; color:$color-text-dim; font-weight:500; letter-spacing:.5px; }
 }
 
-.hidden {
-  display: none;
-}
+.bookmark-btn { position:absolute; top:.45rem; right:.45rem; background:rgba(0,0,0,.25); border:1px solid $color-border; border-radius:8px; padding:.25rem .45rem .2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background $transition, border-color $transition, box-shadow $transition; }
+.bookmark-btn:hover { background:$color-surface; border-color:$color-accent; }
+.bookmark-btn .material-symbols-outlined { font-size:20px; line-height:1; color:$color-text-dim; transition:color $transition; }
+.bookmark-btn.active .material-symbols-outlined { color:$color-accent; }
+.bookmark-btn .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+
+.card:not(.completed):not(.in-progress).not-started .card__progress-bar { background:#475569; }
+
 </style>
