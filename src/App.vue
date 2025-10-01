@@ -37,14 +37,12 @@ const storeUsers = useUsersStore()
   </main>
 </template>
 
-<<<<<<< HEAD
-<style lang="scss"></style>
-=======
 <style lang="scss">
 body {
   margin: 0;
   background-color: #2b2b2b;
 }
+
 main {
   display: flex;
   flex-direction: column;
@@ -85,4 +83,3 @@ main {
   display: none;
 }
 </style>
->>>>>>> 9e1ffe85685f73fd35a6760a8ead893b3f626712
