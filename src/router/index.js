@@ -77,24 +77,6 @@ const router = createRouter({
       ],
     },
     {
-<<<<<<< HEAD
-      path: '/globalscore',
-      name: 'global score',
-      component: GlobalScore,
-    },
-    {
-      path: '/weekscore',
-      name: 'week score',
-      component: WeekScore,
-    },
-    {
-      path: '/friendscore',
-      name: 'friend score',
-      component: FriendScore,
-    },
-    {
-=======
->>>>>>> 9e1ffe85685f73fd35a6760a8ead893b3f626712
       path: '/userProfile',
       name: 'user',
       component: UserProfile,

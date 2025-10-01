@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 
+const Api_Link = 'http://91.134.99.3:3000'
+
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
     users: [],
@@ -9,10 +11,6 @@ export const useUsersStore = defineStore('storeUsers', {
   }),
   actions: {
     async loginUser(email, password) {
-      //A supp les 2 lignes du bas
-      this.router.replace('/scenario')
-      this.currentIdUser = 1
-
       console.log(email + ' ' + password)
 
       const data = {
@@ -21,7 +19,7 @@ export const useUsersStore = defineStore('storeUsers', {
       }
 
       try {
-        const response = await fetch('http://91.134.99.3:81/api/login', {
+        const response = await fetch(`${Api_Link}/api/login`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -35,6 +33,8 @@ export const useUsersStore = defineStore('storeUsers', {
           alert('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
           this.currentIdUser = result[0]._id_user
+          localStorage.setItem('tokenUser', this.currentIdUser)
+          console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
           // Par exemple, rediriger vers une autre page

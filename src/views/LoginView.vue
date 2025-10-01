@@ -1,13 +1,11 @@
 <script setup>
 import { useUsersStore } from '@/stores/users'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const storeUsers = useUsersStore()
 
-const email = ref('Max@gmail.com')
-const password = ref('Max')
+const email = ref('demo_player1@example.com')
+const password = ref('password123')
 
 const togglePassword = () => {
   const passwordInput = document.getElementById('password')
@@ -39,46 +37,20 @@ const loginUser = async () => {
   storeUsers.loginUser(email.value, password.value)
   email.value = ''
   password.value = ''
-  router.replace('/currentmap')
 }
 </script>
 
 <template>
   <form class="login_form" id="loginForm" @submit.prevent="loginUser">
     <div class="login_form__group">
-      <input
-        class="login_form__input"
-        type="email"
-        v-model="email"
-        placeholder="Adresse e-mail"
-        required
-      />
+      <input class="login_form__input" type="email" v-model="email" placeholder="Adresse e-mail" required />
     </div>
     <div class="login_form__group login_form__group--password">
-      <input
-        class="login_form__input"
-        type="password"
-        v-model="password"
-        placeholder="Mot de passe"
-        required
-      />
-      <button
-        type="button"
-        class="login_form__toggle_eye"
-        @click.prevent="togglePassword"
-        aria-label="Afficher ou masquer le mot de passe"
-      >
-        <svg
-          id="eyeIcon"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+      <input class="login_form__input" type="password" v-model="password" placeholder="Mot de passe" required />
+      <button type="button" class="login_form__toggle_eye" @click.prevent="togglePassword"
+        aria-label="Afficher ou masquer le mot de passe">
+        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
           <line x1="12" y1="12" x2="12" y2="12"></line>
         </svg>
@@ -133,6 +105,7 @@ const loginUser = async () => {
     transition:
       border 0.2s,
       background 0.2s;
+
     &:focus {
       outline: none;
       border-color: #888;
@@ -170,6 +143,7 @@ const loginUser = async () => {
     transition:
       background 0.3s,
       transform 0.2s;
+
     &:hover {
       background-color: #555;
       transform: translateY(-2px);
@@ -183,6 +157,7 @@ const loginUser = async () => {
     cursor: pointer;
     font-size: 0.9rem;
     transition: color 0.2s;
+
     &:hover {
       color: #333;
     }
@@ -211,6 +186,7 @@ const loginUser = async () => {
       display: flex;
       align-items: center;
       justify-content: center;
+
       &:hover {
         background-color: #ccc;
         transform: translateY(-2px);
