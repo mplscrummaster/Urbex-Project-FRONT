@@ -49,15 +49,24 @@ export const useUsersStore = defineStore('storeUsers', {
         // alert('Impossible de contacter le serveur.')
       }
     },
-    async registrUser(username, firstname, lastname, email, password) {
+    async registrUser(username, nickname, bio, email, password) {
       const dataUser = {
         username_user: username,
-        firstname_user: firstname,
-        name_user: lastname,
         password_user: password,
         mail_user: email,
       }
+      const dataPlayer = {
+        nickname: nickname,
+        bio: bio,
+      }
       console.log(dataUser)
+      const requestDataUserValidation = this.requestDataUser(dataUser)
+      const requestDataPlayerValidation = this.requestDataPlayer(dataPlayer)
+
+      if (requestDataUserValidation && requestDataPlayerValidation) this.router.replace('/scenario')
+      else console.log('Enregistrement impossible')
+    },
+    async requestDataUser(dataUser) {
       try {
         const response = await fetch(`${Api_Link}/api/register`, {
           method: 'post',
@@ -76,12 +85,41 @@ export const useUsersStore = defineStore('storeUsers', {
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
           //  console.log(this.currentIdUser)
-          this.router.replace('/scenario')
+          return true
         } else {
           alert(result || `Erreur lors de l'inscription`)
+          return false
         }
       } catch (error) {
         console.error('Erreur:', error)
+        return false
+        // alert('Impossible de contacter le serveur')
+      }
+    },
+    async requestDataPlayer(dataPlayer) {
+      try {
+        const response = await fetch(`${Api_Link}/api/me/player`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataPlayer),
+        })
+
+        const result = await response.json()
+
+        if (response.ok) {
+          // alert('Inscription réussie !')
+          console.log(result)
+          //  console.log(this.currentIdUser)
+          return true
+        } else {
+          alert(result || `Erreur lors de l'inscription`)
+          return false
+        }
+      } catch (error) {
+        console.error('Erreur:', error)
+        return false
         // alert('Impossible de contacter le serveur')
       }
     },

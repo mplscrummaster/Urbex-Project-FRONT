@@ -25,15 +25,7 @@ const storeUsers = useUsersStore()
   <main>
     <NavbarItems />
     <RouterView class="content" />
-    <BarUserNavigation v-show="storeUsers.currentIdUser != null" />
-    <!--
-    <button @click.prevent=count>{{ baseStore.getCounter }}</button>
-
-    <label for="">Modifier le titre (a chaque changement)</label>
-    <input type="text" @input=modifyTitle>
-
-    <label for="">Modifier le titre (a chaque perte de focus)</label>
-    <input type="text" @change=modifyTitle>-->
+    <BarUserNavigation v-show="storeUsers.token != null" />
   </main>
 </template>
 
