@@ -15,7 +15,6 @@
     </RouterLink>
   </div>
 </template>
-
 <style lang="scss" scoped>
 .home-bar {
   top: 0;
