@@ -1,90 +1,102 @@
 <script setup>
-  import { useRouter } from 'vue-router'
-  import { ref, computed } from 'vue'
-  const router = useRouter()
+import { useRouter } from 'vue-router'
+import { onMounted, ref, computed } from 'vue'
+import { useScenariosStore } from '@/stores/scenarios'
 
-  if (localStorage.getItem("tokenUser") === null)
-    router.replace("/")
+const router = useRouter()
+const scenariosStore = useScenariosStore()
 
-  const activeFilter = ref('all')
-  console.log();
+// Auth gate (lightweight – relies on token presence only)
+if (!localStorage.getItem('tokenUser')) router.replace('/')
 
-  const scenarios = [
-    { id: 1, title: 'Les ombres de la ville', author: 'Justifit', done: 4, total: 4 },
-    { id: 2, title: 'Les passages interdits', author: 'Aramiss', done: 6, total: 6 },
-    { id: 3, title: 'Les ruines oubliées', author: 'Sally Go', done: 1, total: 4 },
-    { id: 4, title: 'Le réseau invisible', author: 'Justifit', done: 0, total: 4 },
-    { id: 5, title: 'Sous la poussière du temps', author: 'Sealmon', done: 0, total: 7 },
-  ]
+const activeFilter = ref('all')
+const uiLoading = ref(true)
+const uiError = ref(null)
 
-  const changeFilter = (e) => {
-    const filterName = e.target.innerText
-    console.log(`Filter changed to: ${filterName}`)
-    const filters = document.querySelectorAll('.container__filter')
-    filters.forEach((filter) => filter.classList.remove('active'))
-    e.target.classList.add('active')
-    activeFilter.value = filterName
+async function load() {
+  uiLoading.value = true
+  uiError.value = null
+  try {
+    await scenariosStore.refreshAll()
+  } catch (e) {
+    uiError.value = e.message
+  } finally {
+    uiLoading.value = false
   }
+}
+onMounted(load)
 
-  const filteredScenarios = computed(() => {
-    if (activeFilter.value === 'all') {
-      return scenarios
-    }
-    if (activeFilter.value === 'terminés') {
-      return scenarios.filter((s) => s.done === s.total)
-    }
-    if (activeFilter.value === 'commencés') {
-      return scenarios.filter((s) => s.done > 0 && s.done < s.total)
-    }
-    if (activeFilter.value === 'pas encore') {
-      return scenarios.filter((s) => s.done === 0)
-    }
-    return scenarios
-  })
+function changeFilter(e) {
+  const btn = e.target.closest('button.container__filter')
+  if (!btn) return
+  const filterName = btn.innerText.trim()
+  const filters = document.querySelectorAll('.container__filter')
+  filters.forEach((f) => f.classList.remove('active'))
+  btn.classList.add('active')
+  activeFilter.value = filterName
+}
 
-  const scenarioMarked = (e) => {
-    console.log(`Scenario marked: ${e.target}`)
-    e.target.classList.toggle('marked')
+const filteredScenarios = computed(() => {
+  const list = scenariosStore.items
+  switch (activeFilter.value) {
+    case 'terminés':
+      return list.filter((s) => s.status === 'completed')
+    case 'commencés':
+      return list.filter((s) => s.status === 'started')
+    case 'pas encore':
+      return list.filter((s) => s.status === 'not_started')
+    default:
+      return list
   }
+})
 
-  const scenarioClicked = (e) => {
-    // const scenarioCard = e.currentTarget;
-    // const scenarioId = scenarioCard.id;
-    //  console.log(`Scenario clicked: ${scenarioId}`);
-    router.push(`/scenarioinfo`)
+async function toggleBookmark(s, ev) {
+  ev.stopPropagation()
+  try {
+    await scenariosStore.toggleBookmark(s.id)
+  } catch (e) {
+    console.warn('Bookmark error', e.message)
   }
+}
+
+function openScenario(s) {
+  router.push({ name: 'scenario-info', params: { id: s.id } })
+}
 </script>
 
 <template>
   <div class="container">
-    <!-- Фільтри -->
     <div class="container__filters" @click.prevent="changeFilter($event)">
-      <button class="container__filter">all</button>
+      <button class="container__filter active">all</button>
       <button class="container__filter">terminés</button>
       <button class="container__filter">commencés</button>
       <button class="container__filter">pas encore</button>
     </div>
 
-    <!-- Сценарії -->
-    <div v-for="scenario in filteredScenarios" :key="scenario.id" :id="scenario.id" :class="scenario.done === scenario.total
-      ? 'card completed'
-      : scenario.done > 0
-        ? 'card in-progress'
-        : 'card not-started'
-      ">
-      <h3 class="card__title" @click="scenarioClicked($event)">{{ scenario.title }}</h3>
-      <img class="card__bookmark" src="/icons/bookmark.svg" alt="" @click="scenarioMarked($event)" />
+    <div v-if="uiLoading" class="loading-state">Chargement des scénarios…</div>
+    <div v-else-if="uiError" class="error-state">Erreur: {{ uiError }}</div>
+    <div v-else-if="!filteredScenarios.length" class="empty-state">Aucun scénario</div>
 
-      <p class="card__author">Scénario par {{ scenario.author }}</p>
+    <div v-for="s in filteredScenarios" :key="s.id" :id="'scenario-'+s.id" :class="{
+      card: true,
+      completed: s.status === 'completed',
+      'in-progress': s.status === 'started',
+      'not-started': s.status === 'not_started'
+    }" @click="openScenario(s)">
+      <h3 class="card__title">{{ s.title }}</h3>
+      <button class="card__bookmark" :class="{ active: s.bookmarked }" @click="toggleBookmark(s, $event)" :title="s.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+        <span class="material-symbols-outlined" :class="{ fill: s.bookmarked }">{{ s.bookmarked ? 'bookmark' : 'bookmark_add' }}</span>
+      </button>
+      <p class="card__author">Statut: {{ s.status === 'not_started' ? 'pas commencé' : s.status === 'started' ? 'en cours' : 'terminé' }}</p>
       <div class="card__progress">
-        <div class="card__progress-bar" :style="{ width: (scenario.done / scenario.total) * 100 + '%' }"></div>
+        <div class="card__progress-bar" :style="{ width: (Math.round((s.progressRatio||0)*100)) + '%' }"></div>
       </div>
       <p class="card__steps">
-        <span v-if="scenario._preciseProgressLoaded">
-          {{ scenario._completedMissions }}/{{ scenario._totalMissions }} ({{ Math.round(scenario.progressRatio * 100) }}%)
+        <span v-if="s._preciseProgressLoaded">
+          {{ s._completedMissions }}/{{ s._totalMissions }} ({{ Math.round(s.progressRatio * 100) }}%)
         </span>
         <span v-else>
-          {{ Math.round(scenario.progressRatio * 100) }}%
+          {{ Math.round(s.progressRatio * 100) }}%
         </span>
       </p>
     </div>
@@ -127,15 +139,20 @@
   }
 
   .card {
-    background: #bdbdbd;
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 2px 6px rgba(177, 176, 176, 0.4);
-
-    &__bookmark {
-      float: right;
-      cursor: pointer;
-    }
+    background: #1e1e1e;
+    border:1px solid #333;
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+    position:relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,.4);
+    transition: background .25s, border-color .25s;
+    cursor:pointer;
+    &:hover { background:#242424; }
+    &__bookmark { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.07); border:1px solid #444; border-radius:8px; padding:2px 6px 0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .25s,border-color .25s; }
+    &__bookmark:hover { background:#2a2a2a; }
+    &__bookmark .material-symbols-outlined { font-size:20px; line-height:1; color:#888; }
+    &__bookmark .material-symbols-outlined.fill { font-variation-settings:'FILL' 1; color:#3b82f6; }
+    &__bookmark.active { border-color:#3b82f6; }
 
     &__marked {
       filter: invert(39%) sepia(98%) saturate(749%) hue-rotate(203deg) brightness(91%) contrast(86%);
@@ -180,16 +197,10 @@
       color: #ccc;
     }
 
-    &.completed {
-      background-color: rgba(105, 105, 105, 0.637);
-    }
-
-    &.in-progress {
-      border: 2px solid #5d8ddb;
-    }
+    &.completed { border-color: #3b995d; }
+    &.in-progress { border-color:#5d8ddb; }
   }
 
-  .hidden {
-    display: none;
-  }
+  .loading-state, .error-state, .empty-state { padding:1rem; font-size:.85rem; color:#ccc; }
+  .hidden { display:none; }
 </style>

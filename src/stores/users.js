@@ -37,6 +37,7 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
+          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
@@ -88,6 +89,7 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
+          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           return true
         } else {
@@ -187,6 +189,30 @@ export const useUsersStore = defineStore('storeUsers', {
         return null
         // console.log('Impossible de contacter le serveur')
       }
+    },
+    // Hydrate store from existing localStorage token at app bootstrap
+    async hydrate() {
+      const token = localStorage.getItem('tokenUser')
+      if (!token) return
+      this.tokenUser = token
+      // Keep both keys aligned for API helper fallback
+      localStorage.setItem('auth_token', token)
+      try {
+        const me = await this.getMeInfo()
+        if (me && me.id) this.currentIdUser = me.id
+      } catch (e) {
+        console.warn('Hydrate failed, clearing token:', e.message)
+        this.tokenUser = null
+        localStorage.removeItem('tokenUser')
+        localStorage.removeItem('auth_token')
+      }
+    },
+    logout() {
+      this.tokenUser = null
+      this.currentIdUser = null
+      localStorage.removeItem('tokenUser')
+      localStorage.removeItem('auth_token')
+  try { this.router.replace('/login') } catch (e) { console.warn('Router replace failed during logout:', e?.message) }
     },
   },
 })

@@ -2,23 +2,16 @@
   import { useUsersStore } from '@/stores/users'
   const storeUsers = useUsersStore()
   const decconectUser = () => {
-    storeUsers.tokenUser = null
-    localStorage.clear()
+    storeUsers.logout()
   }
 </script>
 
 <template>
-<<<<<<< HEAD
-  <div class="navbar home-bar" v-if="!storeUsers.isAuthenticated">
-    <RouterLink to="/login">Login</RouterLink>
-    <RouterLink to="/register">Inscrire</RouterLink>
-=======
   <div class="navbar home-bar">
     <RouterLink v-if="!storeUsers.tokenUser" to="/login">Login</RouterLink>
     <RouterLink v-if="!storeUsers.tokenUser" to="/register">Inscrire</RouterLink>
     <RouterLink to="/" v-else @click="decconectUser"> Se déconnecter
     </RouterLink>
->>>>>>> origin/dev
   </div>
 </template>
 <style lang="scss" scoped>
