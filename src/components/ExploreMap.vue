@@ -103,7 +103,7 @@ function prepareDrawerForCommune(id) {
 
 async function init() {
   // Initialise la carte tout de suite (pas de loader bloquant)
-  map = L.map(mapEl.value, { minZoom: 6, maxZoom: 19, preferCanvas: true, zoomControl: false }).setView([50.6402809, 4.6667145], 8)
+  map = L.map(mapEl.value, { minZoom: 6, maxZoom: 19, preferCanvas: true, zoomControl: false, scrollWheelZoom: true, doubleClickZoom: true, touchZoom: true, boxZoom: true }).setView([50.6402809, 4.6667145], 8)
 
   const darkNoLabels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '© OpenStreetMap contributors © CARTO',

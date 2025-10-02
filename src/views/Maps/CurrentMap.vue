@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useScenariosStore } from '@/stores/scenarios'
@@ -12,6 +12,8 @@ const userMarker = ref(null)
 const missionLayer = ref(null)
 const locating = ref(true)
 const geoError = ref('')
+const hasLocation = ref(false)
+let watchId = null
 
 const scenariosStore = useScenariosStore()
 const full = ref(null)
@@ -34,7 +36,7 @@ async function loadFullIfNeeded() {
 
 function initMap() {
   if (map) return
-  map = L.map(mapEl.value, { zoomControl: false, preferCanvas: true })
+  map = L.map(mapEl.value, { zoomControl: false, preferCanvas: true, scrollWheelZoom: true, doubleClickZoom: true, touchZoom: true, boxZoom: true })
   const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd',
     attribution: '© OpenStreetMap contributors © CARTO',
@@ -59,22 +61,12 @@ function plotMissions() {
     missionLayer.value.addLayer(marker)
     bounds.push([m.latitude, m.longitude])
   }
-  // Auto-fit missions if we haven't yet and user location not acquired or missions cluster far
-  if (bounds.length && !mapFittedToMissions) {
+  // Nouvel algorithme: on NE recentre PAS sur les missions tant que la géoloc utilisateur est en cours.
+  // On ne fit que si la géolocalisation a échoué (userLocatedOnce = false et locating = false)
+  if (bounds.length && !mapFittedToMissions && !userLocatedOnce && !locating.value) {
     const latLngBounds = L.latLngBounds(bounds)
-    // If user is located and within the bounds extended by small padding, keep user-centered; else fit
-    if (!userLocatedOnce) {
-      map.fitBounds(latLngBounds.pad(0.2))
-      mapFittedToMissions = true
-    } else {
-      const center = latLngBounds.getCenter()
-      const current = map.getCenter()
-      const dist = current.distanceTo ? current.distanceTo(center) : 0
-      if (dist > 3000) { // 3km threshold
-        map.fitBounds(latLngBounds.pad(0.2))
-        mapFittedToMissions = true
-      }
-    }
+    map.fitBounds(latLngBounds.pad(0.2))
+    mapFittedToMissions = true
   }
 }
 
@@ -101,39 +93,70 @@ function createMissionIcon(m, pulse = false) {
   })
 }
 
+function updateUserMarker(latitude, longitude, initial = false) {
+  if (!map) return
+  if (initial) {
+    map.setView([latitude, longitude], 14)
+  }
+  if (userMarker.value) {
+    userMarker.value.setLatLng([latitude, longitude])
+  } else {
+    userMarker.value = L.circleMarker([latitude, longitude], {
+      radius: 8,
+      color: '#38bdf8',
+      weight: 2,
+      fillColor: '#0ea5e9',
+      fillOpacity: 0.85
+    }).addTo(map).bindPopup('Vous êtes ici')
+  }
+  hasLocation.value = true
+  userLocatedOnce = true
+}
+
+function startWatching() {
+  if (!navigator.geolocation) return
+  // Clear any previous watch
+  if (watchId !== null) navigator.geolocation.clearWatch(watchId)
+  watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      locating.value = false
+      geoError.value = ''
+      updateUserMarker(pos.coords.latitude, pos.coords.longitude)
+    },
+    (err) => {
+      locating.value = false
+      if (err.code === 1) { // permission denied
+        geoError.value = 'Permission localisation refusée'
+      } else {
+        geoError.value = err.message || 'Échec localisation continue'
+      }
+    },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+  )
+}
+
 function locateUser() {
   locating.value = true
   geoError.value = ''
   if (!navigator.geolocation) {
     geoError.value = 'Géolocalisation non supportée.'
     locating.value = false
-    // fallback centré Belgique
     map.setView([50.64028, 4.66671], 8)
     return
   }
   navigator.geolocation.getCurrentPosition(
     (pos) => {
-      const { latitude, longitude } = pos.coords
-      if (!map) return
-      map.setView([latitude, longitude], 14)
-      if (userMarker.value) {
-        userMarker.value.setLatLng([latitude, longitude])
-      } else {
-        userMarker.value = L.circleMarker([latitude, longitude], {
-          radius: 8,
-          color: '#38bdf8',
-          weight: 2,
-          fillColor: '#0ea5e9',
-          fillOpacity: 0.85
-        }).addTo(map).bindPopup('Vous êtes ici')
-      }
-      userLocatedOnce = true
       locating.value = false
+      geoError.value = ''
+      updateUserMarker(pos.coords.latitude, pos.coords.longitude, true)
+      startWatching()
     },
     (err) => {
-      geoError.value = err.message || 'Échec géolocalisation'
       locating.value = false
+      geoError.value = err.message || 'Échec géolocalisation'
       map.setView([50.64028, 4.66671], 8)
+      // Comme la géoloc a échoué, on peut maintenant centrer sur les missions si présent
+      plotMissions()
     },
     { enableHighAccuracy: true, timeout: 8000 }
   )
@@ -148,6 +171,12 @@ onMounted(async () => {
   initMap()
   locateUser()
   await loadFullIfNeeded()
+})
+
+onUnmounted(() => {
+  if (watchId !== null && navigator.geolocation) {
+    navigator.geolocation.clearWatch(watchId)
+  }
 })
 
 // Sur changement de scénario courant -> recharger missions
@@ -166,6 +195,9 @@ watch(currentScenario, async (n, o) => {
       <div class="geo-status" v-if="locating">Localisation…</div>
       <div class="geo-status error" v-else-if="geoError">{{ geoError }}</div>
       <div class="no-scenario" v-if="!currentScenario">Aucun scénario en cours ou bookmarké.</div>
+      <button class="locate-btn" :class="{ searching: locating, disabled: locating }" @click="locateUser" type="button" :disabled="locating" aria-label="Me localiser de nouveau">
+        <span class="material-symbols-outlined">my_location</span>
+      </button>
     </div>
     <div class="scenario-overlay" v-if="currentScenario">
       <div class="scenario-overlay__inner">
@@ -183,6 +215,13 @@ watch(currentScenario, async (n, o) => {
 .geo-status { position:absolute; top:10px; right:10px; background:rgba(0,0,0,.55); color:#fff; padding:.4rem .7rem; border-radius:8px; font-size:.75rem; z-index:40; backdrop-filter:blur(6px); }
 .geo-status.error { background:rgba(180,40,40,.75); }
 .no-scenario { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.6); padding:1rem 1.3rem; border-radius:14px; color:#fff; font-size:.9rem; z-index:30; pointer-events:none; }
+
+.locate-btn { position:absolute; bottom:96px; right:14px; z-index:60; background:rgba(15,23,42,.82); border:1px solid rgba(255,255,255,.18); color:#e2e8f0; width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; cursor:pointer; backdrop-filter:blur(6px); box-shadow:0 4px 14px -3px rgba(0,0,0,.6); transition:background .3s,border-color .3s,transform .25s; }
+.locate-btn:hover { background:rgba(30,41,59,.88); }
+.locate-btn:active { transform:translateY(1px); }
+.locate-btn .material-symbols-outlined { font-size:26px; line-height:1; }
+.locate-btn.searching { animation:pulseLoc 1.2s ease-in-out infinite; }
+@keyframes pulseLoc { 0%,100% { box-shadow:0 0 0 0 rgba(96,165,250,.55); } 50% { box-shadow:0 0 0 8px rgba(96,165,250,0); } }
 
 .scenario-overlay { position:fixed; left:0; top:0; right:0; z-index:50; pointer-events:none; }
 .scenario-overlay__inner { padding:70px 14px 12px; max-width:640px; margin:0 auto; pointer-events:auto; }
