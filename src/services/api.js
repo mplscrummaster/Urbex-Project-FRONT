@@ -1,7 +1,10 @@
 // Simple API helper (Step 1: auth only)
 // Future: centralize error handling, auth refresh, scenario endpoints...
 
-const BASE_URL = 'http://91.134.99.3:3000/api' // Adjust if environment changes
+// Previous remote deployment base URL kept for reference:
+// const BASE_URL = 'http://91.134.99.3:3000/api'
+// Local development API base URL:
+const BASE_URL = 'http://91.134.99.3:3000/api'
 
 function getAuthToken() {
   return localStorage.getItem('auth_token') || localStorage.getItem('tokenUser') || null
@@ -54,6 +57,9 @@ export const AuthAPI = {
 }
 
 export const ScenariosAPI = {
+  listAll() {
+    return apiFetch('/scenarios')
+  },
   getMine() {
     // Returns bookmarked or started scenarios for current user
     return apiFetch('/me/scenarios', { auth: true })
@@ -76,11 +82,47 @@ export const ScenariosAPI = {
   unbookmark(id) {
     return apiFetch(`/scenarios/${id}/bookmark`, { method: 'DELETE', auth: true })
   },
+  // Lightweight scenario->commune pin data (optionally only published)
+  listPins({ published } = {}) {
+    const qs = new URLSearchParams()
+    if (published) qs.set('published', '1')
+    const query = qs.toString() ? `?${qs.toString()}` : ''
+    return apiFetch(`/scenarios/communes${query}`)
+  },
+  listScenarioCommunes(options = {}) {
+    return this.listPins(options)
+  },
 }
 
 export const MissionsAPI = {
   complete(id) {
     return apiFetch(`/missions/${id}/complete`, { method: 'POST', auth: true })
+  },
+}
+
+export const CommunesAPI = {
+  list(params = {}) {
+    const qs = new URLSearchParams()
+    if (params.q) qs.set('q', params.q)
+    if (params.postal) qs.set('postal', params.postal)
+    const query = qs.toString() ? `?${qs.toString()}` : ''
+    return apiFetch(`/communes${query}`)
+  },
+  get(id) {
+    return apiFetch(`/communes/${id}`)
+  },
+  shape(id) {
+    return apiFetch(`/communes/${id}/shape`)
+  },
+  // Legacy batch (kept if needed): shapes(ids) {}
+  shapesAll() {
+    return apiFetch('/communes/shapes/all')
+  },
+  shapesFeatureCollection() {
+    return apiFetch('/communes/shapes.geojson')
+  },
+  byScenario(id) {
+    return apiFetch(`/scenarios/${id}/communes`)
   },
 }
 

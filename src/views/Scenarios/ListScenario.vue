@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router'
 import { onMounted, ref, computed } from 'vue'
 import { useScenariosStore } from '@/stores/scenarios'
+import ScenarioCard from '@/components/ScenarioCard.vue'
 
 const router = useRouter()
 const scenariosStore = useScenariosStore()
@@ -50,16 +51,7 @@ const filteredScenarios = computed(() => {
   }
 })
 
-async function toggleBookmark(s, ev) {
-  ev.stopPropagation()
-  try {
-    await scenariosStore.toggleBookmark(s.id)
-  } catch (e) {
-    console.warn('Bookmark error', e.message)
-  }
-}
-
-function openScenario(s) {
+function scenarioClicked(s) {
   router.push({ name: 'scenario-info', params: { id: s.id } })
 }
 </script>
@@ -73,32 +65,16 @@ function openScenario(s) {
       <button class="container__filter">pas encore</button>
     </div>
 
-    <div v-if="uiLoading" class="loading-state">Chargement des scénarios…</div>
-    <div v-else-if="uiError" class="error-state">Erreur: {{ uiError }}</div>
-    <div v-else-if="!filteredScenarios.length" class="empty-state">Aucun scénario</div>
-
-    <div v-for="s in filteredScenarios" :key="s.id" :id="'scenario-'+s.id" :class="{
-      card: true,
-      completed: s.status === 'completed',
-      'in-progress': s.status === 'started',
-      'not-started': s.status === 'not_started'
-    }" @click="openScenario(s)">
-      <h3 class="card__title">{{ s.title }}</h3>
-      <button class="card__bookmark" :class="{ active: s.bookmarked }" @click="toggleBookmark(s, $event)" :title="s.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
-        <span class="material-symbols-outlined" :class="{ fill: s.bookmarked }">{{ s.bookmarked ? 'bookmark' : 'bookmark_add' }}</span>
-      </button>
-      <p class="card__author">Statut: {{ s.status === 'not_started' ? 'pas commencé' : s.status === 'started' ? 'en cours' : 'terminé' }}</p>
-      <div class="card__progress">
-        <div class="card__progress-bar" :style="{ width: (Math.round((s.progressRatio||0)*100)) + '%' }"></div>
-      </div>
-      <p class="card__steps">
-        <span v-if="s._preciseProgressLoaded">
-          {{ s._completedMissions }}/{{ s._totalMissions }} ({{ Math.round(s.progressRatio * 100) }}%)
-        </span>
-        <span v-else>
-          {{ Math.round(s.progressRatio * 100) }}%
-        </span>
-      </p>
+    <!-- Сценарії -->
+    <div v-if="scenariosStore.loading" style="color:#aaa;">Chargement...</div>
+    <div v-else-if="!filteredScenarios.length" style="color:#aaa;">Aucun scénario bookmarké pour l'instant.</div>
+    <div v-else class="cards-list">
+      <ScenarioCard
+        v-for="scenario in filteredScenarios"
+        :key="scenario.id"
+        :scenario="scenario"
+        @select="scenarioClicked"
+      />
     </div>
   </div>
 </template>
@@ -203,4 +179,6 @@ function openScenario(s) {
 
   .loading-state, .error-state, .empty-state { padding:1rem; font-size:.85rem; color:#ccc; }
   .hidden { display:none; }
+.cards-list { display:flex; flex-direction:column; gap:14px; }
+
 </style>
