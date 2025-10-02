@@ -7,7 +7,7 @@
 const BASE_URL = 'http://91.134.99.3:3000/api'
 
 function getAuthToken() {
-  return localStorage.getItem('auth_token') || localStorage.getItem('tokenUser') || null
+  return localStorage.getItem('tokenUser') || null
 }
 
 export async function apiFetch(path, { method = 'GET', body, auth = false } = {}) {

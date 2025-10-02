@@ -37,7 +37,6 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
-          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
@@ -89,7 +88,6 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
-          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           return true
         } else {
@@ -196,7 +194,7 @@ export const useUsersStore = defineStore('storeUsers', {
       if (!token) return
       this.tokenUser = token
       // Keep both keys aligned for API helper fallback
-      localStorage.setItem('auth_token', token)
+      // localStorage.setItem('auth_token', token) // supprimé, on ne garde que tokenUser
       try {
         const me = await this.getMeInfo()
         if (me && me.id) this.currentIdUser = me.id
@@ -204,14 +202,12 @@ export const useUsersStore = defineStore('storeUsers', {
         console.warn('Hydrate failed, clearing token:', e.message)
         this.tokenUser = null
         localStorage.removeItem('tokenUser')
-        localStorage.removeItem('auth_token')
       }
     },
     logout() {
       this.tokenUser = null
       this.currentIdUser = null
       localStorage.removeItem('tokenUser')
-      localStorage.removeItem('auth_token')
       try {
         this.router.replace('/login')
       } catch (e) {
