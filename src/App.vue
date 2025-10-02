@@ -41,9 +41,7 @@
     min-height: 100dvh;
   }
 
-  .content {
-    padding-inline: 2rem;
-  }
+  .content { padding-inline:2rem; padding-bottom:calc(70px + env(safe-area-inset-bottom)); }
 
   .navbar {
     background: #222;

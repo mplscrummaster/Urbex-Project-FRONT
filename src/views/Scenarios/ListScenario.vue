@@ -51,16 +51,7 @@ const filteredScenarios = computed(() => {
   }
 })
 
-async function toggleBookmark(s, ev) {
-  ev.stopPropagation()
-  try {
-    await scenariosStore.toggleBookmark(s.id)
-  } catch (e) {
-    console.warn('Bookmark error', e.message)
-  }
-}
-
-function openScenario(s) {
+function scenarioClicked(s) {
   router.push({ name: 'scenario-info', params: { id: s.id } })
 }
 </script>

@@ -34,7 +34,7 @@ async function loadFullIfNeeded() {
 
 function initMap() {
   if (map) return
-  map = L.map(mapEl.value, { zoomControl: true, preferCanvas: true })
+  map = L.map(mapEl.value, { zoomControl: false, preferCanvas: true })
   const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     subdomains: 'abcd',
     attribution: '© OpenStreetMap contributors © CARTO',

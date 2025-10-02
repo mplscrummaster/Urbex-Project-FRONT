@@ -7,36 +7,28 @@ import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
 const route = useRoute()
 const store = useScenariosStore()
 const router = useRouter()
-function goBack() {
-  // If there is a navigation history, go back, else fallback to scenario list
-  if (window.history.length > 1) {
-    router.back()
-  } else {
-    router.push({ name: 'scenario' })
-  }
-}
 const scenarioId = computed(() => Number(route.params.id))
 // Prefer title from fully loaded cache, fallback to list store items
 const scenarioTitle = computed(() => {
   const id = scenarioId.value
-  const cached = scenariosStore.fullCache[id]
+  const cached = store.fullCache[id]
   if (cached?.scenario?.title) return cached.scenario.title
   if (cached?.scenario?.title_scenario) return cached.scenario.title_scenario
-  return scenariosStore.items.find(s => s.id === id)?.title || ''
+  return store.items.find(s => s.id === id)?.title || ''
 })
 
 // Preload full scenario (for title) if not yet cached
 onMounted(() => {
   const id = scenarioId.value
-  if (id && !scenariosStore.fullCache[id]) {
-    scenariosStore.fetchFull(id).catch(() => {})
+  if (id && !store.fullCache[id]) {
+    store.fetchFull(id).catch(() => {})
   }
 })
 
 // If route id changes, ensure cache
 watch(scenarioId, (n) => {
-  if (n && !scenariosStore.fullCache[n]) {
-    scenariosStore.fetchFull(n).catch(() => {})
+  if (n && !store.fullCache[n]) {
+    store.fetchFull(n).catch(() => {})
   }
 })
 

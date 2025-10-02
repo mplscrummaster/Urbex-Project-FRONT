@@ -3,7 +3,7 @@
     <div v-if="open" class="drawer" :class="sizeClass" @keydown.esc="emit('close')" tabindex="-1" ref="root">
   <div class="handle-area" @mousedown.prevent="startDrag" @touchstart.prevent="startDrag" @click="cycleSize">
         <div class="handle" />
-        <button class="close" @click="emit('close')" aria-label="Fermer">×</button>
+  <button class="close" @click.stop="closeDrawer" @touchstart.stop.prevent="closeDrawer" aria-label="Fermer">×</button>
       </div>
       <div class="content" ref="contentEl">
         <slot />
@@ -51,12 +51,18 @@ function onBackgroundScroll(e) {
 onMounted(() => { document.addEventListener('wheel', onBackgroundScroll, { passive:false }) })
 onUnmounted(() => { document.removeEventListener('wheel', onBackgroundScroll) })
 const sizeClass = computed(() => `is-${sizes[sizeIndex.value]}`)
+
+function closeDrawer() {
+  open.value = false
+  emit('update:modelValue', false)
+  emit('close')
+}
 </script>
 <style scoped lang="scss">
 .drawer { position:fixed; left:0; right:0; bottom:0; background:#0f1a22f2; backdrop-filter:blur(10px); border-top-left-radius:22px; border-top-right-radius:22px; box-shadow:0 -4px 18px -4px rgba(0,0,0,0.55); display:flex; flex-direction:column; max-height:92dvh; z-index:4000; animation:popIn .35s cubic-bezier(.22,.99,.34,1.01); }
 .handle-area { position:relative; padding:10px 40px 6px; display:flex; align-items:center; justify-content:center; }
 .handle { width:52px; height:5px; border-radius:3px; background:#334250; opacity:.9; }
-.close { position:absolute; top:6px; right:10px; background:none; border:none; font-size:22px; color:#94a3b8; cursor:pointer; line-height:1; padding:4px 8px; border-radius:8px; }
+.close { position:absolute; top:4px; right:6px; background:none; border:none; font-size:26px; color:#94a3b8; cursor:pointer; line-height:1; padding:8px 12px; border-radius:12px; touch-action:manipulation; }
 .close:hover { background:#1e293b; color:#e2e8f0; }
 .content { overflow-y:auto; padding:8px 16px 28px; display:flex; flex-direction:column; gap:12px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
 .is-peek { height:28dvh; }
