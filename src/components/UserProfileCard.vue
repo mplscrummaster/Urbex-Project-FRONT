@@ -4,22 +4,23 @@
   import { onMounted, ref } from 'vue'
 
   const storeUsers = useUsersStore()
-  const maxXp = 3000;
-  const headerProfile = ref(null)
-  const modifyInputs = ref(null)
-  const usernameModify = ref(null)
-  const bioModify = ref(null)
-  const urlImgModify = ref(null)
 
-  let nickname = ref(null)
+  let username = ref(null)
   let bio = ref(null)
   let percentXp = ref(null);
   let xp = ref(null)
   let urlImg = ref(null)
 
+  const maxXp = 3000;
+  const headerProfile = ref(null)
+  const modifyInputs = ref(null)
+  const usernameModify = ref(username)
+  const bioModify = ref(bio)
+  const urlImgModify = ref(urlImg)
+
   onMounted(async () => {
     const playerDatas = ref(await storeUsers.getMeInfo());
-    nickname.value = playerDatas.value.nickname;
+    username.value = playerDatas.value.nickname;
     bio.value = playerDatas.value.bio;
     xp.value = playerDatas.value.xp;
     console.log("xp", xp.value)
@@ -54,7 +55,7 @@
     <header class="userCard__header" ref="headerProfile">
       <img class="userCard__picture" :src="urlImg" alt="userImg" />
       <div class="userCard__infos">
-        <div class="userCard__nickname"> {{ nickname }} </div>
+        <div class="userCard__nickname"> {{ username }} </div>
         <div class="userCard__description">{{ bio ?? "Pas de bio" }}</div>
       </div>
       <div class="userCard__progress">
@@ -66,10 +67,13 @@
 
     <form class="modifyForm hidden" ref="modifyInputs">
       <span class="modifyForm__description">Change tes infos ici !</span>
+      <label for="username">Username</label>
       <input type="text" placeholder="Username" v-model="usernameModify">
+      <label for="username">Bio</label>
       <input type="text" placeholder="Bio" v-model="bioModify">
+      <label for="username">Url d'avatar</label>
       <input type="text" placeholder="Url img" v-model="urlImgModify">
-      <button @click.prevent="EndModifyProfil">Modifier</button>
+      <button class="modifyForm__submit" @click.prevent="EndModifyProfil">Modifier</button>
     </form>
 
     <main class="userCard__successList">
@@ -91,6 +95,7 @@
     &__header {
       padding: 2rem;
       display: flex;
+      gap: 1rem;
       flex-direction: column;
       align-items: center;
       border-bottom: 1px solid white;
@@ -156,11 +161,65 @@
         font-size: 3rem;
       }
     }
+
+    &__modifyInfos {
+      transition: all .3s ease-out;
+      cursor: pointer;
+      background-color: rgb(21, 0, 255);
+      color: white;
+      width: fit-content;
+      padding: .8rem 1.5rem;
+      border: none;
+      border-radius: 1rem;
+
+      &:hover {
+        background-color: #0e00ab;
+
+      }
+    }
   }
 
   .modifyForm {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: .7rem;
+
+    &__description {
+      padding-inline-start: .3rem;
+    }
+
+    input {
+      background-color: gray;
+      border: none;
+      border: 2px solid rgb(74, 74, 74);
+      border-radius: 1rem;
+      padding: .5rem;
+      width: 100%;
+      box-shadow: inset 0 0 10px 0 s#00000063;
+
+      &:focus {
+        outline: none;
+        border: 2px solid rgb(21, 0, 255);
+
+      }
+    }
+
+    &__submit {
+      transition: all .3s ease-out;
+      cursor: pointer;
+      background-color: rgb(21, 0, 255);
+      color: white;
+      width: fit-content;
+      padding: .8rem 1.5rem;
+      border: none;
+      border-radius: 1rem;
+
+      &:hover {
+        background-color: #0e00ab;
+
+      }
+    }
   }
 
   .hidden {
