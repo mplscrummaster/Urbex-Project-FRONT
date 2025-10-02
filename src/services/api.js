@@ -4,7 +4,7 @@
 // Previous remote deployment base URL kept for reference:
 // const BASE_URL = 'http://91.134.99.3:3000/api'
 // Local development API base URL:
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = 'http://91.134.99.3:3000/api'
 
 export async function apiFetch(path, { method = 'GET', body, auth = false } = {}) {
   const headers = { 'Content-Type': 'application/json' }
