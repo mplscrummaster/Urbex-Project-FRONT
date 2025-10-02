@@ -212,7 +212,11 @@ export const useUsersStore = defineStore('storeUsers', {
       this.currentIdUser = null
       localStorage.removeItem('tokenUser')
       localStorage.removeItem('auth_token')
-  try { this.router.replace('/login') } catch (e) { console.warn('Router replace failed during logout:', e?.message) }
+      try {
+        this.router.replace('/login')
+      } catch (e) {
+        console.warn('Router replace failed during logout:', e?.message)
+      }
     },
   },
 })
