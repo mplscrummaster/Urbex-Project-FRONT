@@ -41,6 +41,7 @@ body {
   margin: 0;
   background-color: #2b2b2b;
 }
+
 main {
   display: flex;
   flex-direction: column;
@@ -72,8 +73,7 @@ main {
 
   &:hover {
     transition: 0.3s all;
-    color: #0000ca;
-    box-shadow: 0 0 0 1px #0000ca;
+    color: #1c7832;
   }
 }
 
