@@ -36,7 +36,7 @@ export const useScenariosStore = defineStore('scenarios', {
           completed_at: row.completed_at || null,
           // temp progression ratio heuristic (completed => 1, started => 0.4, else 0)
           progressRatio: row.status === 'completed' ? 1 : row.status === 'started' ? 0.4 : 0,
-          author: '—', // backend doesn't send yet
+          author: row.author || '—',
         }))
         this.lastLoadedAt = Date.now()
       } catch (e) {
@@ -87,6 +87,12 @@ export const useScenariosStore = defineStore('scenarios', {
       this.fullLoading = true
       try {
         const data = await ScenariosAPI.getFull(id)
+        // Normaliser le champ titre (backend renvoie title_scenario)
+        if (data && data.scenario) {
+          if (!data.scenario.title && data.scenario.title_scenario) {
+            data.scenario.title = data.scenario.title_scenario
+          }
+        }
         this.fullCache[id] = data
         return data
       } finally {

@@ -3,8 +3,8 @@ import { useUsersStore } from '@/stores/users'
 import { ref } from 'vue'
 const storeUsers = useUsersStore()
 
-const email = ref('Max@gmail.com')
-const password = ref('Max')
+const email = ref('player04@example.com')
+const password = ref('password123')
 
 const togglePassword = () => {
   const passwordInput = document.getElementById('password')

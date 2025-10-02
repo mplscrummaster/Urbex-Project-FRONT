@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed, watch } from 'vue'
+import { onMounted, onBeforeUnmount, ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 import { ScenariosAPI, MissionsAPI } from '@/services/api'
@@ -50,7 +50,8 @@ async function loadScenario() {
   loading.value = true
   error.value = null
   try {
-    full.value = await scenariosStore.fetchFull(routeId.value, true)
+  // Only force fetch if not in cache; avoids duplicate parallel requests with parent view prefetch
+  full.value = await scenariosStore.fetchFull(routeId.value, !scenariosStore.fullCache[routeId.value])
     // Reset collapses and answers
     showIntro.value = false
     showOutro.value = false
@@ -72,6 +73,8 @@ async function loadScenario() {
 }
 
 onMounted(loadScenario)
+// Start geolocation watcher alongside data load
+onMounted(startGeolocation)
 
 // Watch route id changes to reload scenario data
 watch(routeId, (newVal, oldVal) => {
@@ -84,13 +87,80 @@ const missions = computed(() => (full.value?.missions || []).slice().sort((a, b)
 const isCompleted = (missionId) => full.value?.progress?.completedMissionIds?.includes(missionId)
 // Answers state
 const missionAnswers = ref({})
-function initMissionAnswer(id) {
-  if (!missionAnswers.value[id]) missionAnswers.value[id] = { value: '', status: 'idle', error: null }
-}
+// Start/finish scenario action state holders
 const starting = ref(false)
 const startError = ref(null)
 const finishing = ref(false)
 const finishError = ref(null)
+// Geolocation gating additions
+const userLat = ref(null)
+const userLon = ref(null)
+const geoError = ref(null)
+let geoWatchId = null
+const RANGE_METERS = 50
+function startGeolocation() {
+  if (!navigator.geolocation) { geoError.value = 'Géolocalisation non supportée'; return }
+  geoWatchId = navigator.geolocation.watchPosition(
+    pos => { userLat.value = pos.coords.latitude; userLon.value = pos.coords.longitude },
+    err => { geoError.value = err.message || 'Erreur géolocalisation' },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 8000 }
+  )
+}
+function stopGeolocation() { if (geoWatchId!=null && navigator.geolocation) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId=null } }
+function distanceMeters(lat1, lon1, lat2, lon2) {
+  if ([lat1,lon1,lat2,lon2].some(v=>v==null)) return Infinity
+  const R=6371000, toRad=d=>d*Math.PI/180
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1)
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2
+  return 2*R*Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+}
+function missionInRange(m) { if (m.latitude==null || m.longitude==null) return true; return distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude) <= RANGE_METERS }
+function missionDistance(m) { if (m.latitude==null || m.longitude==null) return null; const d=distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude); return Number.isFinite(d)?Math.round(d):null }
+// Initialize a mission answer entry lazily
+function initMissionAnswer(mid) {
+  if (!missionAnswers.value[mid]) {
+    missionAnswers.value[mid] = { value: '', status: 'idle', error: null }
+  }
+}
+// Mission lock helpers
+function missionLocked(m) {
+  if (!m) return true
+  if (scenarioStatus.value === 'not_started') return true
+  if (isCompleted(m.id)) return false
+  return !!m.locked
+}
+function missionLockReason(m) {
+  if (scenarioStatus.value === 'not_started') return 'Commencez le scénario pour accéder aux missions'
+  if (m.locked) return 'Complétez les missions prérequises'
+  return ''
+}
+// Bookmark toggle
+const bookmarking = ref(false)
+const bookmarkError = ref(null)
+async function toggleBookmarkDetail() {
+  if (!full.value) return
+  bookmarkError.value = null
+  const isBookmarked = full.value.progress?.scenario.bookmarked
+  const needsConfirm = isBookmarked && full.value.progress?.scenario.status !== 'not_started'
+  const confirmCallback = async () => {
+    if (!needsConfirm) return true
+    return window.confirm('Retirer ce scénario supprimera aussi toute votre progression. Confirmer ?')
+  }
+  try {
+    bookmarking.value = true
+    await scenariosStore.toggleBookmark(full.value.scenario.id, { confirmCallback })
+    // Recharger full si toujours présent (si unbookmark et statut not_started -> retiré de la liste mais on peut rester sur page)
+    try {
+  full.value = await scenariosStore.fetchFull(routeId.value, true)
+    } catch {
+      // ignorer (ex: progression supprimée)
+    }
+  } catch (e) {
+    bookmarkError.value = e.message
+  } finally {
+    bookmarking.value = false
+  }
+}
 async function startScenario() {
   if (!full.value) return
   startError.value = null
@@ -188,46 +258,10 @@ const allMissionsCompleted = computed(() => {
 })
 // Outro unlocked if all missions completed or scenario already marked completed
 const outroUnlocked = computed(() => allMissionsCompleted.value || scenarioStatus.value === 'completed')
-// Mission lock helpers
-function missionLocked(m) {
-  if (!m) return true
-  if (scenarioStatus.value === 'not_started') return true
-  if (isCompleted(m.id)) return false
-  return !!m.locked
-}
-function missionLockReason(m) {
-  if (scenarioStatus.value === 'not_started') return 'Commencez le scénario pour accéder aux missions'
-  if (m.locked) return 'Complétez les missions prérequises'
-  return ''
-}
-// Bookmark toggle
-const bookmarking = ref(false)
-const bookmarkError = ref(null)
-async function toggleBookmarkDetail() {
-  if (!full.value) return
-  bookmarkError.value = null
-  const isBookmarked = full.value.progress?.scenario.bookmarked
-  const needsConfirm = isBookmarked && full.value.progress?.scenario.status !== 'not_started'
-  const confirmCallback = async () => {
-    if (!needsConfirm) return true
-    return window.confirm('Retirer ce scénario supprimera aussi toute votre progression. Confirmer ?')
-  }
-  try {
-    bookmarking.value = true
-    await scenariosStore.toggleBookmark(full.value.scenario.id, { confirmCallback })
-    // Recharger full si toujours présent (si unbookmark et statut not_started -> retiré de la liste mais on peut rester sur page)
-    try {
-  full.value = await scenariosStore.fetchFull(routeId.value, true)
-    } catch {
-      // ignorer (ex: progression supprimée)
-    }
-  } catch (e) {
-    bookmarkError.value = e.message
-  } finally {
-    bookmarking.value = false
-  }
-}
+// Cleanup geolocation watcher when component unmounts
+onBeforeUnmount(stopGeolocation)
 </script>
+
 <template>
   <div class="scenario-wrapper">
     <div v-if="loading" class="placeholder">Chargement...</div>
@@ -235,7 +269,7 @@ async function toggleBookmarkDetail() {
     <div v-else-if="!full" class="empty">Introuvable</div>
     <div v-else class="scenario">
       <header class="scenario__header">
-        <h1 class="scenario__title">{{ full.scenario.title }}</h1>
+  <h1 class="scenario__title">{{ full.scenario.title || full.scenario.title_scenario }}</h1>
         <div class="scenario__meta">
           <span class="scenario__status">Statut: {{ scenarioStatus }}</span>
           <span v-if="full.progress?.scenario.bookmarked" class="scenario__badge">Bookmark</span>
@@ -312,7 +346,10 @@ async function toggleBookmarkDetail() {
               >
                 <div class="question" v-if="m.riddle_text">{{ m.riddle_text }}</div>
                 <div class="question" v-else>Entrez la réponse de cette mission</div>
-                <div class="answer-row">
+                <div v-if="!missionInRange(m)" class="geo-hint">
+                  Cette mission est située à environ {{ missionDistance(m) }} mètres d'ici. Rendez-vous sur place pour répondre.
+                </div>
+                <div class="answer-row" v-else>
                   <input
                     :disabled="missionAnswers[m.id] && missionAnswers[m.id].status === 'checking'"
                     @focus="initMissionAnswer(m.id)"
@@ -336,6 +373,15 @@ async function toggleBookmarkDetail() {
                   <span v-if="missionAnswers[m.id]?.status === 'ok'" class="ok">Mission validée ✔</span>
                   <span v-else-if="missionAnswers[m.id]?.status === 'wrong'" class="wrong">Mauvaise réponse</span>
                   <span v-else-if="missionAnswers[m.id]?.error" class="wrong">{{ missionAnswers[m.id].error }}</span>
+                </div>
+              </div>
+              <!-- Completed mission review (show riddle & answer once solved) -->
+              <div v-else-if="isCompleted(m.id)" class="mission-review">
+                <div class="question" v-if="m.riddle_text">{{ m.riddle_text }}</div>
+                <div class="question" v-else>Énigme</div>
+                <div class="review-answer">
+                  <span class="label">Réponse :</span>
+                  <span class="value">{{ (m.answer_word || '').trim() || '—' }}</span>
                 </div>
               </div>
             </div>
@@ -465,6 +511,13 @@ figure figcaption { font-size:.55rem; opacity:.6; margin-top:2px; }
 .feedback .ok { color:$color-success; }
 .feedback .wrong { color:$color-danger; }
 
+/* Completed mission review */
+.mission-review { margin-top:.9rem; padding:.75rem .85rem .8rem; border:1px solid $color-border; background:rgba(255,255,255,0.03); border-radius:$radius-sm; display:flex; flex-direction:column; gap:.5rem; }
+.mission-review .question { font-size:.75rem; font-weight:600; letter-spacing:.4px; opacity:.9; }
+.mission-review .review-answer { font-size:.7rem; display:flex; flex-wrap:wrap; gap:.4rem; align-items:baseline; }
+.mission-review .review-answer .label { text-transform:uppercase; letter-spacing:1px; font-weight:600; font-size:.55rem; opacity:.65; }
+.mission-review .review-answer .value { font-weight:600; color:$color-success; font-size:.8rem; }
+
 /* Bookmark button header */
 .bookmark-btn { position:absolute; top:.2rem; right:.2rem; background:rgba(0,0,0,.25); border:1px solid $color-border; border-radius:8px; padding:.3rem .5rem .25rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background $transition, border-color $transition; }
 .bookmark-btn:hover:not(:disabled) { background:$color-surface; border-color:$color-accent; }
@@ -472,4 +525,7 @@ figure figcaption { font-size:.55rem; opacity:.6; margin-top:2px; }
 .bookmark-btn .material-symbols-outlined { font-size:22px; line-height:1; color:$color-text-dim; transition:color $transition; }
 .bookmark-btn.active .material-symbols-outlined { color:$color-accent; }
 .bookmark-btn .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+.geo-hint { margin:.6rem 0 .4rem; font-size:.75rem; color:#fbbf24; background:rgba(251,191,36,.08); padding:.5rem .65rem; border:1px solid rgba(251,191,36,.25); border-radius:6px; line-height:1.25; }
+.answer-input:disabled { opacity:.55; cursor:not-allowed; }
+.btn-secondary:disabled { opacity:.55; cursor:not-allowed; }
 </style>

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import ListScenario from '@/views/Scenarios/ListScenario.vue'
+import ScenariosView from '@/views/ScenariosView.vue'
 import GlobalMap from '@/views/Maps/GlobalMap.vue'
 import CurrentMap from '@/views/Maps/CurrentMap.vue'
 import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
@@ -34,6 +35,11 @@ const router = createRouter({
       path: '/scenario',
       name: 'scenario',
       component: ListScenario,
+    },
+    {
+      path: '/scenarios',
+      name: 'scenarios',
+      component: ScenariosView,
     },
     {
       path: '/globalmap',
