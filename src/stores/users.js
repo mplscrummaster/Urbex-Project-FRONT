@@ -10,6 +10,7 @@ export const useUsersStore = defineStore('storeUsers', {
     router: useRouter(),
     tokenUser: localStorage.getItem('tokenUser'),
   }),
+
   actions: {
     async loginUser(email, password) {
       // console.log(email + ' ' + password)
@@ -127,5 +128,32 @@ export const useUsersStore = defineStore('storeUsers', {
         // console.log('Impossible de contacter le serveur')
       }
     },
+    async getMeInfo() {
+      try {
+        const responsePlayer = await fetch(`${Api_Link}/api/me/player`, {
+          method: 'get',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": 'Bearer ' + this.tokenUser,
+          },
+        })
+
+        const result = await responsePlayer.json()
+
+        if (responsePlayer.ok) {
+          // console.log('Inscription réussie !')
+          console.log(result)
+          //  console.log(this.currentIdUser)
+          return result
+        } else {
+          console.log(result || `Erreur lors de l'inscription`)
+          return null
+        }
+      } catch (error) {
+        console.error('Erreur:', error)
+        return null
+        // console.log('Impossible de contacter le serveur')
+      }
+    }
   },
 })
