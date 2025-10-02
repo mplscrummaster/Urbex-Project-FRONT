@@ -1,19 +1,18 @@
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
 
+const Api_Link = 'http://91.134.99.3:3000'
+
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
     users: [],
     currentIdUser: null,
     router: useRouter(),
+    tokenUser: localStorage.getItem('tokenUser'),
   }),
   actions: {
     async loginUser(email, password) {
-      //A supp les 2 lignes du bas
-      this.router.replace('/scenario')
-      this.currentIdUser = 1
-
-      console.log(email + ' ' + password)
+      // console.log(email + ' ' + password)
 
       const data = {
         mail_user: email,
@@ -21,7 +20,7 @@ export const useUsersStore = defineStore('storeUsers', {
       }
 
       try {
-        const response = await fetch('http://91.134.99.3:81/api/login', {
+        const response = await fetch(`${Api_Link}/api/login`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -32,32 +31,47 @@ export const useUsersStore = defineStore('storeUsers', {
         const result = await response.json()
 
         if (response.ok) {
-          alert('Connexion réussie !')
+          // console.log('Connexion réussie !')
           console.log(result) // Traiter la réponse API ici
-          this.currentIdUser = result[0]._id_user
+          this.currentIdUser = result.id
+          this.tokenUser = result.token
+          localStorage.setItem('tokenUser', this.tokenUser)
+          //  console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
           // Par exemple, rediriger vers une autre page
           // window.location.href = "/dashboard.html";
         } else {
-          alert(result || 'Erreur lors de la connexion')
+          console.log(result || 'Erreur lors de la connexion')
         }
       } catch (error) {
         console.error('Erreur:', error)
-        // alert('Impossible de contacter le serveur.')
+        // console.log('Impossible de contacter le serveur.')
       }
     },
-    async registrUser(username, firstname, lastname, email, password) {
+    async registerUser({ username, nickname, bio, email, password }) {
       const dataUser = {
         username_user: username,
-        firstname_user: firstname,
-        name_user: lastname,
         password_user: password,
         mail_user: email,
       }
-      console.log(dataUser)
+      const dataPlayer = {
+        nickname: nickname,
+        bio: bio,
+      }
+      console.log('dataUser', dataUser)
+      const requestDataUserValidation = await this.requestDataUser(dataUser)
+      const requestDataPlayerValidation = await this.requestDataPlayer(dataPlayer)
+
+      if (requestDataUserValidation && requestDataPlayerValidation) this.router.replace('/scenario')
+      else {
+        console.log('Enregistrement impossible')
+        alert("Veuillez réessayer")
+      }
+    },
+    async requestDataUser(dataUser) {
       try {
-        const response = await fetch('http://91.134.99.3:81/api/register', {
+        const responseUser = await fetch(`${Api_Link}/api/register`, {
           method: 'post',
           headers: {
             'Content-Type': 'application/json',
@@ -65,21 +79,52 @@ export const useUsersStore = defineStore('storeUsers', {
           body: JSON.stringify(dataUser),
         })
 
-        const result = await response.json()
+        const result = await responseUser.json()
 
-        if (response.ok) {
-          // alert('Inscription réussie !')
+        if (responseUser.ok) {
+          // console.log('Inscription réussie !')
           console.log(result)
-          this.currentIdUser = result[0]._id_user
-          // Traiter la réponse API ici
-          // Par exemple, rediriger vers une autre page
-          // window.location.href = "/dashboard.html";
+          this.currentIdUser = result.id
+          this.tokenUser = result.token
+          localStorage.setItem('tokenUser', this.tokenUser)
+          //  console.log(this.currentIdUser)
+          return true
         } else {
-          alert(result || `Erreur lors de l'inscription`)
+          console.log(result || `Erreur lors de l'inscription`)
+          return false
         }
       } catch (error) {
         console.error('Erreur:', error)
-        // alert('Impossible de contacter le serveur')
+        return false
+        // console.log('Impossible de contacter le serveur')
+      }
+    },
+    async requestDataPlayer(dataPlayer) {
+      try {
+        const responsePlayer = await fetch(`${Api_Link}/api/me/player`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": 'Bearer ' + this.tokenUser,
+          },
+          body: JSON.stringify(dataPlayer),
+        })
+
+        const result = await responsePlayer.json()
+
+        if (responsePlayer.ok) {
+          // console.log('Inscription réussie !')
+          console.log(result)
+          //  console.log(this.currentIdUser)
+          return true
+        } else {
+          console.log(result || `Erreur lors de l'inscription`)
+          return false
+        }
+      } catch (error) {
+        console.error('Erreur:', error)
+        return false
+        // console.log('Impossible de contacter le serveur')
       }
     },
   },

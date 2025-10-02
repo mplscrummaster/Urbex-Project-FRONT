@@ -1,5 +1,6 @@
 <script setup>
-import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
+  import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
+
 </script>
 <template>
   <ScenarioInfoComponent />

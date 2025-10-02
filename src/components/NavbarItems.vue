@@ -1,19 +1,25 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
-const storeUsers = useUsersStore()
+  import { useUsersStore } from '@/stores/users'
+  const storeUsers = useUsersStore()
+  const decconectUser = () => {
+    storeUsers.tokenUser = null
+    localStorage.clear()
+  }
 </script>
 
 <template>
-  <div class="navbar home-bar" :class="{ hidden: storeUsers.currentIdUser }">
-    <RouterLink v-if="!storeUsers.currentIdUser" to="/login">Login</RouterLink>
-    <RouterLink v-if="!storeUsers.currentIdUser" to="/register">Inscrire</RouterLink>
+  <div class="navbar home-bar">
+    <RouterLink v-if="!storeUsers.tokenUser" to="/login">Login</RouterLink>
+    <RouterLink v-if="!storeUsers.tokenUser" to="/register">Inscrire</RouterLink>
+    <RouterLink to="/" v-else @click="decconectUser"> Se déconnecter
+    </RouterLink>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .home-bar {
   top: 0;
-
+  position: fixed;
   height: 60px;
   background: rgba(15, 15, 15, 0.3);
   backdrop-filter: blur(6px);
