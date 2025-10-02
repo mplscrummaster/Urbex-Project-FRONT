@@ -4,7 +4,7 @@
 
   const storeUsers = useUsersStore()
 
-  const email = ref('demo_player1@example.com')
+  const email = ref('player04@example.com')
   const password = ref('password123')
 
   const togglePassword = () => {
