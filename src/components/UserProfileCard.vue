@@ -5,6 +5,11 @@
 
   const storeUsers = useUsersStore()
   const maxXp = 3000;
+  const headerProfile = ref(null)
+  const modifyInputs = ref(null)
+  const usernameModify = ref(null)
+  const bioModify = ref(null)
+  const urlImgModify = ref(null)
 
   let nickname = ref(null)
   let bio = ref(null)
@@ -25,11 +30,28 @@
 
   })
 
+  const ModifyProfil = () => {
+    //1) Cacher le header du profil
+    headerProfile.value.classList.add("hidden")
+    modifyInputs.value.classList.remove("hidden")
+
+    //2) Afficher le form pour modifier le profil
+  }
+
+  const EndModifyProfil = async () => {
+    headerProfile.value.classList.remove("hidden")
+    modifyInputs.value.classList.add("hidden")
+
+    const results = await storeUsers.setMeInfo(usernameModify.value, bioModify.value, urlImgModify.value)
+
+    console.log("setMeInfo", results);
+  }
+
 </script>
 
 <template>
   <div class="userCard">
-    <header class="userCard__header">
+    <header class="userCard__header" ref="headerProfile">
       <img class="userCard__picture" :src="urlImg" alt="userImg" />
       <div class="userCard__infos">
         <div class="userCard__nickname"> {{ nickname }} </div>
@@ -39,8 +61,17 @@
         <span class="userCard__progressText">{{ xp + "/" + maxXp }}</span>
         <div class="userCard__progressBar" :style="{ width: percentXp + '%' }"></div>
       </div>
-      <button class="userCard__modifyInfos">Modifier le profil</button>
+      <button class="userCard__modifyInfos" @click.prevent="ModifyProfil">Modifier le profil</button>
     </header>
+
+    <form class="modifyForm hidden" ref="modifyInputs">
+      <span class="modifyForm__description">Change tes infos ici !</span>
+      <input type="text" placeholder="Username" v-model="usernameModify">
+      <input type="text" placeholder="Bio" v-model="bioModify">
+      <input type="text" placeholder="Url img" v-model="urlImgModify">
+      <button @click.prevent="EndModifyProfil">Modifier</button>
+    </form>
+
     <main class="userCard__successList">
       <h1 class="userCard__successList--title">Succès</h1>
       <SuccessCard />
@@ -53,6 +84,7 @@
 </template>
 
 <style lang="scss" scoped>
+
   .userCard {
     border-radius: 1rem;
 
@@ -124,5 +156,14 @@
         font-size: 3rem;
       }
     }
+  }
+
+  .modifyForm {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>

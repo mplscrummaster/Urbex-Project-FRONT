@@ -154,6 +154,39 @@ export const useUsersStore = defineStore('storeUsers', {
         return null
         // console.log('Impossible de contacter le serveur')
       }
+    },
+    async setMeInfo(username, bio, url_img_avatar) {
+      try {
+        const dataMe = {
+          "nickname": username,
+          "bio": bio,
+          "url_img_avatar": url_img_avatar,
+        }
+        const responsePlayer = await fetch(`${Api_Link}/api/me/player`, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json',
+            "Authorization": 'Bearer ' + this.tokenUser,
+          },
+          body: JSON.stringify(dataMe)
+        })
+
+        const result = await responsePlayer.json()
+
+        if (responsePlayer.ok) {
+          // console.log('Inscription réussie !')
+          console.log(result)
+          //  console.log(this.currentIdUser)
+          return result
+        } else {
+          console.log(result || `Erreur lors de l'inscription`)
+          return null
+        }
+      } catch (error) {
+        console.error('Erreur:', error)
+        return null
+        // console.log('Impossible de contacter le serveur')
+      }
     }
   },
 })
