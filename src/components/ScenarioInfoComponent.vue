@@ -315,7 +315,7 @@ onBeforeUnmount(stopGeolocation)
           v-for="m in missions"
           :key="m.id"
           class="missionCard"
-          :class="{ completed: isCompleted(m.id), locked: missionLocked(m) }"
+          :class="{ completed: isCompleted(m.id), locked: missionLocked(m), open: openMissions[m.id] }"
         >
           <div v-if="isCompleted(m.id)" class="mission-complete-indicator" aria-label="Mission complétée" title="Mission complétée">
             <span class="material-symbols-outlined">check</span>
@@ -446,18 +446,25 @@ onBeforeUnmount(stopGeolocation)
 .scenario__badge { @extend .pill-badge; }
 
 // Unified card style
-.card, .missionCard { @extend .elevated; background:$color-surface-alt; border:1px solid $color-border; border-radius:$radius-md; padding:14px 14px 12px; display:grid; grid-template-columns:1fr auto; position:relative; }
+.card, .missionCard { @extend .elevated; background:$color-surface-alt; border:1px solid $color-border; border-radius:$radius-md; padding:14px 16px 12px; display:grid; grid-template-columns:1fr auto; position:relative; }
 .card__title, .missionCard__title { margin:0; font-size:1rem; font-weight:600; color:$color-text; letter-spacing:.3px; }
 .missionCard__title { position:relative; margin-right:2.2rem; }
 .card__body, .missionCard__info { grid-column:1 / -1; margin-top:.6rem; display:flex; flex-direction:column; gap:.8rem; }
-.missionCard { transition:background $transition,border-color $transition, box-shadow $transition; }
-.missionCard.completed { /* neutral appearance */ position:relative; }
+.missionCard { transition:background $transition,border-color $transition, box-shadow $transition, transform $transition; }
+.missionCard:not(.open):hover { background:$color-surface; }
+.missionCard.open { background:linear-gradient(135deg, rgba($color-accent,0.15), rgba($color-accent,0.05) 55%, $color-surface-alt); border-color:color.adjust($color-accent,$lightness: -10%); box-shadow:0 0 0 1px rgba($color-accent,.4), 0 4px 14px -2px rgba(0,0,0,.55); }
+.missionCard.open .missionCard__title { color:#fff; }
+.missionCard.completed { background:linear-gradient(120deg, rgba($color-success,.18), rgba($color-success,.08) 60%, $color-surface-alt); border-color:rgba($color-success,.55); }
 .missionCard.completed::before { display:none; }
-.missionCard.locked { opacity:.55; position:relative; }
-.missionCard.locked .missionCard__title { filter:grayscale(.2); }
+.missionCard.locked { opacity:.6; position:relative; background:repeating-linear-gradient(145deg,rgba(255,255,255,.03) 0 18px, rgba(255,255,255,.04) 18px 36px) $color-surface-alt; }
+.missionCard.locked .missionCard__title { filter:grayscale(.25); }
 .missionCard.locked .arrow { filter:grayscale(1) brightness(.55); cursor:not-allowed; }
+.missionCard.locked.open { background:linear-gradient(135deg, rgba(255,255,255,.05), rgba(255,255,255,.02)); }
 .locked-hint { font-size:.65rem; color:$color-text-dim; background:rgba(255,255,255,.03); padding:.35rem .5rem; border:1px dashed $color-border; border-radius:$radius-sm; }
-.missionCard:hover { background:$color-surface; }
+.intro-card { background:linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); border:1px solid $color-border; }
+.intro-card.started { background:linear-gradient(135deg, rgba($color-accent,.15), rgba($color-accent,.05)); }
+.outro-card { background:linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.015)); }
+.outro-card.completed { background:linear-gradient(135deg, rgba($color-success,.2), rgba($color-success,.05)); border-color:rgba($color-success,.55); }
 .mission-complete-indicator { position:absolute; top:-8px; right:-8px; width:22px; height:22px; border-radius:50%; background:$color-success; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 2px $color-surface-alt, 0 2px 4px rgba(0,0,0,.45); pointer-events:none; z-index:5; }
 .mission-complete-indicator .material-symbols-outlined { font-size:14px; line-height:1; color:#fff; font-variation-settings:'FILL' 1; }
 .tick, .completed-badge, .completed-icon, .status-cluster, .dot { display:none !important; }
@@ -483,7 +490,7 @@ figure figcaption { font-size:.55rem; opacity:.6; margin-top:2px; }
 .placeholder, .error, .empty { color:$color-text-dim; }
 
 /* Ensure consistent spacing between all collapsible sections (intro, each mission, conclusion) */
-.missions-group { display:flex; flex-direction:column; gap:1.4rem; }
+.missions-group { display:flex; flex-direction:column; gap:1rem; margin-top:.4rem; }
 
 /* Fade reused */
 .fade-enter-active, .fade-leave-active { transition: opacity .25s; }
@@ -502,7 +509,7 @@ figure figcaption { font-size:.55rem; opacity:.6; margin-top:2px; }
 .error-msg { color:$color-danger; font-size:.7rem; }
 
 /* Mission answer form */
-.mission-answer { margin-top:.9rem; padding:.9rem .9rem .95rem; border:1px solid $color-border; background:$color-bg-alt; border-radius:$radius-sm; display:flex; flex-direction:column; gap:.65rem; }
+.mission-answer { margin-top:.55rem; padding:.75rem .8rem .85rem; border:1px solid $color-border; background:$color-bg-alt; border-radius:$radius-sm; display:flex; flex-direction:column; gap:.55rem; }
 .mission-answer .question { font-size:.8rem; font-weight:600; letter-spacing:.4px; }
 .answer-row { display:flex; gap:.6rem; }
 .answer-input { flex:1; background:$color-surface; border:1px solid $color-border; border-radius:$radius-sm; padding:.55rem .7rem; color:$color-text; font:inherit; font-size:.8rem; }
@@ -525,6 +532,9 @@ figure figcaption { font-size:.55rem; opacity:.6; margin-top:2px; }
 .bookmark-btn .material-symbols-outlined { font-size:22px; line-height:1; color:$color-text-dim; transition:color $transition; }
 .bookmark-btn.active .material-symbols-outlined { color:$color-accent; }
 .bookmark-btn .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1; }
+/* fine-tune spacing inside collapses */
+.missionCard__info { padding-top:.35rem; }
+.card__body { padding-top:.35rem; }
 .geo-hint { margin:.6rem 0 .4rem; font-size:.75rem; color:#fbbf24; background:rgba(251,191,36,.08); padding:.5rem .65rem; border:1px solid rgba(251,191,36,.25); border-radius:6px; line-height:1.25; }
 .answer-input:disabled { opacity:.55; cursor:not-allowed; }
 .btn-secondary:disabled { opacity:.55; cursor:not-allowed; }

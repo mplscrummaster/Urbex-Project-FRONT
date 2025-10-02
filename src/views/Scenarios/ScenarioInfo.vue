@@ -5,8 +5,16 @@ import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
 
 const route = useRoute()
+const store = useScenariosStore()
 const router = useRouter()
-const scenariosStore = useScenariosStore()
+function goBack() {
+  // If there is a navigation history, go back, else fallback to scenario list
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    router.push({ name: 'scenario' })
+  }
+}
 const scenarioId = computed(() => Number(route.params.id))
 // Prefer title from fully loaded cache, fallback to list store items
 const scenarioTitle = computed(() => {
@@ -51,6 +59,7 @@ function goBack() {
   return router.push('/scenarios')
 }
 </script>
+
 <template>
   <div class="scenario-page">
     <header class="scenario-page__sticky">
@@ -59,9 +68,12 @@ function goBack() {
       </button>
   <h1 class="scenario-page__title">{{ scenarioTitle || '…' }}</h1>
     </header>
-    <ScenarioInfoComponent />
+    <div class="scenario-page__body">
+      <ScenarioInfoComponent />
+    </div>
   </div>
- </template>
+</template>
+
 <style lang="scss" scoped>
 .scenario-page__sticky { position:sticky; top:0; z-index:30; backdrop-filter:blur(8px); background:linear-gradient(180deg,rgba(10,14,22,.88),rgba(10,14,22,.55) 70%,rgba(10,14,22,0)); padding:.65rem 0 .45rem; margin:0 0 .4rem; display:flex; align-items:center; gap:.4rem; }
 .scenario-page__title { margin:0; font-size:1.05rem; font-weight:600; letter-spacing:.5px; background:linear-gradient(90deg,#fff,#b5c9ff); -webkit-background-clip:text; background-clip:text; color:transparent; flex:1; }

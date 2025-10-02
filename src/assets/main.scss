@@ -1,0 +1,21 @@
+@use '/src/assets/ListScenario.scss';
+@use '/src/assets/Navbar.scss';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #2b2b2b;
+  min-height: 100dvh;
+}
+main {
+  display: flex;
+  flex-direction: column;
+}
+.content {
+  margin-block: 4rem;
+}

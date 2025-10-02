@@ -6,10 +6,14 @@
 // Local development API base URL:
 const BASE_URL = 'http://91.134.99.3:3000/api'
 
+function getAuthToken() {
+  return localStorage.getItem('auth_token') || localStorage.getItem('tokenUser') || null
+}
+
 export async function apiFetch(path, { method = 'GET', body, auth = false } = {}) {
   const headers = { 'Content-Type': 'application/json' }
   if (auth) {
-    const token = localStorage.getItem('auth_token')
+    const token = getAuthToken()
     if (token) headers.Authorization = `Bearer ${token}`
   }
   const res = await fetch(`${BASE_URL}${path}`, {

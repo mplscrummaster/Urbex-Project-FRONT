@@ -1,55 +1,74 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, computed, onMounted, watch } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioCard from '@/components/ScenarioCard.vue'
 
-const activeFilter = ref('all')
 const router = useRouter()
 const scenariosStore = useScenariosStore()
 
-onMounted(async () => {
-  await scenariosStore.fetchMine()
-  // lancer enrichissement précis en arrière-plan
-  scenariosStore.enrichProgress()
-})
+// Auth gate (lightweight – relies on token presence only)
+if (!localStorage.getItem('tokenUser')) router.replace('/')
 
-// Possibilité: relancer enrichissement si items changent (ex: après un toggle futur)
-watch(
-  () => scenariosStore.items.length,
-  () => {
-    scenariosStore.enrichProgress()
+const activeFilter = ref('all')
+const uiLoading = ref(true)
+const uiError = ref(null)
+
+async function load() {
+  uiLoading.value = true
+  uiError.value = null
+  try {
+    await scenariosStore.refreshAll()
+  } catch (e) {
+    uiError.value = e.message
+  } finally {
+    uiLoading.value = false
   }
-)
+}
+onMounted(load)
 
-const changeFilter = (e) => {
-  const txt = e.target.innerText
+function changeFilter(e) {
+  const btn = e.target.closest('button.container__filter')
+  if (!btn) return
+  const filterName = btn.innerText.trim()
   const filters = document.querySelectorAll('.container__filter')
   filters.forEach((f) => f.classList.remove('active'))
-  e.target.classList.add('active')
-  activeFilter.value = txt
+  btn.classList.add('active')
+  activeFilter.value = filterName
 }
 
 const filteredScenarios = computed(() => {
   const list = scenariosStore.items
-  if (activeFilter.value === 'all') return list
-  if (activeFilter.value === 'terminés') return list.filter((s) => s.status === 'completed')
-  if (activeFilter.value === 'commencés') return list.filter((s) => s.status === 'started')
-  if (activeFilter.value === 'pas encore') return list.filter((s) => s.status === 'not_started')
-  return list
+  switch (activeFilter.value) {
+    case 'terminés':
+      return list.filter((s) => s.status === 'completed')
+    case 'commencés':
+      return list.filter((s) => s.status === 'started')
+    case 'pas encore':
+      return list.filter((s) => s.status === 'not_started')
+    default:
+      return list
+  }
 })
 
-const scenarioClicked = (scenario) => {
-  router.push(`/scenario/${scenario.id}`)
+async function toggleBookmark(s, ev) {
+  ev.stopPropagation()
+  try {
+    await scenariosStore.toggleBookmark(s.id)
+  } catch (e) {
+    console.warn('Bookmark error', e.message)
+  }
 }
 
+function openScenario(s) {
+  router.push({ name: 'scenario-info', params: { id: s.id } })
+}
 </script>
 
 <template>
   <div class="container">
-    <!-- Фільтри -->
     <div class="container__filters" @click.prevent="changeFilter($event)">
-      <button class="container__filter">all</button>
+      <button class="container__filter active">all</button>
       <button class="container__filter">terminés</button>
       <button class="container__filter">commencés</button>
       <button class="container__filter">pas encore</button>
@@ -70,39 +89,105 @@ const scenarioClicked = (scenario) => {
 </template>
 
 <style lang="scss" scoped>
-@use '@/styles/theme.scss' as *;
-
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.1rem;
-  padding-block: 1rem 5rem;
-  position: relative;
-
-  &__filters {
+  .container {
     display: flex;
-    gap: .6rem;
-    margin-bottom: .5rem;
-    flex-wrap: wrap;
-  }
-  &__filter {
-    background: $color-surface;
-    border: 1px solid $color-border;
-    border-radius: 999px;
-    padding: .45rem 1.1rem;
-    font-size: .7rem;
-    letter-spacing: .5px;
-    text-transform: uppercase;
-    color: $color-text-dim;
-    cursor: pointer;
-    font-weight:600;
-    display:inline-flex; align-items:center; gap:.35rem;
-    transition: background $transition, color $transition, border-color $transition;
-    &:hover { background:$color-surface-alt; color:$color-text; }
-    &.active { background:$color-accent; color:#fff; border-color:$color-accent; box-shadow:0 0 0 1px rgba(59,130,246,.4); }
-  }
-}
+    flex-direction: column;
+    gap: 12px;
+    background-color: #2a2a2a;
+    padding-block: 1rem 5rem;
 
+    &__filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    &__filter {
+      background: #1e1e1e;
+      border: none;
+      border-radius: 16px;
+      padding: 6px 14px;
+      font-size: 14px;
+      color: #aaa;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #2a2a2a;
+      }
+
+      &.active {
+        background: #3b82f6;
+        color: #fff;
+      }
+    }
+  }
+
+  .card {
+    background: #1e1e1e;
+    border:1px solid #333;
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+    position:relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,.4);
+    transition: background .25s, border-color .25s;
+    cursor:pointer;
+    &:hover { background:#242424; }
+    &__bookmark { position:absolute; top:6px; right:6px; background:rgba(255,255,255,.07); border:1px solid #444; border-radius:8px; padding:2px 6px 0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .25s,border-color .25s; }
+    &__bookmark:hover { background:#2a2a2a; }
+    &__bookmark .material-symbols-outlined { font-size:20px; line-height:1; color:#888; }
+    &__bookmark .material-symbols-outlined.fill { font-variation-settings:'FILL' 1; color:#3b82f6; }
+    &__bookmark.active { border-color:#3b82f6; }
+
+    &__marked {
+      filter: invert(39%) sepia(98%) saturate(749%) hue-rotate(203deg) brightness(91%) contrast(86%);
+      color: yellow;
+    }
+
+    &__title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    &__author {
+      margin: 4px 0;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    &__progress {
+      margin-top: 6px;
+      background: #333;
+      height: 6px;
+      border-radius: 4px;
+      overflow: hidden;
+      grid-column-start: 0;
+      grid-row-start: 3;
+    }
+
+    &__progress-bar {
+      background: #3b82f6;
+      /* синій */
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    &__steps {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    &.completed { border-color: #3b995d; }
+    &.in-progress { border-color:#5d8ddb; }
+  }
+
+  .loading-state, .error-state, .empty-state { padding:1rem; font-size:.85rem; color:#ccc; }
+  .hidden { display:none; }
 .cards-list { display:flex; flex-direction:column; gap:14px; }
 
 </style>

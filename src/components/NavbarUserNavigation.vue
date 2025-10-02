@@ -15,11 +15,15 @@
   width: 100%;
   position: fixed;
   bottom: 0;
-  z-index: 10;
+
+  * {
+    min-width: 0;
+  }
+
 }
 
 .active {
-  color: red;
-  border: 2px solid red;
+  color: green;
+  border: 2px solid green;
 }
 </style>
