@@ -1,14 +1,6 @@
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useScenariosStore } from '@/stores/scenarios'
-import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
+  import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
 
-const route = useRoute()
-const scenariosStore = useScenariosStore()
-const scenarioId = computed(() => Number(route.params.id))
-// Try to get title from store (list) fallback to nothing; component inside will still show its own title
-const scenarioTitle = computed(() => scenariosStore.items.find(s => s.id === scenarioId.value)?.title || '')
 </script>
 <template>
   <div class="scenario-page">
