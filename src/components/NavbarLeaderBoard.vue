@@ -9,7 +9,7 @@
 
 <style scoped>
 .active {
-  color: red;
-  border: 2px solid red;
+  color: green;
+  border: 2px solid green;
 }
 </style>
