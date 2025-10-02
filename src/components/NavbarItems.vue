@@ -2,8 +2,7 @@
   import { useUsersStore } from '@/stores/users'
   const storeUsers = useUsersStore()
   const decconectUser = () => {
-    storeUsers.tokenUser = null
-    localStorage.clear()
+    storeUsers.logout()
   }
 </script>
 

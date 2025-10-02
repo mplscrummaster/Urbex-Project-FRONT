@@ -46,9 +46,10 @@ const router = createRouter({
       component: CurrentMap,
     },
     {
-      path: '/scenarioinfo',
-      name: 'scenario info',
+      path: '/scenario/:id',
+      name: 'scenario-info',
       component: ScenarioInfo,
+      props: true,
     },
     {
       path: '/leaderboard',

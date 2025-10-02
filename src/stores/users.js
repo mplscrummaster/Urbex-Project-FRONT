@@ -37,6 +37,7 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
+          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           this.router.replace('/scenario')
 
@@ -67,7 +68,7 @@ export const useUsersStore = defineStore('storeUsers', {
       if (requestDataUserValidation && requestDataPlayerValidation) this.router.replace('/scenario')
       else {
         console.log('Enregistrement impossible')
-        alert("Veuillez réessayer")
+        alert('Veuillez réessayer')
       }
     },
     async requestDataUser(dataUser) {
@@ -88,6 +89,7 @@ export const useUsersStore = defineStore('storeUsers', {
           this.currentIdUser = result.id
           this.tokenUser = result.token
           localStorage.setItem('tokenUser', this.tokenUser)
+          localStorage.setItem('auth_token', this.tokenUser)
           //  console.log(this.currentIdUser)
           return true
         } else {
@@ -106,7 +108,7 @@ export const useUsersStore = defineStore('storeUsers', {
           method: 'put',
           headers: {
             'Content-Type': 'application/json',
-            "Authorization": 'Bearer ' + this.tokenUser,
+            Authorization: 'Bearer ' + this.tokenUser,
           },
           body: JSON.stringify(dataPlayer),
         })
@@ -134,7 +136,7 @@ export const useUsersStore = defineStore('storeUsers', {
           method: 'get',
           headers: {
             'Content-Type': 'application/json',
-            "Authorization": 'Bearer ' + this.tokenUser,
+            Authorization: 'Bearer ' + this.tokenUser,
           },
         })
 
@@ -158,17 +160,17 @@ export const useUsersStore = defineStore('storeUsers', {
     async setMeInfo(username, bio, url_img_avatar) {
       try {
         const dataMe = {
-          "nickname": username,
-          "bio": bio,
-          "url_img_avatar": url_img_avatar,
+          nickname: username,
+          bio: bio,
+          url_img_avatar: url_img_avatar,
         }
         const responsePlayer = await fetch(`${Api_Link}/api/me/player`, {
           method: 'put',
           headers: {
             'Content-Type': 'application/json',
-            "Authorization": 'Bearer ' + this.tokenUser,
+            Authorization: 'Bearer ' + this.tokenUser,
           },
-          body: JSON.stringify(dataMe)
+          body: JSON.stringify(dataMe),
         })
 
         const result = await responsePlayer.json()
@@ -187,6 +189,34 @@ export const useUsersStore = defineStore('storeUsers', {
         return null
         // console.log('Impossible de contacter le serveur')
       }
-    }
+    },
+    // Hydrate store from existing localStorage token at app bootstrap
+    async hydrate() {
+      const token = localStorage.getItem('tokenUser')
+      if (!token) return
+      this.tokenUser = token
+      // Keep both keys aligned for API helper fallback
+      localStorage.setItem('auth_token', token)
+      try {
+        const me = await this.getMeInfo()
+        if (me && me.id) this.currentIdUser = me.id
+      } catch (e) {
+        console.warn('Hydrate failed, clearing token:', e.message)
+        this.tokenUser = null
+        localStorage.removeItem('tokenUser')
+        localStorage.removeItem('auth_token')
+      }
+    },
+    logout() {
+      this.tokenUser = null
+      this.currentIdUser = null
+      localStorage.removeItem('tokenUser')
+      localStorage.removeItem('auth_token')
+      try {
+        this.router.replace('/login')
+      } catch (e) {
+        console.warn('Router replace failed during logout:', e?.message)
+      }
+    },
   },
 })
