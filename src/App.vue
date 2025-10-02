@@ -60,7 +60,6 @@ main {
   display: flex;
   gap: 1rem;
   justify-content: space-around;
-  width: 100%;
 }
 
 .navbar a {
