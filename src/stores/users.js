@@ -64,7 +64,10 @@ export const useUsersStore = defineStore('storeUsers', {
       const requestDataPlayerValidation = await this.requestDataPlayer(dataPlayer)
 
       if (requestDataUserValidation && requestDataPlayerValidation) this.router.replace('/scenario')
-      else console.log('Enregistrement impossible')
+      else {
+        console.log('Enregistrement impossible')
+        alert("Veuillez réessayer")
+      }
     },
     async requestDataUser(dataUser) {
       try {
