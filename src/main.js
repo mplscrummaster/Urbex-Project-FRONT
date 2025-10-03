@@ -14,4 +14,11 @@ app.use(router)
 const usersStore = useUsersStore()
 usersStore.hydrate()
 
+// Global 401 handler: when API helper emits 'api:unauthorized', logout and redirect
+if (typeof window !== 'undefined') {
+	window.addEventListener('api:unauthorized', () => {
+		try { usersStore.logout() } catch { /* noop */ }
+	})
+}
+
 app.mount('#app')

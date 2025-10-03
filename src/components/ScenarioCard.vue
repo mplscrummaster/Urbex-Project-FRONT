@@ -25,8 +25,8 @@
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: progressPercent + '%' }" />
         </div>
-        <div class="progress-meta" v-if="scenario._preciseProgressLoaded">
-          {{ scenario._completedMissions }}/{{ scenario._totalMissions }} ({{ progressPercent }}%)
+        <div class="progress-meta" v-if="scenario.hasPreciseProgress">
+          {{ scenario.completedMissions }}/{{ scenario.totalMissions }} ({{ progressPercent }}%)
         </div>
         <div class="progress-meta" v-else>
           {{ progressPercent }}%

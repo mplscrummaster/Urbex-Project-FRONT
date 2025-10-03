@@ -6,37 +6,13 @@
 
   const email = ref('player05@example.com')
   const password = ref('password123')
+  const showPassword = ref(false)
 
-  const togglePassword = () => {
-    const passwordInput = document.getElementById('password')
-    const eyeIcon = document.getElementById('eyeIcon')
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text'
-      eyeIcon.innerHTML = `
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-      <circle cx="12" cy="12" r="3"></circle>
-    `
-    } else {
-      passwordInput.type = 'password'
-      eyeIcon.innerHTML = `
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-      <line x1="12" y1="12" x2="12" y2="12"></line>
-    `
-    }
-  }
+  const togglePassword = () => { showPassword.value = !showPassword.value }
 
-  // Écoute de la soumission du formulaire
   const loginUser = async () => {
-    // Vérification simple
-    if (!email.value || !password.value) {
-      alert('Veuillez remplir tous les champs !')
-      return
-    }
-
-    // Préparation des données à envoyer
-    storeUsers.loginUser(email.value, password.value)
-    email.value = ''
-    password.value = ''
+    if (!email.value || !password.value) { alert('Veuillez remplir tous les champs !'); return }
+    await storeUsers.loginUser(email.value, password.value)
   }
 </script>
 
@@ -46,14 +22,10 @@
       <input class="login_form__input" type="email" v-model="email" placeholder="Adresse e-mail" required />
     </div>
     <div class="login_form__group login_form__group--password">
-      <input class="login_form__input" type="password" v-model="password" placeholder="Mot de passe" required />
+      <input class="login_form__input" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="Mot de passe" required />
       <button type="button" class="login_form__toggle_eye" @click.prevent="togglePassword"
         aria-label="Afficher ou masquer le mot de passe">
-        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
-          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <line x1="12" y1="12" x2="12" y2="12"></line>
-        </svg>
+        <span class="material-symbols-outlined">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
       </button>
     </div>
     <button type="submit" class="login_form__submit">Se connecter</button>

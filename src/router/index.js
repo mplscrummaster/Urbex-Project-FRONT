@@ -2,16 +2,19 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import ListScenario from '@/views/Scenarios/ListScenario.vue'
-import ScenariosView from '@/views/ScenariosView.vue'
-import GlobalMap from '@/views/Maps/GlobalMap.vue'
-import CurrentMap from '@/views/Maps/CurrentMap.vue'
-import ScenarioInfo from '@/views/Scenarios/ScenarioInfo.vue'
+// import ScenarioOverviewView from '@/views/Scenarios/ScenarioOverviewView.vue'
+import GlobalMapView from '@/views/Maps/GlobalMap.vue'
+import CurrentMapView from '@/views/Maps/CurrentMap.vue'
+import ScenarioInfoView from '@/views/Scenarios/ScenarioInfo.vue'
 import Leaderboard from '@/views/LeaderboardView.vue'
-import LeaderboardGlobal from '@/components/LeaderBoard/LeaderboardGlobal.vue'
-import LeaderboardFriends from '@/components/LeaderBoard/LeaderboardFriends.vue'
-import LeaderboardWeek from '@/components/LeaderBoard/LeaderboardWeek.vue'
+import LeaderboardGlobal from '@/components/leaderboard/LeaderboardGlobal.vue'
+import LeaderboardFriends from '@/components/leaderboard/LeaderboardFriends.vue'
+import LeaderboardWeek from '@/components/leaderboard/LeaderboardWeek.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import RegisterView from '@/views/RegisterView.vue'
+
+// Simple auth check based on presence of token in localStorage
+const isAuthenticated = () => !!localStorage.getItem('tokenUser')
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,62 +36,63 @@ const router = createRouter({
     },
     {
       path: '/scenario',
-      name: 'scenario',
-      component: ListScenario,
+  name: 'scenarios-list',
+  component: ListScenario,
+      meta: { requiresAuth: true },
     },
+    // Legacy route retained if needed; comment out if not used
+    // { path: '/scenarios', name: 'scenarios-overview', component: ScenarioOverviewView, meta: { requiresAuth: true } },
+    { path: '/globalmap', redirect: '/global-map' },
     {
-      path: '/scenarios',
-      name: 'scenarios',
-      component: ScenariosView,
+      path: '/global-map',
+      name: 'map-global',
+  component: GlobalMapView,
+      meta: { requiresAuth: true },
     },
+    { path: '/currentmap', redirect: '/current-map' },
     {
-      path: '/globalmap',
-      name: 'global map',
-      component: GlobalMap,
-    },
-    {
-      path: '/currentmap',
-      name: 'current map',
-      component: CurrentMap,
+      path: '/current-map',
+      name: 'map-current',
+  component: CurrentMapView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/scenario/:id',
-      name: 'scenario-info',
-      component: ScenarioInfo,
+      name: 'scenario-detail',
+      component: ScenarioInfoView,
+      meta: { requiresAuth: true },
       props: true,
     },
     {
       path: '/leaderboard',
-      name: 'leader board',
+      name: 'leaderboard',
       component: Leaderboard,
+      meta: { requiresAuth: true },
       children: [
-        {
-          path: '',
-          component: LeaderboardGlobal,
-        },
-        {
-          path: '/LeaderboardGlobal',
-          name: 'global score',
-          component: LeaderboardGlobal,
-        },
-        {
-          path: '/LeaderboardWeeks',
-          name: 'week score',
-          component: LeaderboardWeek,
-        },
-        {
-          path: '/LeaderboardFriends',
-          name: 'friends score',
-          component: LeaderboardFriends,
-        },
+        { path: '', name: 'leaderboard-global', component: LeaderboardGlobal },
+        { path: 'global', redirect: { name: 'leaderboard-global' } },
+        { path: 'weeks', name: 'leaderboard-weeks', component: LeaderboardWeek },
+        { path: 'friends', name: 'leaderboard-friends', component: LeaderboardFriends },
       ],
     },
+    { path: '/userProfile', redirect: '/user-profile' },
     {
-      path: '/userProfile',
+      path: '/user-profile',
       name: 'user',
       component: UserProfile,
+      meta: { requiresAuth: true },
     },
   ],
+})
+
+// Global navigation guard for protected routes
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(r => r.meta?.requiresAuth)) {
+    if (!isAuthenticated()) {
+      return next({ name: 'login', query: { redirect: to.fullPath } })
+    }
+  }
+  next()
 })
 
 export default router
