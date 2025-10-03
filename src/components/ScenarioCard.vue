@@ -60,7 +60,7 @@ const statusClass = computed(() => {
   return 'is-not-started'
 })
 
-async function toggleBookmark() {
+const toggleBookmark = async () => {
   try {
     await store.toggleBookmark(props.scenario.id, {
       confirmCallback: async () => window.confirm('Confirmer la suppression du favori et de la progression ?'),
@@ -70,7 +70,7 @@ async function toggleBookmark() {
   }
 }
 
-function handleSelect() {
+const handleSelect = () => {
   if (!props.clickable) return
   emit('select', props.scenario)
 }

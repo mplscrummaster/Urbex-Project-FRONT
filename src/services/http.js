@@ -5,10 +5,10 @@ export const BASE_URL = (
 
 const getAuthToken = () => localStorage.getItem('tokenUser') || null
 
-export async function apiFetch(
+export const apiFetch = async (
   path,
   { method = 'GET', body, auth = false, headers: extraHeaders = {}, raw = false } = {},
-) {
+) => {
   const headers = { 'Content-Type': 'application/json', ...extraHeaders }
   if (auth) {
     const token = getAuthToken()

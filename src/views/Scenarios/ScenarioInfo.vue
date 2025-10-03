@@ -32,7 +32,7 @@ watch(scenarioId, (n) => {
   }
 })
 
-function goBack() {
+const goBack = () => {
   const from = route.query.from
   const commune = route.query.commune
   const zoom = route.query.zoom

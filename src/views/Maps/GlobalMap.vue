@@ -30,9 +30,9 @@ const publishedOnly = ref(true)
 // State for selected polygon
 const ui = reactive({ selectedId: null })
 
-function baseStyle() { return { color: '#64748b', weight: 1, opacity: 0.65, fillOpacity: 0.07, fillColor: '#1e293b' } }
-function hoverStyle() { return { color: '#93c5fd', weight: 2, opacity: 1, fillOpacity: 0.18, fillColor: '#334155' } }
-function selectedStyle() { return { color: '#fbbf24', weight: 3, opacity: 1, fillOpacity: 0.28, fillColor: '#f59e0b' } }
+const baseStyle = () => ({ color: '#64748b', weight: 1, opacity: 0.65, fillOpacity: 0.07, fillColor: '#1e293b' })
+const hoverStyle = () => ({ color: '#93c5fd', weight: 2, opacity: 1, fillOpacity: 0.18, fillColor: '#334155' })
+const selectedStyle = () => ({ color: '#fbbf24', weight: 3, opacity: 1, fillOpacity: 0.28, fillColor: '#f59e0b' })
 
 const polygonLayers = new Map() // id -> layer
 const communeMarkers = new Map() // id -> marker (clustered)
@@ -41,14 +41,14 @@ const errorMsg = ref('')
 const progress = ref(0)
 const total = ref(0)
 
-function applyCurrentStyle(id) {
+const applyCurrentStyle = (id) => {
   const layer = polygonLayers.get(id)
   if (!layer) return
   const style = id === ui.selectedId ? selectedStyle() : baseStyle()
   layer.setStyle(style)
 }
 
-function attachFeature(layer, id) {
+const attachFeature = (layer, id) => {
   layer.on('mouseover', () => { if (id !== ui.selectedId) layer.setStyle(hoverStyle()) })
   layer.on('mouseout', () => { if (id !== ui.selectedId) layer.setStyle(baseStyle()) })
   layer.on('click', () => {
@@ -57,7 +57,7 @@ function attachFeature(layer, id) {
   })
 }
 
-function selectCommune(id) {
+const selectCommune = (id) => {
   if (ui.selectedId === id) {
     ui.selectedId = null
     applyCurrentStyle(id)
@@ -75,7 +75,7 @@ function selectCommune(id) {
   prepareDrawerForCommune(id)
 }
 
-function prepareDrawerForCommune(id) {
+const prepareDrawerForCommune = (id) => {
   ScenariosAPI.listScenarioCommunes({ published: publishedOnly.value }).then(rows => {
     const list = rows.filter(r => r.commune_id === id).map(r => ({
       id: r.scenario_id,
@@ -92,7 +92,7 @@ function prepareDrawerForCommune(id) {
   }).catch(()=>{})
 }
 
-async function loadScenarioMarkers() {
+const loadScenarioMarkers = async () => {
   // Cleanup previous layer and index
   scenarioMarkersLayer.clearLayers()
   communeMarkers.clear()
@@ -139,7 +139,7 @@ async function loadScenarioMarkers() {
   }
 }
 
-async function init() {
+const init = async () => {
   const { map: m } = createBaseMap(mapEl.value, {
     center: [50.6402809, 4.6667145],
     zoom: 8,
@@ -189,7 +189,7 @@ async function init() {
       const tempGroup = L.featureGroup()
       const chunkSize = 60
       let i = 0
-      async function step() {
+      const step = async () => {
         const end = Math.min(i + chunkSize, feats.length)
         for (; i < end; i++) {
           const f = feats[i]

@@ -1,12 +1,12 @@
 import { ref, onUnmounted } from 'vue'
 
-export function useGeolocation(options = { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }) {
+export const useGeolocation = (options = { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }) => {
   const coords = ref({ latitude: null, longitude: null, accuracy: null })
   const error = ref('')
   const locating = ref(false)
   let watchId = null
 
-  function start() {
+  const start = () => {
     if (!navigator.geolocation) {
       error.value = 'Géolocalisation non supportée.'
       return
@@ -28,7 +28,7 @@ export function useGeolocation(options = { enableHighAccuracy: true, maximumAge:
     )
   }
 
-  function once() {
+  const once = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
         error.value = 'Géolocalisation non supportée.'
@@ -53,7 +53,7 @@ export function useGeolocation(options = { enableHighAccuracy: true, maximumAge:
     })
   }
 
-  function stop() {
+  const stop = () => {
     if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId)
     watchId = null
   }

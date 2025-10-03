@@ -37,7 +37,7 @@
     clearInterval(animIntervalId);
   });
 
-  function toggleGlitch() {
+  const toggleGlitch = () => {
     isGlitch.value = !isGlitch.value;
   }
 </script>
