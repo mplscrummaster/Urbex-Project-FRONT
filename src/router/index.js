@@ -36,8 +36,8 @@ const router = createRouter({
     },
     {
       path: '/scenario',
-  name: 'scenarios-list',
-  component: ListScenario,
+      name: 'scenarios-list',
+      component: ListScenario,
       meta: { requiresAuth: true },
     },
     // Legacy route retained if needed; comment out if not used
@@ -46,14 +46,14 @@ const router = createRouter({
     {
       path: '/global-map',
       name: 'map-global',
-  component: GlobalMapView,
+      component: GlobalMapView,
       meta: { requiresAuth: true },
     },
     { path: '/currentmap', redirect: '/current-map' },
     {
       path: '/current-map',
       name: 'map-current',
-  component: CurrentMapView,
+      component: CurrentMapView,
       meta: { requiresAuth: true },
     },
     {
@@ -87,7 +87,7 @@ const router = createRouter({
 
 // Global navigation guard for protected routes
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(r => r.meta?.requiresAuth)) {
+  if (to.matched.some((r) => r.meta?.requiresAuth)) {
     if (!isAuthenticated()) {
       return next({ name: 'login', query: { redirect: to.fullPath } })
     }

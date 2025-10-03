@@ -8,9 +8,19 @@ export const CommunesAPI = {
     const query = qs.toString() ? `?${qs.toString()}` : ''
     return apiFetch(`/communes${query}`)
   },
-  get(id) { return apiFetch(`/communes/${id}`) },
-  shape(id) { return apiFetch(`/communes/${id}/shape`) },
-  shapesAll() { return apiFetch('/communes/shapes/all') },
-  shapesFeatureCollection() { return apiFetch('/communes/shapes.geojson') },
-  byScenario(id) { return apiFetch(`/scenarios/${id}/communes`) },
+  get(id) {
+    return apiFetch(`/communes/${id}`)
+  },
+  shape(id) {
+    return apiFetch(`/communes/${id}/shape`)
+  },
+  shapesAll() {
+    return apiFetch('/communes/shapes/all')
+  },
+  shapesFeatureCollection() {
+    return apiFetch('/communes/shapes.geojson')
+  },
+  byScenario(id) {
+    return apiFetch(`/scenarios/${id}/communes`)
+  },
 }

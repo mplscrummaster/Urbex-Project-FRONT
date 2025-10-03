@@ -48,7 +48,7 @@ export const useScenariosStore = defineStore('scenarios', {
     },
     async enrichProgress(concurrency = 3) {
       if (this.progressLoading) return
-  const targets = this.items.filter((s) => !s.hasPreciseProgress)
+      const targets = this.items.filter((s) => !s.hasPreciseProgress)
       if (!targets.length) return
       this.progressLoading = true
       const queue = [...targets]
