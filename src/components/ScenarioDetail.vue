@@ -58,7 +58,7 @@ const loadScenario = async () => {
     openMissions.value = {}
     missionAnswers.value = {}
     // Load progress (adds lock states)
-    await loadProgress(true)
+  await loadProgress()
     if (scenarioStatus.value === 'not_started') {
       showIntro.value = true
     } else {
@@ -74,7 +74,7 @@ const loadScenario = async () => {
 
 onMounted(loadScenario)
 // Start geolocation watcher alongside data load
-onMounted(startGeolocation)
+onMounted(() => startGeolocation())
 
 // Watch route id changes to reload scenario data
 watch(routeId, (newVal, oldVal) => {
@@ -168,7 +168,7 @@ const startScenario = async () => {
     starting.value = true
   await ScenariosAPI.start(routeId.value)
     // pas besoin de re-fetch complet tout de suite; recharger surtout la progression
-    await loadProgress(true)
+  await loadProgress()
   } catch (e) {
     startError.value = e.message
   } finally {
@@ -181,7 +181,7 @@ const finishScenario = async () => {
   try {
     finishing.value = true
   await ScenariosAPI.complete(routeId.value)
-    await loadProgress(true)
+  await loadProgress()
   } catch (e) {
     finishError.value = e.message
   } finally {
@@ -214,7 +214,7 @@ const submitMission = async (m) => {
   }
 }
 // Charger/rafraîchir la progression utilisateur
-const loadProgress = async (force = false) => {
+const loadProgress = async () => {
   try {
   const prog = await ScenariosAPI.getProgress(routeId.value)
     if (full.value) {
@@ -241,9 +241,8 @@ const loadProgress = async (force = false) => {
         completedMissionIds: completedIds,
       }
     }
-  } catch (e) {
-    if (force) console.warn('Impossible de charger la progression:', e.message)
-    // laisser sans progression -> fallback not_started
+  } catch {
+    // laisser sans progression -> fallback not_started (silent)
   }
 }
 

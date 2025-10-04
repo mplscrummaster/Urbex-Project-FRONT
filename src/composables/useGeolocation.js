@@ -1,6 +1,8 @@
 import { ref, onUnmounted } from 'vue'
 
-export const useGeolocation = (options = { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }) => {
+export const useGeolocation = (
+  options = { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 },
+) => {
   const coords = ref({ latitude: null, longitude: null, accuracy: null })
   const error = ref('')
   const locating = ref(false)
@@ -24,7 +26,7 @@ export const useGeolocation = (options = { enableHighAccuracy: true, maximumAge:
         locating.value = false
         error.value = err?.message || 'Échec localisation'
       },
-      options
+      options,
     )
   }
 
@@ -48,7 +50,7 @@ export const useGeolocation = (options = { enableHighAccuracy: true, maximumAge:
           error.value = err?.message || 'Échec géolocalisation'
           reject(err)
         },
-        options
+        options,
       )
     })
   }

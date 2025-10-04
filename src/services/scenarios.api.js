@@ -25,14 +25,11 @@ export const ScenariosAPI = {
   unbookmark(id) {
     return apiFetch(`/scenarios/${id}/bookmark`, { method: 'DELETE', auth: true })
   },
-  listPins({ published } = {}) {
-    const qs = new URLSearchParams()
-    if (published) qs.set('published', '1')
-    const query = qs.toString() ? `?${qs.toString()}` : ''
-    return apiFetch(`/scenarios/communes${query}`)
+  listPins() {
+    return apiFetch(`/scenarios/communes`)
   },
-  listScenarioCommunes(options = {}) {
-    return this.listPins(options)
+  listScenarioCommunes() {
+    return this.listPins()
   },
 }
 

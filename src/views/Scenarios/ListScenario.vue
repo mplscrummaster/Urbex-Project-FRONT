@@ -82,7 +82,10 @@ const scenarioClicked = (s) => {
     flex-direction: column;
     gap: 12px;
     background-color: $color-bg-alt;
-    padding-block: 1rem 5rem;
+    padding: 1rem clamp(12px, 4vw, 24px) 5rem;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 960px;
 
     &__filters {
       display: flex;

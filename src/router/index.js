@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import ListScenario from '@/views/Scenarios/ListScenario.vue'
-// import ScenarioOverviewView from '@/views/Scenarios/ScenarioOverviewView.vue'
 import GlobalMapView from '@/views/Maps/GlobalMap.vue'
 import CurrentMapView from '@/views/Maps/CurrentMap.vue'
 import ScenarioInfoView from '@/views/Scenarios/ScenarioInfo.vue'
@@ -23,6 +22,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      beforeEnter: () => (isAuthenticated() ? { name: 'map-current' } : true),
     },
     {
       path: '/login',
@@ -40,8 +40,7 @@ const router = createRouter({
       component: ListScenario,
       meta: { requiresAuth: true },
     },
-    // Legacy route retained if needed; comment out if not used
-    // { path: '/scenarios', name: 'scenarios-overview', component: ScenarioOverviewView, meta: { requiresAuth: true } },
+
     { path: '/globalmap', redirect: '/global-map' },
     {
       path: '/global-map',

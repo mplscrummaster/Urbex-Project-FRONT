@@ -1,6 +1,6 @@
 <script setup>
 // Inlined ExploreMap for clarity: GlobalMap is a full view with map + drawer
-import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
+import { onMounted, onUnmounted, ref, reactive } from 'vue'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -24,8 +24,6 @@ const drawerOpen = ref(false)
 const drawerScenarios = ref([])
 const router = useRouter()
 const route = useRoute()
-// Filter: show only published scenarios by default
-const publishedOnly = ref(true)
 
 // State for selected polygon
 const ui = reactive({ selectedId: null })
@@ -76,7 +74,7 @@ const selectCommune = (id) => {
 }
 
 const prepareDrawerForCommune = (id) => {
-  ScenariosAPI.listScenarioCommunes({ published: publishedOnly.value }).then(rows => {
+  ScenariosAPI.listScenarioCommunes().then(rows => {
     const list = rows.filter(r => r.commune_id === id).map(r => ({
       id: r.scenario_id,
       title: r.title,
@@ -91,13 +89,12 @@ const prepareDrawerForCommune = (id) => {
     if (!scenariosStore.items.length) scenariosStore.fetchMine().catch(()=>{})
   }).catch(()=>{})
 }
-
 const loadScenarioMarkers = async () => {
   // Cleanup previous layer and index
   scenarioMarkersLayer.clearLayers()
   communeMarkers.clear()
   try {
-    const links = await ScenariosAPI.listScenarioCommunes({ published: publishedOnly.value })
+    const links = await ScenariosAPI.listScenarioCommunes()
     const byScenario = new Map()
     const byCommune = new Map()
     for (const row of links) {
@@ -123,8 +120,7 @@ const loadScenarioMarkers = async () => {
       const digits = displayCount.length
       const size = digits === 1 ? 16 : (digits === 2 ? 20 : 22)
       const fontSize = digits === 1 ? 10 : (digits === 2 ? 11 : 12)
-      const hasPublished = commune.scenarios.some(s => s.published)
-      const classMod = hasPublished ? 'published' : 'draft'
+      const classMod = 'published'
       const iconHtml = `<div class="scenario-dot ${classMod}" style="width:${size}px;height:${size}px;font-size:${fontSize}px;line-height:${size}px;">${displayCount}</div>`
       const icon = L.divIcon({ className: 'scenario-dot-wrapper', html: iconHtml, iconSize: [size, size], iconAnchor: [size/2, size/2] })
       try {
@@ -134,8 +130,8 @@ const loadScenarioMarkers = async () => {
         communeMarkers.set(commune.id, marker)
       } catch { /* ignore marker errors */ }
     }
-  } catch (e2) {
-    console.warn('[scenarios] load failed', e2)
+  } catch {
+    // silently ignore scenario marker load errors
   }
 }
 
@@ -231,7 +227,7 @@ const init = async () => {
       }
     } catch (e) {
       errorMsg.value = e.message || 'Erreur chargement géométries'
-      console.error('[communes] featurecollection error', e)
+      // retain error state without console noise
     } finally {
       loading.value = false
     }
@@ -239,20 +235,14 @@ const init = async () => {
 }
 
 onMounted(() => { init() })
-// Refresh markers when filter toggles
-watch(publishedOnly, () => { loadScenarioMarkers() })
+// No filter: load once at init or when needed
 onUnmounted(() => { if (map) map.remove() })
 </script>
 
 <template>
   <div class="explore-layout">
     <div ref="mapEl" class="explore-map" />
-    <div class="map-controls">
-      <label class="toggle">
-        <input type="checkbox" v-model="publishedOnly" />
-        <span>Scénarios publiés uniquement</span>
-      </label>
-    </div>
+    
     <div class="shape-progress" v-if="loading">
       <div class="label">Chargement des communes</div>
       <div class="bar-wrapper"><div class="bar" :style="{ width: total ? ((progress/total)*100)+'%' : '0%' }"></div></div>

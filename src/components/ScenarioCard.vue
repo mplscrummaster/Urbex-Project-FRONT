@@ -36,15 +36,19 @@
   </div>
 </template>
 <script setup>
-import { computed } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
+import { useRouter } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 const props = defineProps({
   scenario: { type: Object, required: true },
   compact: { type: Boolean, default: false },
   showAuthor: { type: Boolean, default: true },
   clickable: { type: Boolean, default: true },
+  // When true, the card will navigate to detail on click (besides emitting 'select')
+  autoNavigate: { type: Boolean, default: true },
 })
 const emit = defineEmits(['select'])
+const router = useRouter()
 const store = useScenariosStore()
 
 const progressPercent = computed(() => {
@@ -72,7 +76,12 @@ const toggleBookmark = async () => {
 
 const handleSelect = () => {
   if (!props.clickable) return
+  const hasListener = !!getCurrentInstance()?.vnode?.props?.onSelect
   emit('select', props.scenario)
+  if (props.autoNavigate && !hasListener && props.scenario?.id != null) {
+    // Navigate to scenario detail as a safe default
+    router.push({ name: 'scenario-detail', params: { id: props.scenario.id } }).catch(() => {})
+  }
 }
 </script>
 <style scoped lang="scss">

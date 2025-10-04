@@ -10,10 +10,9 @@
     const baseStore = useBaseStore();
     const title = ref('App');
    
-   const count = () => {
-      console.log("count")
-      baseStore.incrementCounter();
-    }
+  const count = () => {
+    baseStore.incrementCounter();
+   }
    
     const modifyTitle = (event) => {
       title.value = event.target.value;
@@ -24,7 +23,7 @@
 <template>
   <main>
     <NavbarItems />
-    <RouterView class="content" />
+    <RouterView />
     <BarUserNavigation v-show="storeUsers.tokenUser != null" />
   </main>
 </template>
@@ -40,10 +39,7 @@ main {
   min-height: 100dvh;
 }
 
-.content {
-  padding-inline: 2rem;
-  padding-bottom: calc(70px + env(safe-area-inset-bottom));
-}
+/* per-view spacing: handled inside each view to avoid global margins */
 
 .navbar {
   background: $color-surface;
