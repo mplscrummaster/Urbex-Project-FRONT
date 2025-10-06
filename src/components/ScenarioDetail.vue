@@ -345,7 +345,9 @@ watch(routeId, (newVal, oldVal) => { if (newVal !== oldVal) loadScenario() })
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '@/styles/theme.scss' as *;
+
 /* General wrapper */
 .scenarioWrapper {
   padding: 0.4rem 0.5rem 0.8rem;
@@ -379,22 +381,17 @@ watch(routeId, (newVal, oldVal) => { if (newVal !== oldVal) loadScenario() })
   align-items: center;
 }
 
-.badge {
-  background: #334155;
-  color: #cbd5e1;
-  padding: 0.1rem 0.35rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-}
 
 /* Card base style */
 .introCard,
 .outroCard,
-.missionCard {
+.missionCard,
+.scenarioHeader {
   background: rgba(15, 17, 26, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   margin: 0.5rem 0;
+  padding: 0.5rem;
   overflow: hidden;
 }
 
@@ -536,6 +533,38 @@ input[type="text"]:disabled {
   padding: 0.8rem;
   font-size: 0.95rem;
   color: #d1d5db;
+}
+
+.bookmark-btn {
+  background: rgba(0, 0, 0, .25);
+  border: 1px solid $color-border;
+  border-radius: 8px;
+  padding: .3rem .5rem .25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .25s, border-color .25s;
+}
+
+.bookmark-btn:hover {
+  background: $color-surface-alt;
+  border-color: $color-accent;
+}
+
+.bookmark-btn .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+  color: $color-text-dim;
+  transition: color .25s;
+}
+
+.bookmark-btn.active .material-symbols-outlined {
+  color: $color-accent;
+}
+
+.bookmark-btn .material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1;
 }
 
 /* Transitions */
