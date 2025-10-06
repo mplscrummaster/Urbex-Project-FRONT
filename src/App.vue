@@ -1,23 +1,22 @@
 <script setup>
-  import NavbarItems from './components/NavbarItems.vue'
-  import BarUserNavigation from './components/NavbarUserNavigation.vue'
-  import { useUsersStore } from '@/stores/users'
-  import '/src/assets/main.scss'
-  const storeUsers = useUsersStore()
-  /*  import { useBaseStore } from "./stores/base.js";
-    import { ref } from "vue";
-   
-    const baseStore = useBaseStore();
-    const title = ref('App');
-   
-  const count = () => {
-    baseStore.incrementCounter();
-   }
-   
-    const modifyTitle = (event) => {
-      title.value = event.target.value;
-    }
-  */
+import BarUserNavigation from './components/NavbarUserNavigation.vue'
+import { useUsersStore } from '@/stores/users'
+import '/src/assets/main.scss'
+const storeUsers = useUsersStore()
+/*  import { useBaseStore } from "./stores/base.js";
+  import { ref } from "vue";
+ 
+  const baseStore = useBaseStore();
+  const title = ref('App');
+ 
+const count = () => {
+  baseStore.incrementCounter();
+ }
+ 
+  const modifyTitle = (event) => {
+    title.value = event.target.value;
+  }
+*/
 </script>
 
 <template>
@@ -31,7 +30,9 @@
 <style lang="scss">
 @use '@/styles/theme.scss' as *;
 
-body { margin: 0; }
+body {
+  margin: 0;
+}
 
 main {
   display: flex;
@@ -67,5 +68,7 @@ main {
   }
 }
 
-.hidden { display: none; }
+.hidden {
+  display: none;
+}
 </style>
