@@ -1,6 +1,6 @@
 // Shared HTTP helper for API modules
 export const BASE_URL = (
-  import.meta?.env?.VITE_API_BASE_URL || ' https://michonmaximilien.dev/api'
+  import.meta?.env?.VITE_API_BASE_URL || 'https://michonmaximilien.dev/urbex-api/api'
 ).replace(/\/$/, '')
 
 const getAuthToken = () => localStorage.getItem('tokenUser') || null
