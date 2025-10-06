@@ -18,3 +18,8 @@ main {
 .content {
   margin-block: 4rem;
 }
+
+/* Utility: add bottom padding so content isn't covered by the fixed bottom tab bar */
+.with-tabbar-padding {
+  padding-bottom: calc(var(--user-bar-h) + env(safe-area-inset-bottom));
+}

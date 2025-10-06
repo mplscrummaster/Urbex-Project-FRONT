@@ -5,7 +5,7 @@
         <div class="handle" />
   <button class="close" @click.stop="closeDrawer" @touchstart.stop.prevent="closeDrawer" aria-label="Fermer">×</button>
       </div>
-      <div class="content" ref="contentEl">
+      <div class="drawer-content" ref="contentEl">
         <slot />
       </div>
     </div>
@@ -59,15 +59,16 @@ const closeDrawer = () => {
 }
 </script>
 <style scoped lang="scss">
-.drawer { position:fixed; left:0; right:0; bottom:0; background:#0f1a22f2; backdrop-filter:blur(10px); border-top-left-radius:22px; border-top-right-radius:22px; box-shadow:0 -4px 18px -4px rgba(0,0,0,0.55); display:flex; flex-direction:column; max-height:92dvh; z-index:4000; animation:popIn .35s cubic-bezier(.22,.99,.34,1.01); }
-.handle-area { position:relative; padding:10px 40px 6px; display:flex; align-items:center; justify-content:center; }
+.drawer { position:fixed; left:0; right:0; bottom:var(--drawer-bottom-offset, 0px); background:#0f1a22f2; backdrop-filter:blur(10px); border-top-left-radius:22px; border-top-right-radius:22px; box-shadow:0 -4px 18px -4px rgba(0,0,0,0.55); display:flex; flex-direction:column; max-height:92dvh; z-index:4000; animation:popIn .35s cubic-bezier(.22,.99,.34,1.01); }
+.handle-area { position:relative; padding:6px 20px 4px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
 .handle { width:52px; height:5px; border-radius:3px; background:#334250; opacity:.9; }
 .close { position:absolute; top:4px; right:6px; background:none; border:none; font-size:26px; color:#94a3b8; cursor:pointer; line-height:1; padding:8px 12px; border-radius:12px; touch-action:manipulation; }
 .close:hover { background:#1e293b; color:#e2e8f0; }
-.content { overflow-y:auto; padding:8px 16px 28px; display:flex; flex-direction:column; gap:12px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
-.is-peek { height:28dvh; }
-.is-mid { height:55dvh; }
-.is-full { height:88dvh; }
+.drawer-content { flex:1 1 auto; min-height:0; overflow-y:auto; margin: 2rem 12px 10px; display:flex; flex-direction:column; gap:8px; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; border-radius: 14px;}
+.drawer-content > * { margin: 0; }
+.is-peek { height:26dvh; }
+.is-mid { height:56dvh; }
+.is-full { height:90dvh; }
 .drawer-fade-enter-active,.drawer-fade-leave-active { transition:opacity .25s ease; }
 .drawer-fade-enter-from,.drawer-fade-leave-to { opacity:0; }
 @keyframes popIn { from { transform:translateY(40px); opacity:0; } to { transform:translateY(0); opacity:1; } }

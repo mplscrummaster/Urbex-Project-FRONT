@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, onBeforeUnmount, ref, computed, watch, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 import { ScenariosAPI, MissionsAPI } from '@/services/api'
 
 const route = useRoute()
+const router = useRouter()
 const scenariosStore = useScenariosStore()
 // Reactive scenario id based on route param
 const routeId = computed(() => Number(route.params.id))
@@ -46,6 +47,26 @@ const toggleMission = (missionId) => {
   if (!currently) openMissions.value[missionId] = true
 }
 
+// Open a mission from route query (?mission=ID), returns true if opened
+const openMissionFromQuery = async () => {
+  const q = route.query
+  const raw = q?.mission
+  if (raw == null) return false
+  const mid = Number(raw)
+  if (!Number.isFinite(mid)) return false
+  const m = (full.value?.missions || []).find(x => Number(x.id) === mid)
+  if (!m) return false
+  // allow opening even if completed; block if locked
+  if (missionLocked(m) && !isCompleted(m.id)) return false
+  closeAll()
+  openMissions.value[m.id] = true
+  showIntro.value = false
+  showOutro.value = false
+  await nextTick()
+  try { document.getElementById(`mission-${m.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }) } catch { /* noop */ }
+  return true
+}
+
 const loadScenario = async () => {
   loading.value = true
   error.value = null
@@ -59,11 +80,15 @@ const loadScenario = async () => {
     missionAnswers.value = {}
     // Load progress (adds lock states)
   await loadProgress()
-    if (scenarioStatus.value === 'not_started') {
-      showIntro.value = true
-    } else {
-      const first = (full.value?.missions || []).find(m => !missionLocked(m))
-      if (first) openMissions.value[first.id] = true
+    // Try open targeted mission from query first
+    const opened = await openMissionFromQuery()
+    if (!opened) {
+      if (scenarioStatus.value === 'not_started') {
+        showIntro.value = true
+      } else {
+        const first = (full.value?.missions || []).find(m => !missionLocked(m))
+        if (first) openMissions.value[first.id] = true
+      }
     }
   } catch (e) {
     error.value = e.message
@@ -83,8 +108,20 @@ watch(routeId, (newVal, oldVal) => {
   }
 })
 
+// Watch for query mission change to open the requested mission
+watch(() => route.query?.mission, async (nv, ov) => {
+  if (nv !== ov && full.value) {
+    await openMissionFromQuery()
+  }
+})
+
 const missions = computed(() => (full.value?.missions || []).slice().sort((a, b) => a.position - b.position))
-const isCompleted = (missionId) => full.value?.progress?.completedMissionIds?.includes(missionId)
+// Normalize completed mission IDs to strings for robust comparison
+const completedIdSet = computed(() => {
+  const ids = full.value?.progress?.completedMissionIds || []
+  return new Set(ids.map((v) => String(v)))
+})
+const isCompleted = (missionId) => completedIdSet.value.has(String(missionId))
 // Answers state
 const missionAnswers = ref({})
 // Start/finish scenario action state holders
@@ -115,19 +152,52 @@ const distanceMeters = (lat1, lon1, lat2, lon2) => {
   return 2*R*Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
 }
 const missionInRange = (m) => { if (m.latitude==null || m.longitude==null) return true; return distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude) <= RANGE_METERS }
-const missionDistance = (m) => { if (m.latitude==null || m.longitude==null) return null; const d=distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude); return Number.isFinite(d)?Math.round(d):null }
+const missionDistance = (m) => { if (m.latitude==null || m.longitude==null) return null; const d=distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude); return Number.isFinite(d)?d:null }
+const formatDistance = (meters) => {
+  if (meters == null || !Number.isFinite(meters)) return null
+  const d = Math.max(0, meters)
+  if (d >= 1000) {
+    const km = d / 1000
+    // For >= 10 km, round to integer; else one decimal. Use fr-FR formatting and max 1 decimal.
+    const value = km >= 10 ? Math.round(km) : Math.round(km * 10) / 10
+    return `${value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} km`
+  }
+  if (d > 100) {
+    const tens = Math.round(d / 10) * 10
+    return `${tens.toLocaleString('fr-FR')} m`
+  }
+  return `${Math.round(d).toLocaleString('fr-FR')} m`
+}
+const missionDistanceText = (m) => {
+  const d = missionDistance(m)
+  const label = formatDistance(d)
+  return label || ''
+}
 // Initialize a mission answer entry lazily
 const initMissionAnswer = (mid) => {
   if (!missionAnswers.value[mid]) {
     missionAnswers.value[mid] = { value: '', status: 'idle', error: null }
   }
 }
-// Mission lock helpers
+// Mission lock helpers (with robust fallbacks)
 const missionLocked = (m) => {
   if (!m) return true
+  // If scenario is not started, keep everything locked
   if (scenarioStatus.value === 'not_started') return true
+  // Completed missions are never locked
   if (isCompleted(m.id)) return false
-  return !!m.locked
+  // If backend provided explicit lock state, respect it
+  if (typeof m.locked === 'boolean') return m.locked
+  // Fallback 1: prerequisites list -> require all to be completed
+  if (Array.isArray(m.prerequisites) && m.prerequisites.length) {
+    return !m.prerequisites.every((pid) => completedIdSet.value.has(String(pid)))
+  }
+  // Fallback 2: sequential by position -> lock until all previous positions completed
+  const prev = (missions.value || []).filter((x) => x.position != null && m.position != null && x.position < m.position)
+  if (prev.length) {
+    return !prev.every((x) => isCompleted(x.id))
+  }
+  return false
 }
 const missionLockReason = (m) => {
   if (scenarioStatus.value === 'not_started') return 'Commencez le scénario pour accéder aux missions'
@@ -169,6 +239,8 @@ const startScenario = async () => {
   await ScenariosAPI.start(routeId.value)
     // pas besoin de re-fetch complet tout de suite; recharger surtout la progression
   await loadProgress()
+    // Mémoriser ce scénario comme "en cours" côté client
+    try { localStorage.setItem('currentScenarioId', String(routeId.value)) } catch { /* ignore */ }
   } catch (e) {
     startError.value = e.message
   } finally {
@@ -187,6 +259,30 @@ const finishScenario = async () => {
   } finally {
     finishing.value = false
   }
+}
+// CTA play/replay from header
+const playCtaLabel = computed(() => {
+  if (scenarioStatus.value === 'completed') return 'Rejouer'
+  if (scenarioStatus.value === 'started') return 'Reprendre'
+  return 'Jouer'
+})
+const onPlayClick = async () => {
+  const id = routeId.value
+  if (!id) return
+  if (scenarioStatus.value === 'completed') {
+    const ok = window.confirm('Rejouer ce scénario va supprimer toute votre progression pour celui-ci. Continuer ?')
+    if (!ok) return
+    try {
+      await ScenariosAPI.unbookmark(id)
+      await ScenariosAPI.start(id)
+      await loadProgress()
+    } catch (e) {
+      // Optionally surface error
+      try { console.error(e) } catch { /* ignore */ }
+    }
+  }
+  try { localStorage.setItem('currentScenarioId', String(id)) } catch { /* ignore */ }
+  router.push({ name: 'map-current', query: { scenario: id } }).catch(() => {})
 }
 const submitMission = async (m) => {
   initMissionAnswer(m.id)
@@ -207,6 +303,8 @@ const submitMission = async (m) => {
   try {
     await MissionsAPI.complete(m.id)
     await loadProgress(true)
+    // If this mission just became completed, keep it open for review
+    openMissions.value[m.id] = true
     entry.status = 'ok'
   } catch (e) {
     entry.status = 'idle'
@@ -220,21 +318,25 @@ const loadProgress = async () => {
     if (full.value) {
       // Some progress endpoints return missions with `_id_mission` instead of `id`
       const completedIds = (prog.missions || [])
-        .filter(m => m.completed)
-        .map(m => (m.id != null ? m.id : m._id_mission))
-        .filter(v => v != null)
+        .filter((m) => m.completed)
+        .map((m) => (m.id != null ? m.id : m._id_mission))
+        .filter((v) => v != null)
+        .map((v) => String(v))
       // Merge lock/prerequisite state
       const byId = {}
-      for (const pm of (prog.missions || [])) {
+      for (const pm of prog.missions || []) {
         const mid = pm.id != null ? pm.id : pm._id_mission
-        if (mid != null) byId[mid] = { locked: !!pm.locked, prerequisites: pm.prerequisites || [] }
+        if (mid != null) byId[String(mid)] = { locked: !!pm.locked, prerequisites: pm.prerequisites || [] }
       }
       if (Array.isArray(full.value.missions)) {
-        full.value.missions = full.value.missions.map(m => ({
-          ...m,
-          locked: byId[m.id]?.locked || false,
-          prerequisites: byId[m.id]?.prerequisites || []
-        }))
+        full.value.missions = full.value.missions.map((m) => {
+          const info = byId[String(m.id)] || {}
+          return {
+            ...m,
+            locked: info.locked || false,
+            prerequisites: info.prerequisites || [],
+          }
+        })
       }
       full.value.progress = {
         scenario: prog.progress,
@@ -246,14 +348,40 @@ const loadProgress = async () => {
   }
 }
 
-const scenarioStatus = computed(() => full.value?.progress?.scenario?.status || 'not_started')
+// Derive scenario status if backend status is missing (no call to missionLocked to avoid cycles)
+const scenarioStatus = computed(() => {
+  const s = full.value?.progress?.scenario?.status
+  if (s) return s
+  const list = full.value?.missions || []
+  if (!list.length) return 'not_started'
+  // all completed -> completed
+  if (list.every((m) => completedIdSet.value.has(String(m.id)))) return 'completed'
+  // any completion -> started
+  if (completedIdSet.value.size > 0) return 'started'
+  // infer unlocked ignoring scenario gate
+  const isUnlockedWithoutGate = (m) => {
+    if (!m) return false
+    if (isCompleted(m.id)) return true
+    if (typeof m.locked === 'boolean') return !m.locked
+    if (Array.isArray(m.prerequisites) && m.prerequisites.length) {
+      return m.prerequisites.every((pid) => completedIdSet.value.has(String(pid)))
+    }
+    // sequential fallback by position
+    if (m.position != null) {
+      const prev = list.filter((x) => x.position != null && x.position < m.position)
+      return prev.every((x) => completedIdSet.value.has(String(x.id)))
+    }
+    return true
+  }
+  if (list.some((m) => isUnlockedWithoutGate(m))) return 'started'
+  return 'not_started'
+})
 // All missions completed?
 const allMissionsCompleted = computed(() => {
   if (!full.value) return false
   const list = full.value.missions || []
   if (!list.length) return false
-  const completedIds = full.value.progress?.completedMissionIds || []
-  return list.every(m => completedIds.includes(m.id))
+  return list.every((m) => completedIdSet.value.has(String(m.id)))
 })
 // Outro unlocked if all missions completed or scenario already marked completed
 const outroUnlocked = computed(() => allMissionsCompleted.value || scenarioStatus.value === 'completed')
@@ -273,6 +401,10 @@ onBeforeUnmount(stopGeolocation)
           <span class="scenario__status">Statut: {{ scenarioStatus }}</span>
           <span v-if="full.progress?.scenario.bookmarked" class="scenario__badge">Bookmark</span>
         </div>
+        <button class="play-btn" @click="onPlayClick" :title="playCtaLabel + ' sur la carte'">
+          <span class="material-symbols-outlined">play_arrow</span>
+          <span class="label">{{ playCtaLabel }}</span>
+        </button>
         <button class="bookmark-btn" :class="{ active: full.progress?.scenario.bookmarked }" :disabled="bookmarking" @click="toggleBookmarkDetail" :title="full.progress?.scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
           <span class="material-symbols-outlined" :class="{ fill: full.progress?.scenario.bookmarked }">{{ full.progress?.scenario.bookmarked ? 'bookmark' : 'bookmark_add' }}</span>
         </button>
@@ -281,11 +413,19 @@ onBeforeUnmount(stopGeolocation)
 
       <!-- INTRO -->
       <div class="card intro-card" :class="{ started: scenarioStatus !== 'not_started' }">
-        <div v-if="scenarioStatus !== 'not_started'" class="meta-badge small success" title="Introduction vue">
+        <div v-if="scenarioStatus !== 'not_started'" class="intro-complete-indicator" aria-label="Introduction vue" title="Introduction vue">
           <span class="material-symbols-outlined">check</span>
         </div>
         <h2 class="card__title">Introduction</h2>
-        <img class="arrow" :class="{ rotated: showIntro }" src="/icons/arrow_drop_down_circle.svg" alt="toggle intro" @click="toggleIntro" />
+        <button
+          type="button"
+          class="arrow material-symbols-outlined"
+          :class="{ rotated: showIntro }"
+          @click="toggleIntro"
+          aria-label="Basculer l'introduction"
+        >
+          expand_more
+        </button>
         <Transition name="fade">
           <div v-show="showIntro" class="card__body">
             <div v-if="!full.introBlocks.length" class="muted">Aucune introduction.</div>
@@ -313,6 +453,7 @@ onBeforeUnmount(stopGeolocation)
         <div
           v-for="m in missions"
           :key="m.id"
+          :id="`mission-${m.id}`"
           class="missionCard"
           :class="{ completed: isCompleted(m.id), locked: missionLocked(m), open: openMissions[m.id] }"
         >
@@ -320,14 +461,16 @@ onBeforeUnmount(stopGeolocation)
             <span class="material-symbols-outlined">check</span>
           </div>
           <h2 class="missionCard__title">Mission {{ m.position }} - {{ m.title }}</h2>
-          <img
-            class="arrow"
+          <button
+            type="button"
+            class="arrow material-symbols-outlined"
             :class="{ rotated: openMissions[m.id], disabled: missionLocked(m) && !isCompleted(m.id) }"
-            src="/icons/arrow_drop_down_circle.svg"
-            alt="toggle mission"
             @click="toggleMission(m.id)"
             :title="missionLockReason(m)"
-          />
+            aria-label="Basculer la mission"
+          >
+            expand_more
+          </button>
           <Transition name="fade">
             <div class="missionCard__info" v-show="openMissions[m.id]">
               <div v-if="!m.blocks.length" class="muted">Pas de contenu.</div>
@@ -336,17 +479,23 @@ onBeforeUnmount(stopGeolocation)
                 <p v-if="b.type === 'text'">{{ b.content_text }}</p>
                 <figure v-else-if="b.type === 'image'">
                   <img :src="b.url_media" :alt="b.caption || 'image'" />
-                  <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
                 </figure>
               </div>
               <div
                 v-if="scenarioStatus !== 'not_started' && !isCompleted(m.id) && !missionLocked(m)"
                 class="mission-answer"
               >
-                <div class="question" v-if="m.riddle_text">{{ m.riddle_text }}</div>
-                <div class="question" v-else>Entrez la réponse de cette mission</div>
+                <div class="question" v-if="m.riddle_text">
+                  <span class="material-symbols-outlined">help</span>
+                  {{ m.riddle_text }}
+                </div>
+                <div class="question" v-else>
+                  <span class="material-symbols-outlined">help</span>
+                  Entrez la réponse de cette mission
+                </div>
                 <div v-if="!missionInRange(m)" class="geo-hint">
-                  Cette mission est située à environ {{ missionDistance(m) }} mètres d'ici. Rendez-vous sur place pour répondre.
+                  <span class="material-symbols-outlined">near_me_disabled</span>
+                  Cette mission est située à environ {{ missionDistanceText(m) }} d'ici. Rendez-vous sur place pour répondre.
                 </div>
                 <div class="answer-row" v-else>
                   <input
@@ -376,8 +525,14 @@ onBeforeUnmount(stopGeolocation)
               </div>
               <!-- Completed mission review (show riddle & answer once solved) -->
               <div v-else-if="isCompleted(m.id)" class="mission-review">
-                <div class="question" v-if="m.riddle_text">{{ m.riddle_text }}</div>
-                <div class="question" v-else>Énigme</div>
+                <div class="question" v-if="m.riddle_text">
+                  <span class="material-symbols-outlined">help</span>
+                  {{ m.riddle_text }}
+                </div>
+                <div class="question" v-else>
+                  <span class="material-symbols-outlined">help</span>
+                  Énigme
+                </div>
                 <div class="review-answer">
                   <span class="label">Réponse :</span>
                   <span class="value">{{ (m.answer_word || '').trim() || '—' }}</span>
@@ -390,17 +545,19 @@ onBeforeUnmount(stopGeolocation)
 
       <!-- OUTRO -->
       <div class="card outro-card" :class="{ completed: scenarioStatus === 'completed', locked: !outroUnlocked }">
-        <div v-if="scenarioStatus === 'completed'" class="meta-badge small success" title="Scénario terminé">
+        <div v-if="scenarioStatus === 'completed'" class="outro-complete-indicator" aria-label="Scénario terminé" title="Scénario terminé">
           <span class="material-symbols-outlined">check</span>
         </div>
         <h2 class="card__title">Conclusion</h2>
-        <img
-          class="arrow"
+        <button
+          type="button"
+          class="arrow material-symbols-outlined"
           :class="{ rotated: showOutro, disabled: !outroUnlocked }"
-          src="/icons/arrow_drop_down_circle.svg"
-          alt="toggle outro"
           @click="toggleOutro"
-        />
+          aria-label="Basculer la conclusion"
+        >
+          expand_more
+        </button>
         <Transition name="fade">
           <div class="card__body" v-show="showOutro">
             <div v-if="!full.outroBlocks.length" class="muted">Aucune conclusion.</div>
@@ -433,30 +590,41 @@ onBeforeUnmount(stopGeolocation)
 .scenario__meta { display: flex; gap: .5rem; align-items: center; margin-left: auto; }
 .scenario__status { font-size: .85rem; color: #d3daf1; opacity: .85; }
 .scenario__badge { background: #334155; color: #cbd5e1; padding: .15rem .45rem; border-radius: 999px; font-size: .75rem; border: 1px solid rgba(255,255,255,.15); }
+.play-btn { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: .28rem .5rem; border-radius: 10px; cursor: pointer; display:inline-flex; align-items:center; gap:.35rem; }
+.play-btn .material-symbols-outlined { font-size: 20px; }
+.play-btn .label { font-size:.9rem; }
 .bookmark-btn { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); color: #cbd5e1; padding: .35rem .6rem; border-radius: 10px; cursor: pointer; }
 .bookmark-btn.active { color: #fff; border-color: rgba(255,255,255,.35); }
 .bookmark-btn .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'opsz' 24 }
 .bookmark-btn .material-symbols-outlined.fill { font-variation-settings: 'FILL' 1, 'wght' 400, 'opsz' 24 }
 .card { background: rgba(15,17,26,.55); padding: .75rem .75rem; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; margin: .75rem 0; position: relative; overflow: hidden; }
+.intro-card, .outro-card { overflow: visible; }
 .card .divider { height: 1px; background: rgba(255,255,255,.08); margin: .8rem 0; }
 .card__title { margin: 0; font-size: 1rem; font-weight: 600; letter-spacing: .5px; }
 .intro-card.started .card__title { opacity: .75; }
-.arrow { width: 30px; height: 30px; opacity: .8; position: absolute; right: .3rem; top: .35rem; transition: transform .2s ease; cursor: pointer; }
+.arrow { width: 28px; height: 28px; position: absolute; right: .5rem; top: .45rem; display: inline-flex; align-items:center; justify-content:center; border: none; background: transparent; color: #60a5fa; cursor: pointer; z-index: 1; transition: transform .18s ease, color .18s ease, opacity .18s ease; }
 .arrow.rotated { transform: rotate(180deg); }
-.arrow.disabled { opacity: .4; cursor: default; }
+.arrow:hover { color: #93c5fd; }
+.arrow.disabled { color: #64748b; opacity: .7; cursor: default; }
 .missions-group { display: flex; flex-direction: column; gap: .75rem; }
-.missionCard { background: rgba(20,22,31,.55); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.missionCard { position: relative; background: rgba(20,22,31,.55); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; overflow: visible; box-shadow: 0 1px 2px rgba(0,0,0,.25); }
 .missionCard.open { border-color: rgba(255,255,255,.18); box-shadow: 0 2px 8px rgba(0,0,0,.2); }
 .missionCard.completed { background: rgba(25,28,38,.5); }
 .missionCard.locked .missionCard__title { opacity: .6 }
 .missionCard__title { margin: 0; padding: .6rem 2.2rem .55rem .75rem; font-size: .95rem; font-weight: 600; display: flex; align-items: center; gap: .5rem; }
 .missionCard__info { padding: .35rem .6rem .75rem; }
-.mission-complete-indicator { position: absolute; right: .35rem; top: .42rem; display: inline-flex; width: 24px; height: 24px; border-radius: 999px; background: rgba(31,41,55,.8); color:#34d399; border:1px solid rgba(52,211,153,.35); align-items:center; justify-content:center; }
-.mission-complete-indicator .material-symbols-outlined { font-size: 18px; }
+.mission-complete-indicator { position: absolute; right: -7px; top: -7px; display: inline-flex; width: 22px; height: 22px; border-radius: 999px; background: rgba(31,41,55,.9); color:#34d399; border:2px solid rgba(52,211,153,.5); align-items:center; justify-content:center; box-shadow: 0 2px 8px rgba(0,0,0,.4); z-index: 2; pointer-events: none; }
+.mission-complete-indicator .material-symbols-outlined { font-size: 16px; }
+.intro-complete-indicator, .outro-complete-indicator { position: absolute; right: -7px; top: -7px; display: inline-flex; width: 22px; height: 22px; border-radius: 999px; background: rgba(31,41,55,.9); color:#34d399; border:2px solid rgba(52,211,153,.5); align-items:center; justify-content:center; box-shadow: 0 2px 8px rgba(0,0,0,.4); z-index: 2; pointer-events: none; }
+.intro-complete-indicator .material-symbols-outlined, .outro-complete-indicator .material-symbols-outlined { font-size: 16px; }
 .block { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: .55rem .6rem; margin: .5rem 0; }
 .block.image { padding: .35rem; overflow: hidden; }
 .block.image img { width: 100%; height: auto; display: block; border-radius: 8px; }
 .mission-answer { background: rgba(255,255,255,.02); border: 1px dashed rgba(255,255,255,.1); border-radius: 10px; padding: .55rem; margin-top: .6rem; }
+.mission-answer .question { display:flex; align-items:flex-start; gap:.4rem; font-weight:600; color:#e5e7eb; letter-spacing:.2px; margin-bottom:.35rem; }
+.mission-answer .question .material-symbols-outlined { font-size:18px; opacity:.9; color:#93c5fd; line-height:1; }
+.mission-review .question { display:flex; align-items:flex-start; gap:.4rem; font-weight:600; color:#dbeafe; letter-spacing:.2px; margin-bottom:.35rem; }
+.mission-review .question .material-symbols-outlined { font-size:18px; opacity:.95; color:#93c5fd; line-height:1; }
 .answer-row { display: flex; align-items: center; gap: .5rem; }
 .answer-input { flex: 1; background: #111827; border: 1px solid #334155; border-radius: 8px; color: #e5e7eb; padding: .5rem .65rem; outline: none; }
 .btn-secondary { background: #1f2937; border: 1px solid #374151; color: #e5e7eb; padding: .45rem .75rem; border-radius: 8px; cursor: pointer; }
@@ -464,10 +632,15 @@ onBeforeUnmount(stopGeolocation)
 .feedback { min-height: 1.2rem; margin-top: .35rem; font-size: .9rem; }
 .ok { color: #34d399; }
 .wrong { color: #f87171; }
+.geo-hint { display:flex; align-items:flex-start; gap:.35rem; background: rgba(56,189,248,.08); border:1px solid rgba(56,189,248,.22); color:#cdeffd; padding:.45rem .55rem; border-radius:8px; margin:.35rem 0 .5rem; font-size:.9rem; }
+.geo-hint .material-symbols-outlined { font-size:18px; line-height:1; color:#7dd3fc; }
 .locked-hint { font-size: .85rem; color: #d1d9e6; opacity: .85; margin: .25rem 0; }
 .meta-badge { background: rgba(255,255,255,.07); display: inline-flex; align-items:center; gap: .3rem; padding: .18rem .4rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.15); }
 .meta-badge.small { font-size: .8rem; }
 .outro-card.completed .card__title { opacity: .75; }
+.outro-card.locked { opacity: 1; }
+.outro-card.locked .card__title { opacity: .6 }
+.outro-card.locked .card__body { opacity: .9 }
 .outro-actions { display: flex; gap: .5rem; align-items: center; }
 .btn-primary { background: linear-gradient(90deg,#4338ca,#6366f1); border: none; color: #fff; padding: .55rem .9rem; border-radius: 8px; cursor: pointer; }
 .btn-primary:disabled { opacity: .65; cursor: not-allowed; }

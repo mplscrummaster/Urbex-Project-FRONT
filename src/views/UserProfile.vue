@@ -14,7 +14,7 @@
 </script>
 
 <template>
-  <header class="profile">
+  <header class="profile with-tabbar-padding">
     <div class="profile__header">
       <h1 class="profile__title">Mon Profil</h1>
     </div>

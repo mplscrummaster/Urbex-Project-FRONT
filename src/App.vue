@@ -24,6 +24,8 @@
   <main>
     <NavbarItems />
     <RouterView />
+    <!-- Spacer to prevent content from being hidden behind the fixed bottom user bar -->
+    <div v-show="storeUsers.tokenUser != null" class="user-bar-spacer" aria-hidden="true"></div>
     <BarUserNavigation v-show="storeUsers.tokenUser != null" />
   </main>
 </template>
@@ -33,11 +35,15 @@
 
 body { margin: 0; }
 
+:root { --user-bar-h: 64px; --drawer-bottom-offset: calc(var(--user-bar-h) + env(safe-area-inset-bottom)); }
+
 main {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
 }
+
+.user-bar-spacer { height: calc(var(--user-bar-h) + env(safe-area-inset-bottom)); }
 
 /* per-view spacing: handled inside each view to avoid global margins */
 
