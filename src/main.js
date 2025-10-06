@@ -22,3 +22,10 @@ if (typeof window !== 'undefined') {
 }
 
 app.mount('#app')
+
+// Register service worker (production only)
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+	navigator.serviceWorker.register('/sw.js').catch(() => {
+		// fail silently
+	})
+}
