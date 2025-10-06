@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useScenariosStore } from '@/stores/scenarios'
@@ -17,6 +17,7 @@ const missionLayer = ref(null)
 const { coords, error: geoError, locating, start: startGeo, once: onceGeo, stop: stopGeo } = useGeolocation({ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 })
 
 const scenariosStore = useScenariosStore()
+const route = useRoute()
 const full = ref(null)
 let userLocatedOnce = false
 let mapFittedToMissions = false
@@ -24,12 +25,28 @@ const router = useRouter()
 let suppressCloseOnMove = false
 // basemap picker removed
 
-// Choix du "scénario courant": priorité scénario started, sinon le premier not_started bookmarké
+// Sélection explicite via query ?scenario=ID sinon heuristique: started (le plus récent) puis premier not_started
+const persistedScenarioId = ref(null)
+const selectedScenarioId = computed(() => {
+  const raw = route.query?.scenario
+  const id = Number(raw)
+  if (Number.isFinite(id)) return id
+  return Number.isFinite(persistedScenarioId.value) ? persistedScenarioId.value : null
+})
 const currentScenario = computed(() => {
-  const items = scenariosStore.items
-  const started = items.find(s => s.status === 'started')
-  if (started) return started
-  return items.find(s => s.status === 'not_started') || null
+  const items = scenariosStore.items || []
+  // if explicit selection matches an item, use it
+  if (selectedScenarioId.value) {
+    const picked = items.find((s) => s.id === selectedScenarioId.value)
+    if (picked) return picked
+  }
+  // fallback: most recently started
+  const started = items
+    .filter((s) => s.status === 'started')
+    .sort((a, b) => (Date.parse(b.startedAt || 0) || 0) - (Date.parse(a.startedAt || 0) || 0))
+  if (started.length) return started[0]
+  // else: first not_started
+  return items.find((s) => s.status === 'not_started') || null
 })
 
 const loadFullIfNeeded = async () => {
@@ -200,6 +217,11 @@ onMounted(async () => {
     await scenariosStore.fetchMine(true)
     scenariosStore.enrichProgress()
   }
+  // Charger l'éventuel choix persistant si pas de paramètre d'URL
+  try {
+    const v = Number(localStorage.getItem('currentScenarioId'))
+    if (Number.isFinite(v)) persistedScenarioId.value = v
+  } catch { /* ignore storage errors */ }
   initMap()
   locateUser()
   await loadFullIfNeeded()
@@ -209,6 +231,13 @@ onMounted(async () => {
       updateUserMarker(c.latitude, c.longitude)
     }
   })
+  // If a specific scenario is requested but missing locally, refresh and load
+  watch(selectedScenarioId, async (id) => {
+    if (id && !scenariosStore.items.some((s) => s.id === id)) {
+      await scenariosStore.fetchMine(true)
+      await loadFullIfNeeded()
+    }
+  }, { immediate: true })
 })
 
 onUnmounted(() => {
@@ -218,9 +247,12 @@ onUnmounted(() => {
 // Sur changement de scénario courant -> recharger missions
 watch(currentScenario, async (n, o) => {
   if (n && (!o || n.id !== o.id)) {
+    // reset fit flag so we can refit if needed on new scenario
+    mapFittedToMissions = false
     await loadFullIfNeeded()
   }
 })
+
 
 </script>
 
@@ -238,7 +270,7 @@ watch(currentScenario, async (n, o) => {
     </div>
     <div class="scenario-overlay" v-if="currentScenario">
       <div class="scenario-overlay__inner">
-  <ScenarioCard :scenario="currentScenario" :compact="true" :showAuthor="true" :clickable="true" @select="s => $router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'current' } })" />
+        <ScenarioCard :scenario="currentScenario" :compact="true" :showAuthor="true" :clickable="true" @select="s => $router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'current' } })" />
       </div>
     </div>
   </div>
@@ -266,6 +298,7 @@ watch(currentScenario, async (n, o) => {
 .scenario-overlay__inner { padding:22px 14px 12px; max-width:640px; margin:0 auto; pointer-events:auto; }
 .scenario-overlay :deep(.scenario-card) { backdrop-filter:blur(6px); background:rgba(15,23,42,.78); border-color:rgba(255,255,255,.12); }
 .scenario-overlay :deep(.scenario-card:hover) { background:rgba(30,41,59,.82); }
+
 
 /* Mission custom markers (moved out of scoped via separate global style block below) */
 

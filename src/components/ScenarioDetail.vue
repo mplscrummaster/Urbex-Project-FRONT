@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, onBeforeUnmount, ref, computed, watch, nextTick } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 import { ScenariosAPI, MissionsAPI } from '@/services/api'
 
 const route = useRoute()
+const router = useRouter()
 const scenariosStore = useScenariosStore()
 // Reactive scenario id based on route param
 const routeId = computed(() => Number(route.params.id))
@@ -151,7 +152,27 @@ const distanceMeters = (lat1, lon1, lat2, lon2) => {
   return 2*R*Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
 }
 const missionInRange = (m) => { if (m.latitude==null || m.longitude==null) return true; return distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude) <= RANGE_METERS }
-const missionDistance = (m) => { if (m.latitude==null || m.longitude==null) return null; const d=distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude); return Number.isFinite(d)?Math.round(d):null }
+const missionDistance = (m) => { if (m.latitude==null || m.longitude==null) return null; const d=distanceMeters(userLat.value,userLon.value,m.latitude,m.longitude); return Number.isFinite(d)?d:null }
+const formatDistance = (meters) => {
+  if (meters == null || !Number.isFinite(meters)) return null
+  const d = Math.max(0, meters)
+  if (d >= 1000) {
+    const km = d / 1000
+    // For >= 10 km, round to integer; else one decimal. Use fr-FR formatting and max 1 decimal.
+    const value = km >= 10 ? Math.round(km) : Math.round(km * 10) / 10
+    return `${value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} km`
+  }
+  if (d > 100) {
+    const tens = Math.round(d / 10) * 10
+    return `${tens.toLocaleString('fr-FR')} m`
+  }
+  return `${Math.round(d).toLocaleString('fr-FR')} m`
+}
+const missionDistanceText = (m) => {
+  const d = missionDistance(m)
+  const label = formatDistance(d)
+  return label || ''
+}
 // Initialize a mission answer entry lazily
 const initMissionAnswer = (mid) => {
   if (!missionAnswers.value[mid]) {
@@ -218,6 +239,8 @@ const startScenario = async () => {
   await ScenariosAPI.start(routeId.value)
     // pas besoin de re-fetch complet tout de suite; recharger surtout la progression
   await loadProgress()
+    // Mémoriser ce scénario comme "en cours" côté client
+    try { localStorage.setItem('currentScenarioId', String(routeId.value)) } catch { /* ignore */ }
   } catch (e) {
     startError.value = e.message
   } finally {
@@ -236,6 +259,30 @@ const finishScenario = async () => {
   } finally {
     finishing.value = false
   }
+}
+// CTA play/replay from header
+const playCtaLabel = computed(() => {
+  if (scenarioStatus.value === 'completed') return 'Rejouer'
+  if (scenarioStatus.value === 'started') return 'Reprendre'
+  return 'Jouer'
+})
+const onPlayClick = async () => {
+  const id = routeId.value
+  if (!id) return
+  if (scenarioStatus.value === 'completed') {
+    const ok = window.confirm('Rejouer ce scénario va supprimer toute votre progression pour celui-ci. Continuer ?')
+    if (!ok) return
+    try {
+      await ScenariosAPI.unbookmark(id)
+      await ScenariosAPI.start(id)
+      await loadProgress()
+    } catch (e) {
+      // Optionally surface error
+      try { console.error(e) } catch { /* ignore */ }
+    }
+  }
+  try { localStorage.setItem('currentScenarioId', String(id)) } catch { /* ignore */ }
+  router.push({ name: 'map-current', query: { scenario: id } }).catch(() => {})
 }
 const submitMission = async (m) => {
   initMissionAnswer(m.id)
@@ -354,6 +401,10 @@ onBeforeUnmount(stopGeolocation)
           <span class="scenario__status">Statut: {{ scenarioStatus }}</span>
           <span v-if="full.progress?.scenario.bookmarked" class="scenario__badge">Bookmark</span>
         </div>
+        <button class="play-btn" @click="onPlayClick" :title="playCtaLabel + ' sur la carte'">
+          <span class="material-symbols-outlined">play_arrow</span>
+          <span class="label">{{ playCtaLabel }}</span>
+        </button>
         <button class="bookmark-btn" :class="{ active: full.progress?.scenario.bookmarked }" :disabled="bookmarking" @click="toggleBookmarkDetail" :title="full.progress?.scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
           <span class="material-symbols-outlined" :class="{ fill: full.progress?.scenario.bookmarked }">{{ full.progress?.scenario.bookmarked ? 'bookmark' : 'bookmark_add' }}</span>
         </button>
@@ -428,7 +479,6 @@ onBeforeUnmount(stopGeolocation)
                 <p v-if="b.type === 'text'">{{ b.content_text }}</p>
                 <figure v-else-if="b.type === 'image'">
                   <img :src="b.url_media" :alt="b.caption || 'image'" />
-                  <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
                 </figure>
               </div>
               <div
@@ -445,7 +495,7 @@ onBeforeUnmount(stopGeolocation)
                 </div>
                 <div v-if="!missionInRange(m)" class="geo-hint">
                   <span class="material-symbols-outlined">near_me_disabled</span>
-                  Cette mission est située à environ {{ missionDistance(m) }} mètres d'ici. Rendez-vous sur place pour répondre.
+                  Cette mission est située à environ {{ missionDistanceText(m) }} d'ici. Rendez-vous sur place pour répondre.
                 </div>
                 <div class="answer-row" v-else>
                   <input
@@ -540,6 +590,9 @@ onBeforeUnmount(stopGeolocation)
 .scenario__meta { display: flex; gap: .5rem; align-items: center; margin-left: auto; }
 .scenario__status { font-size: .85rem; color: #d3daf1; opacity: .85; }
 .scenario__badge { background: #334155; color: #cbd5e1; padding: .15rem .45rem; border-radius: 999px; font-size: .75rem; border: 1px solid rgba(255,255,255,.15); }
+.play-btn { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); color: #e2e8f0; padding: .28rem .5rem; border-radius: 10px; cursor: pointer; display:inline-flex; align-items:center; gap:.35rem; }
+.play-btn .material-symbols-outlined { font-size: 20px; }
+.play-btn .label { font-size:.9rem; }
 .bookmark-btn { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.15); color: #cbd5e1; padding: .35rem .6rem; border-radius: 10px; cursor: pointer; }
 .bookmark-btn.active { color: #fff; border-color: rgba(255,255,255,.35); }
 .bookmark-btn .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'opsz' 24 }

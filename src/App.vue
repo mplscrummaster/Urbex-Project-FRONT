@@ -35,7 +35,7 @@
 
 body { margin: 0; }
 
-:root { --user-bar-h: 64px; }
+:root { --user-bar-h: 64px; --drawer-bottom-offset: calc(var(--user-bar-h) + env(safe-area-inset-bottom)); }
 
 main {
   display: flex;
