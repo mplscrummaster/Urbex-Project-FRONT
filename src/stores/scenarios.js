@@ -32,8 +32,9 @@ export const useScenariosStore = defineStore('scenarios', {
           title: row.title,
           status: row.status,
           bookmarked: !!row.bookmarked,
-          started_at: row.started_at || null,
-          completed_at: row.completed_at || null,
+          // Frontend uses camelCase naming internally
+          startedAt: row.started_at || null,
+          completedAt: row.completed_at || null,
           // temp progression ratio heuristic (completed => 1, started => 0.4, else 0)
           progressRatio: row.status === 'completed' ? 1 : row.status === 'started' ? 0.4 : 0,
           author: row.author || '—',
@@ -47,7 +48,7 @@ export const useScenariosStore = defineStore('scenarios', {
     },
     async enrichProgress(concurrency = 3) {
       if (this.progressLoading) return
-      const targets = this.items.filter((s) => !s._preciseProgressLoaded)
+      const targets = this.items.filter((s) => !s.hasPreciseProgress)
       if (!targets.length) return
       this.progressLoading = true
       const queue = [...targets]
@@ -64,9 +65,9 @@ export const useScenariosStore = defineStore('scenarios', {
           const ref = this.items.find((i) => i.id === el.id)
           if (ref) {
             ref.progressRatio = ratio
-            ref._completedMissions = completed
-            ref._totalMissions = total
-            ref._preciseProgressLoaded = true
+            ref.completedMissions = completed
+            ref.totalMissions = total
+            ref.hasPreciseProgress = true
           }
         } catch (e) {
           this.progressErrors[el.id] = e.message

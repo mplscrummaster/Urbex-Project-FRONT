@@ -2,7 +2,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
-import ScenarioInfoComponent from '@/components/ScenarioInfoComponent.vue'
+import ScenarioDetail from '@/components/ScenarioDetail.vue'
 
 const route = useRoute()
 const store = useScenariosStore()
@@ -32,7 +32,7 @@ watch(scenarioId, (n) => {
   }
 })
 
-function goBack() {
+const goBack = () => {
   const from = route.query.from
   const commune = route.query.commune
   const zoom = route.query.zoom
@@ -44,11 +44,11 @@ function goBack() {
     if (zoom) q.zoom = zoom
     if (lat) q.lat = lat
     if (lon) q.lon = lon
-    return router.push({ path: '/globalmap', query: q })
+    return router.push({ name: 'map-global', query: q })
   }
-  if (from === 'list') return router.push('/scenarios')
+  if (from === 'list') return router.push({ name: 'scenarios-list' })
   if (history.length > 1) return router.back()
-  return router.push('/scenarios')
+  return router.push({ name: 'scenarios-list' })
 }
 </script>
 
@@ -61,7 +61,7 @@ function goBack() {
   <h1 class="scenario-page__title">{{ scenarioTitle || '…' }}</h1>
     </header>
     <div class="scenario-page__body">
-      <ScenarioInfoComponent />
+  <ScenarioDetail />
     </div>
   </div>
 </template>

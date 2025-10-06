@@ -4,16 +4,15 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioCard from '@/components/ScenarioCard.vue'
+import { useGeolocation } from '@/composables/useGeolocation'
+import { createBaseMap, withLayerGroup } from '@/composables/useLeafletMap'
 
 // Elements & map instance refs
 const mapEl = ref(null)
 let map
 const userMarker = ref(null)
 const missionLayer = ref(null)
-const locating = ref(true)
-const geoError = ref('')
-const hasLocation = ref(false)
-let watchId = null
+const { coords, error: geoError, locating, start: startGeo, once: onceGeo, stop: stopGeo } = useGeolocation({ enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 })
 
 const scenariosStore = useScenariosStore()
 const full = ref(null)
@@ -28,25 +27,26 @@ const currentScenario = computed(() => {
   return items.find(s => s.status === 'not_started') || null
 })
 
-async function loadFullIfNeeded() {
+const loadFullIfNeeded = async () => {
   if (!currentScenario.value) return
   full.value = await scenariosStore.fetchFull(currentScenario.value.id, true)
   plotMissions()
 }
 
-function initMap() {
+const initMap = () => {
   if (map) return
-  map = L.map(mapEl.value, { zoomControl: false, preferCanvas: true, scrollWheelZoom: true, doubleClickZoom: true, touchZoom: true, boxZoom: true })
-  const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    attribution: '© OpenStreetMap contributors © CARTO',
-    maxZoom: 20
+  const { map: m } = createBaseMap(mapEl.value, {
+    zoomControl: false,
+    minZoom: 3,
+    maxZoom: 20,
+    preferCanvas: true,
+    interactions: { scrollWheelZoom: true, doubleClickZoom: true, touchZoom: true, boxZoom: true }
   })
-  tiles.addTo(map)
-  missionLayer.value = L.layerGroup().addTo(map)
+  map = m
+  missionLayer.value = withLayerGroup(map)
 }
 
-function plotMissions() {
+const plotMissions = () => {
   if (!map || !missionLayer.value) return
   missionLayer.value.clearLayers()
   if (!full.value?.missions?.length) return
@@ -70,12 +70,12 @@ function plotMissions() {
   }
 }
 
-function missionCompleted(m) {
+const missionCompleted = (m) => {
   const completed = full.value?.progress?.completedMissionIds || []
   return completed.includes(m.id)
 }
 
-function createMissionIcon(m, pulse = false) {
+const createMissionIcon = (m, pulse = false) => {
   const completed = missionCompleted(m)
   const cls = [ 'mission-marker', completed ? 'completed' : 'pending', pulse ? 'pulse' : '' ].filter(Boolean).join(' ')
   const icon = completed ? 'check' : 'explore'
@@ -93,7 +93,7 @@ function createMissionIcon(m, pulse = false) {
   })
 }
 
-function updateUserMarker(latitude, longitude, initial = false) {
+const updateUserMarker = (latitude, longitude, initial = false) => {
   if (!map) return
   if (initial) {
     map.setView([latitude, longitude], 14)
@@ -109,57 +109,17 @@ function updateUserMarker(latitude, longitude, initial = false) {
       fillOpacity: 0.85
     }).addTo(map).bindPopup('Vous êtes ici')
   }
-  hasLocation.value = true
   userLocatedOnce = true
 }
 
-function startWatching() {
-  if (!navigator.geolocation) return
-  // Clear any previous watch
-  if (watchId !== null) navigator.geolocation.clearWatch(watchId)
-  watchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      locating.value = false
-      geoError.value = ''
-      updateUserMarker(pos.coords.latitude, pos.coords.longitude)
-    },
-    (err) => {
-      locating.value = false
-      if (err.code === 1) { // permission denied
-        geoError.value = 'Permission localisation refusée'
-      } else {
-        geoError.value = err.message || 'Échec localisation continue'
-      }
-    },
-    { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
-  )
-}
-
-function locateUser() {
-  locating.value = true
-  geoError.value = ''
-  if (!navigator.geolocation) {
-    geoError.value = 'Géolocalisation non supportée.'
-    locating.value = false
+const locateUser = () => {
+  onceGeo().then(({ latitude, longitude }) => {
+    updateUserMarker(latitude, longitude, true)
+    startGeo()
+  }).catch(() => {
     map.setView([50.64028, 4.66671], 8)
-    return
-  }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      locating.value = false
-      geoError.value = ''
-      updateUserMarker(pos.coords.latitude, pos.coords.longitude, true)
-      startWatching()
-    },
-    (err) => {
-      locating.value = false
-      geoError.value = err.message || 'Échec géolocalisation'
-      map.setView([50.64028, 4.66671], 8)
-      // Comme la géoloc a échoué, on peut maintenant centrer sur les missions si présent
-      plotMissions()
-    },
-    { enableHighAccuracy: true, timeout: 8000 }
-  )
+    plotMissions()
+  })
 }
 
 onMounted(async () => {
@@ -171,12 +131,16 @@ onMounted(async () => {
   initMap()
   locateUser()
   await loadFullIfNeeded()
+  // Live update marker when coords change
+  watch(coords, (c) => {
+    if (c?.latitude != null && c?.longitude != null) {
+      updateUserMarker(c.latitude, c.longitude)
+    }
+  })
 })
 
 onUnmounted(() => {
-  if (watchId !== null && navigator.geolocation) {
-    navigator.geolocation.clearWatch(watchId)
-  }
+  stopGeo()
 })
 
 // Sur changement de scénario courant -> recharger missions
@@ -201,7 +165,7 @@ watch(currentScenario, async (n, o) => {
     </div>
     <div class="scenario-overlay" v-if="currentScenario">
       <div class="scenario-overlay__inner">
-        <ScenarioCard :scenario="currentScenario" :compact="true" :showAuthor="true" :clickable="true" @select="s => $router.push({ path: '/scenario/' + s.id, query: { from: 'current' } })" />
+  <ScenarioCard :scenario="currentScenario" :compact="true" :showAuthor="true" :clickable="true" @select="s => $router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'current' } })" />
       </div>
     </div>
   </div>

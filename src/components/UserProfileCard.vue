@@ -14,20 +14,22 @@
   const maxXp = 3000;
   const headerProfile = ref(null)
   const modifyInputs = ref(null)
-  const usernameModify = ref(username)
-  const bioModify = ref(bio)
-  const urlImgModify = ref(urlImg)
+  // Editable fields
+  const usernameModify = ref('')
+  const bioModify = ref('')
+  const urlImgModify = ref('')
 
   onMounted(async () => {
     const playerDatas = ref(await storeUsers.getMeInfo());
     username.value = playerDatas.value.nickname;
     bio.value = playerDatas.value.bio;
     xp.value = playerDatas.value.xp;
-    console.log("xp", xp.value)
     percentXp.value = (xp.value / maxXp) * 100;
-    console.log("xp", percentXp.value)
-    urlImg.value = playerDatas.value.url_img_avatar ?? "/public/img/profile-placeholder.png";
-    console.log("playerDatas.url_img_avatar", playerDatas.value.url_img_avatar);
+    urlImg.value = playerDatas.value.url_img_avatar ?? "/img/profile-placeholder.png";
+    // Initialize editable fields with current values
+    usernameModify.value = username.value || ''
+    bioModify.value = bio.value || ''
+    urlImgModify.value = urlImg.value || ''
 
   })
 
@@ -44,8 +46,12 @@
     modifyInputs.value.classList.add("hidden")
 
     const results = await storeUsers.setMeInfo(usernameModify.value, bioModify.value, urlImgModify.value)
-
-    console.log("setMeInfo", results);
+    // Optionally refresh local display after save
+    if (results) {
+      username.value = results.nickname ?? usernameModify.value
+      bio.value = results.bio ?? bioModify.value
+      urlImg.value = results.url_img_avatar ?? urlImgModify.value
+    }
   }
 
 </script>
@@ -196,7 +202,7 @@
       border-radius: 1rem;
       padding: .5rem;
       width: 100%;
-      box-shadow: inset 0 0 10px 0 s#00000063;
+  box-shadow: inset 0 0 10px 0 #00000063;
 
       &:focus {
         outline: none;

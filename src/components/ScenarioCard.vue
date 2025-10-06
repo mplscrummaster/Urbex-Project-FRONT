@@ -25,8 +25,8 @@
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: progressPercent + '%' }" />
         </div>
-        <div class="progress-meta" v-if="scenario._preciseProgressLoaded">
-          {{ scenario._completedMissions }}/{{ scenario._totalMissions }} ({{ progressPercent }}%)
+        <div class="progress-meta" v-if="scenario.hasPreciseProgress">
+          {{ scenario.completedMissions }}/{{ scenario.totalMissions }} ({{ progressPercent }}%)
         </div>
         <div class="progress-meta" v-else>
           {{ progressPercent }}%
@@ -36,15 +36,19 @@
   </div>
 </template>
 <script setup>
-import { computed } from 'vue'
+import { computed, getCurrentInstance } from 'vue'
+import { useRouter } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 const props = defineProps({
   scenario: { type: Object, required: true },
   compact: { type: Boolean, default: false },
   showAuthor: { type: Boolean, default: true },
   clickable: { type: Boolean, default: true },
+  // When true, the card will navigate to detail on click (besides emitting 'select')
+  autoNavigate: { type: Boolean, default: true },
 })
 const emit = defineEmits(['select'])
+const router = useRouter()
 const store = useScenariosStore()
 
 const progressPercent = computed(() => {
@@ -60,7 +64,7 @@ const statusClass = computed(() => {
   return 'is-not-started'
 })
 
-async function toggleBookmark() {
+const toggleBookmark = async () => {
   try {
     await store.toggleBookmark(props.scenario.id, {
       confirmCallback: async () => window.confirm('Confirmer la suppression du favori et de la progression ?'),
@@ -70,9 +74,14 @@ async function toggleBookmark() {
   }
 }
 
-function handleSelect() {
+const handleSelect = () => {
   if (!props.clickable) return
+  const hasListener = !!getCurrentInstance()?.vnode?.props?.onSelect
   emit('select', props.scenario)
+  if (props.autoNavigate && !hasListener && props.scenario?.id != null) {
+    // Navigate to scenario detail as a safe default
+    router.push({ name: 'scenario-detail', params: { id: props.scenario.id } }).catch(() => {})
+  }
 }
 </script>
 <style scoped lang="scss">

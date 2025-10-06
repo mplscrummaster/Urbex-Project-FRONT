@@ -1,27 +1,28 @@
 <script setup>
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
 const route = useRoute()
 const users = useUsersStore()
-// Optionally hide on auth pages only
-const hidden = ['login','register'].includes(route.name)
+// Optionally hide on auth pages only (reactive)
+const hidden = computed(() => ['login','register'].includes(route.name))
 </script>
 
 <template>
   <div class="navbar user-bar" v-show="users.tokenUser && !hidden">
-    <RouterLink active-class="active" to="/scenario" aria-label="Scénarios">
+  <RouterLink active-class="active" :to="{ name: 'scenarios-list' }" aria-label="Scénarios">
       <span class="material-symbols-outlined">format_list_bulleted</span>
     </RouterLink>
-    <RouterLink active-class="active" to="/globalmap" aria-label="Carte globale">
+  <RouterLink active-class="active" :to="{ name: 'map-global' }" aria-label="Carte globale">
       <span class="material-symbols-outlined">map</span>
     </RouterLink>
-    <RouterLink active-class="active" to="/currentmap" aria-label="Carte actuelle / position">
+  <RouterLink active-class="active" :to="{ name: 'map-current' }" aria-label="Carte actuelle / position">
       <span class="material-symbols-outlined">my_location</span>
     </RouterLink>
     <RouterLink active-class="active" to="/leaderboard" aria-label="Classement">
       <span class="material-symbols-outlined">emoji_events</span>
     </RouterLink>
-    <RouterLink active-class="active" to="/userProfile" aria-label="Profil utilisateur">
+    <RouterLink active-class="active" to="/user-profile" aria-label="Profil utilisateur">
       <span class="material-symbols-outlined">person</span>
     </RouterLink>
   </div>
@@ -32,6 +33,7 @@ const hidden = ['login','register'].includes(route.name)
 .user-bar a { flex:1; text-align:center; color:#c4ced8; padding:.4rem .4rem; border-radius:12px; position:relative; display:flex; justify-content:center; align-items:center; line-height:1; transition:background .25s,color .25s; }
  .user-bar a .material-symbols-outlined { font-size:26px; display:block; line-height:1; }
 .user-bar a.active { background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; box-shadow:0 2px 6px -1px rgba(0,0,0,.6); }
+.user-bar a.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
 .user-bar a:not(.active):hover { background:rgba(255,255,255,.07); color:#fff; }
 .user-bar a:active { transform:translateY(1px); }
 .user-bar a::after { content:""; position:absolute; bottom:4px; left:50%; width:0; height:2px; background:#60a5fa; border-radius:2px; transition:width .3s, left .3s; }
@@ -40,8 +42,5 @@ const hidden = ['login','register'].includes(route.name)
 @media (min-width:680px){ .user-bar { padding:.6rem 1.8rem calc(.7rem + env(safe-area-inset-bottom)); } .user-bar a { font-size:.72rem; } }
 @media (min-width:960px){ .user-bar { max-width:960px; margin:0 auto; left:0; right:0; } }
 
-.active {
-  color: green;
-  border: 2px solid green;
-}
+/* remove legacy debug active style */
 </style>

@@ -11,10 +11,11 @@ const scenariosStore = useScenariosStore()
 if (!localStorage.getItem('tokenUser')) router.replace('/')
 
 const activeFilter = ref('all')
+const filters = ['all', 'terminés', 'commencés', 'pas encore']
 const uiLoading = ref(true)
 const uiError = ref(null)
 
-async function load() {
+const load = async () => {
   uiLoading.value = true
   uiError.value = null
   try {
@@ -27,15 +28,7 @@ async function load() {
 }
 onMounted(load)
 
-function changeFilter(e) {
-  const btn = e.target.closest('button.container__filter')
-  if (!btn) return
-  const filterName = btn.innerText.trim()
-  const filters = document.querySelectorAll('.container__filter')
-  filters.forEach((f) => f.classList.remove('active'))
-  btn.classList.add('active')
-  activeFilter.value = filterName
-}
+const selectFilter = (name) => { activeFilter.value = name }
 
 const filteredScenarios = computed(() => {
   const list = scenariosStore.items
@@ -51,18 +44,21 @@ const filteredScenarios = computed(() => {
   }
 })
 
-function scenarioClicked(s) {
-  router.push({ name: 'scenario-info', params: { id: s.id } })
+const scenarioClicked = (s) => {
+  router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'list' } })
 }
 </script>
 
 <template>
   <div class="container">
-    <div class="container__filters" @click.prevent="changeFilter($event)">
-      <button class="container__filter active">all</button>
-      <button class="container__filter">terminés</button>
-      <button class="container__filter">commencés</button>
-      <button class="container__filter">pas encore</button>
+    <div class="container__filters">
+      <button
+        v-for="name in filters"
+        :key="name"
+        class="container__filter"
+        :class="{ active: activeFilter === name }"
+        @click.prevent="selectFilter(name)"
+      >{{ name }}</button>
     </div>
 
     <!-- Сценарії -->
@@ -80,12 +76,16 @@ function scenarioClicked(s) {
 </template>
 
 <style lang="scss" scoped>
+  @use '@/styles/theme.scss' as *;
   .container {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    background-color: #2a2a2a;
-    padding-block: 1rem 5rem;
+    background-color: $color-bg-alt;
+    padding: 1rem clamp(12px, 4vw, 24px) 5rem;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 960px;
 
     &__filters {
       display: flex;
@@ -94,22 +94,22 @@ function scenarioClicked(s) {
     }
 
     &__filter {
-      background: #1e1e1e;
+      background: $color-surface;
       border: none;
       border-radius: 16px;
       padding: 6px 14px;
       font-size: 14px;
-      color: #aaa;
+      color: $color-text-dim;
       cursor: pointer;
       transition: background 0.2s ease;
 
       &:hover {
-        background: #2a2a2a;
+        background: $color-surface-alt;
       }
 
       &.active {
-        background: #3b82f6;
-        color: #fff;
+        background: $color-accent;
+        color: $color-text;
       }
     }
   }

@@ -22,28 +22,28 @@ const contentEl = ref(null)
 const open = ref(props.modelValue)
 watch(() => props.modelValue, v => { open.value = v })
 watch(open, v => emit('update:modelValue', v))
-function cycleSize() {
+const cycleSize = () => {
   sizeIndex.value = (sizeIndex.value + 1) % sizes.length
   emit('size', sizes[sizeIndex.value])
 }
-function startDrag(ev) {
+const startDrag = (ev) => {
   const startY = (ev.touches ? ev.touches[0].clientY : ev.clientY)
   const startIdx = sizeIndex.value
-  function move(e2) {
+  const move = (e2) => {
     const y = (e2.touches ? e2.touches[0].clientY : e2.clientY)
     const delta = y - startY
     if (Math.abs(delta) < 30) return
     if (delta < 0 && sizeIndex.value < sizes.length - 1) sizeIndex.value = startIdx + 1
     else if (delta > 0 && sizeIndex.value > 0) sizeIndex.value = startIdx - 1
   }
-  function up() { window.removeEventListener('mousemove', move); window.removeEventListener('touchmove', move); window.removeEventListener('mouseup', up); window.removeEventListener('touchend', up); }
+  const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('touchmove', move); window.removeEventListener('mouseup', up); window.removeEventListener('touchend', up); }
   window.addEventListener('mousemove', move)
   window.addEventListener('touchmove', move)
   window.addEventListener('mouseup', up)
   window.addEventListener('touchend', up)
 }
 // Prevent background (map) scroll when drawer is open, but allow scroll inside the drawer itself
-function onBackgroundScroll(e) {
+const onBackgroundScroll = (e) => {
   if (!open.value) return
   if (root.value && root.value.contains(e.target)) return // allow scrolling inside drawer
   e.preventDefault()
@@ -52,7 +52,7 @@ onMounted(() => { document.addEventListener('wheel', onBackgroundScroll, { passi
 onUnmounted(() => { document.removeEventListener('wheel', onBackgroundScroll) })
 const sizeClass = computed(() => `is-${sizes[sizeIndex.value]}`)
 
-function closeDrawer() {
+const closeDrawer = () => {
   open.value = false
   emit('update:modelValue', false)
   emit('close')
