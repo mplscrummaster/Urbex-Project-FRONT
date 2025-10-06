@@ -1,6 +1,6 @@
 // Shared HTTP helper for API modules
 export const BASE_URL = (
-  import.meta?.env?.VITE_API_BASE_URL || 'http://91.134.99.3:3000/api'
+  import.meta?.env?.VITE_API_BASE_URL || ' https://michonmaximilien.dev/api'
 ).replace(/\/$/, '')
 
 const getAuthToken = () => localStorage.getItem('tokenUser') || null
