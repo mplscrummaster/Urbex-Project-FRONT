@@ -230,9 +230,18 @@ watch(routeId, (newVal, oldVal) => { if (newVal !== oldVal) loadScenario() })
         <h1 class="cardTitle">{{ full.scenario.title || full.scenario.title_scenario }}</h1>
         <div class="scenarioMeta">
           <span>Status: {{ scenarioStatus }}</span>
-          <span v-if="full.progress?.scenario.bookmarked" class="badge">★</span>
+
+          <!-- Bookmark button instead of badge -->
+          <button class="bookmark-btn" :class="{ active: full.progress?.scenario.bookmarked }" :disabled="bookmarking"
+            @click="toggleBookmarkDetail"
+            :title="full.progress?.scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'">
+            <span class="material-symbols-outlined" :class="{ fill: full.progress?.scenario.bookmarked }">
+              {{ full.progress?.scenario.bookmarked ? 'bookmark' : 'bookmark_add' }}
+            </span>
+          </button>
         </div>
       </div>
+
 
       <!-- Intro -->
       <div class="introCard">
