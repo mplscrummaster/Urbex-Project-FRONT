@@ -1,6 +1,6 @@
 <script setup>
 // Inlined ExploreMap for clarity: GlobalMap is a full view with map + drawer
-import { onMounted, onUnmounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -73,22 +73,45 @@ const selectCommune = (id) => {
   prepareDrawerForCommune(id)
 }
 
+const syncDrawerWithStore = () => {
+  if (!drawerScenarios.value?.length) return
+  const byId = new Map(scenariosStore.items.map(s => [s.id, s]))
+  drawerScenarios.value = drawerScenarios.value.map(s => {
+    const mine = byId.get(s.id)
+    return {
+      ...s,
+      bookmarked: !!(mine?.bookmarked),
+      status: mine?.status ?? s.status,
+      progressRatio: (mine?.progressRatio ?? s.progressRatio) ?? 0,
+      author: s.author || mine?.author || '—'
+    }
+  })
+}
+
 const prepareDrawerForCommune = (id) => {
   ScenariosAPI.listScenarioCommunes().then(rows => {
-    const list = rows.filter(r => r.commune_id === id).map(r => ({
-      id: r.scenario_id,
-      title: r.title,
-      published: !!r.is_published,
-      status: 'not_started',
-      bookmarked: false,
-      progressRatio: 0,
-      author: r.author || '—'
-    }))
+    const list = rows.filter(r => r.commune_id === id).map(r => {
+      const mine = scenariosStore.items.find(s => s.id === r.scenario_id)
+      return {
+        id: r.scenario_id,
+        title: r.title,
+        published: !!r.is_published,
+        status: mine?.status || 'not_started',
+        bookmarked: !!mine?.bookmarked,
+        progressRatio: mine?.progressRatio ?? 0,
+        author: r.author || mine?.author || '—'
+      }
+    })
     drawerScenarios.value = list
     drawerOpen.value = true
-    if (!scenariosStore.items.length) scenariosStore.fetchMine().catch(()=>{})
+    if (!scenariosStore.items.length) scenariosStore.fetchMine().then(() => syncDrawerWithStore()).catch(()=>{})
   }).catch(()=>{})
 }
+
+// Keep drawer scenario bookmark/status in sync when user toggles favorites
+watch(() => scenariosStore.items, () => {
+  if (drawerOpen.value) syncDrawerWithStore()
+}, { deep: true })
 const loadScenarioMarkers = async () => {
   // Cleanup previous layer and index
   scenarioMarkersLayer.clearLayers()
@@ -243,6 +266,7 @@ onUnmounted(() => { if (map) map.remove() })
   <div class="explore-layout">
     <div ref="mapEl" class="explore-map" />
     
+    
     <div class="shape-progress" v-if="loading">
       <div class="label">Chargement des communes</div>
       <div class="bar-wrapper"><div class="bar" :style="{ width: total ? ((progress/total)*100)+'%' : '0%' }"></div></div>
@@ -267,6 +291,8 @@ onUnmounted(() => { if (map) map.remove() })
 @use '@/styles/theme.scss' as *;
 .explore-layout { position:relative; width:100%; height:100dvh; overflow:hidden; }
 .explore-map { position:absolute; inset:0; z-index:1; }
+
+/* basemap picker removed */
 
 .map-controls { position:absolute; top:12px; left:12px; z-index:5; background:rgba(15,23,42,.82); color:#e2e8f0; border:1px solid rgba(255,255,255,.12); padding:8px 10px; border-radius:10px; backdrop-filter:blur(6px); box-shadow:0 4px 12px rgba(0,0,0,0.35); }
 .map-controls .toggle { display:flex; align-items:center; gap:8px; font-size:.85rem; }

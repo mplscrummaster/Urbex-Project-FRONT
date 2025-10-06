@@ -29,7 +29,7 @@ const hidden = computed(() => ['login','register'].includes(route.name))
 </template>
 
 <style lang="scss" scoped>
-.user-bar { width:100%; position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; align-items:center; gap:.25rem; padding:.55rem clamp(0.4rem,2vw,1.2rem) calc(.55rem + env(safe-area-inset-bottom)); background:rgba(20,22,26,.85); backdrop-filter:blur(10px); border-top:1px solid rgba(255,255,255,.08); z-index:500; box-shadow:0 -4px 12px -3px rgba(0,0,0,.55); }
+.user-bar { width:100%; position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; align-items:center; gap:.25rem; padding:.55rem clamp(0.4rem,2vw,1.2rem) calc(.55rem + env(safe-area-inset-bottom)); background:rgba(20,22,26,.85); backdrop-filter:blur(10px); border-top:1px solid rgba(255,255,255,.08); z-index:500; box-shadow:0 -4px 12px -3px rgba(0,0,0,.55); height: var(--user-bar-h); }
 .user-bar a { flex:1; text-align:center; color:#c4ced8; padding:.4rem .4rem; border-radius:12px; position:relative; display:flex; justify-content:center; align-items:center; line-height:1; transition:background .25s,color .25s; }
  .user-bar a .material-symbols-outlined { font-size:26px; display:block; line-height:1; }
 .user-bar a.active { background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; box-shadow:0 2px 6px -1px rgba(0,0,0,.6); }

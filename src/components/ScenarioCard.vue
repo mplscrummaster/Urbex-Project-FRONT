@@ -66,9 +66,13 @@ const statusClass = computed(() => {
 
 const toggleBookmark = async () => {
   try {
-    await store.toggleBookmark(props.scenario.id, {
+    const ok = await store.toggleBookmark(props.scenario.id, {
       confirmCallback: async () => window.confirm('Confirmer la suppression du favori et de la progression ?'),
     })
+    if (ok) {
+      // Optionally reflect immediate UI state: rely on props reactive update via store watchers
+      // No direct mutation of props.scenario here to avoid breaking uni-directional data flow
+    }
   } catch {
     // silent
   }
