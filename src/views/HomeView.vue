@@ -7,7 +7,7 @@ const isAuthenticated = computed(() => !!users.tokenUser)
 </script>
 
 <template>
-  <div class="home-view">
+  <div class="home-view with-tabbar-padding">
     <div class="background"></div>
     <div class="home-container">
       <GlitchClock />

@@ -1,6 +1,6 @@
 <script setup>
 // Inlined ExploreMap for clarity: GlobalMap is a full view with map + drawer
-import { onMounted, onUnmounted, ref, reactive } from 'vue'
+import { onMounted, onUnmounted, ref, reactive, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet.markercluster/dist/leaflet.markercluster.js'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
@@ -13,6 +13,7 @@ import ScenarioCard from '@/components/ScenarioCard.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 import { createBaseMap, withLayerGroup } from '@/composables/useLeafletMap'
+import { useGeolocation } from '@/composables/useGeolocation'
 
 const mapEl = ref(null)
 let map
@@ -38,6 +39,54 @@ const loading = ref(true)
 const errorMsg = ref('')
 const progress = ref(0)
 const total = ref(0)
+
+// Search UI state
+const searchTerm = ref('')
+const searchState = reactive({ loading: false, error: '' })
+
+const onSearchSubmit = async () => {
+  const term = (searchTerm.value || '').trim()
+  if (!term) return
+  searchState.loading = true
+  searchState.error = ''
+  try {
+    const raw = term.replace(/\s+/g, '')
+    const isPostal = /^\d{4,5}$/.test(raw)
+    let results = []
+    try {
+      results = await CommunesAPI.list(isPostal ? { postal: raw } : { q: term })
+    } catch { /* fall through to fallback */ }
+    if ((!results || results.length === 0) && isPostal) {
+      // Fallback to name search if no postal hit
+      try { results = await CommunesAPI.list({ q: term }) } catch { /* ignore */ }
+    } else if ((!results || results.length === 0) && !isPostal && /^\d{4,5}$/.test(raw)) {
+      // If user typed mostly digits, also try postal
+      try { results = await CommunesAPI.list({ postal: raw }) } catch { /* ignore */ }
+    }
+    if (results && results.length) {
+      const r = results[0]
+      let lat = r.lat, lon = r.lon
+      if ((lat == null || lon == null) && r.id) {
+        try {
+          const full = await CommunesAPI.get(r.id)
+          lat = full.lat; lon = full.lon
+        } catch { /* ignore, will no-op if still null */ }
+      }
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        const targetZoom = Math.max(map.getZoom() || 8, 11)
+        map.setView([lat, lon], targetZoom, { animate: true })
+      } else {
+        searchState.error = 'Coordonnées introuvables pour cette commune'
+      }
+    } else {
+      searchState.error = 'Aucune commune trouvée'
+    }
+  } catch (e) {
+    searchState.error = e?.message || 'Erreur de recherche'
+  } finally {
+    searchState.loading = false
+  }
+}
 
 const applyCurrentStyle = (id) => {
   const layer = polygonLayers.get(id)
@@ -73,22 +122,45 @@ const selectCommune = (id) => {
   prepareDrawerForCommune(id)
 }
 
+const syncDrawerWithStore = () => {
+  if (!drawerScenarios.value?.length) return
+  const byId = new Map(scenariosStore.items.map(s => [s.id, s]))
+  drawerScenarios.value = drawerScenarios.value.map(s => {
+    const mine = byId.get(s.id)
+    return {
+      ...s,
+      bookmarked: !!(mine?.bookmarked),
+      status: mine?.status ?? s.status,
+      progressRatio: (mine?.progressRatio ?? s.progressRatio) ?? 0,
+      author: s.author || mine?.author || '—'
+    }
+  })
+}
+
 const prepareDrawerForCommune = (id) => {
   ScenariosAPI.listScenarioCommunes().then(rows => {
-    const list = rows.filter(r => r.commune_id === id).map(r => ({
-      id: r.scenario_id,
-      title: r.title,
-      published: !!r.is_published,
-      status: 'not_started',
-      bookmarked: false,
-      progressRatio: 0,
-      author: r.author || '—'
-    }))
+    const list = rows.filter(r => r.commune_id === id).map(r => {
+      const mine = scenariosStore.items.find(s => s.id === r.scenario_id)
+      return {
+        id: r.scenario_id,
+        title: r.title,
+        published: !!r.is_published,
+        status: mine?.status || 'not_started',
+        bookmarked: !!mine?.bookmarked,
+        progressRatio: mine?.progressRatio ?? 0,
+        author: r.author || mine?.author || '—'
+      }
+    })
     drawerScenarios.value = list
     drawerOpen.value = true
-    if (!scenariosStore.items.length) scenariosStore.fetchMine().catch(()=>{})
+    if (!scenariosStore.items.length) scenariosStore.fetchMine().then(() => syncDrawerWithStore()).catch(()=>{})
   }).catch(()=>{})
 }
+
+// Keep drawer scenario bookmark/status in sync when user toggles favorites
+watch(() => scenariosStore.items, () => {
+  if (drawerOpen.value) syncDrawerWithStore()
+}, { deep: true })
 const loadScenarioMarkers = async () => {
   // Cleanup previous layer and index
   scenarioMarkersLayer.clearLayers()
@@ -146,6 +218,19 @@ const init = async () => {
     interactions: { scrollWheelZoom: true, doubleClickZoom: true, touchZoom: true, boxZoom: true }
   })
   map = m
+  // Try to acquire user location early (non-blocking)
+  let userLoc = null
+  try {
+    const { once } = useGeolocation()
+    ;(async () => {
+      try {
+        const c = await once().catch(() => null)
+        if (c && Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
+          userLoc = [c.latitude, c.longitude]
+        }
+      } catch { /* ignore */ }
+    })()
+  } catch { /* ignore */ }
 
   communesLayer = withLayerGroup(map)
   scenarioMarkersLayer = L.markerClusterGroup({
@@ -213,6 +298,10 @@ const init = async () => {
                 map.setView([la, lo], z, { animate: false })
               }
             }
+            // If no explicit view passed via URL, center on user location if available
+            if (!(q.lat && q.lon && q.zoom) && userLoc) {
+              map.setView(userLoc, 11, { animate: false })
+            }
             if (q.commune) {
               const cid = Number(q.commune)
               if (Number.isFinite(cid)) setTimeout(()=>selectCommune(cid), 70)
@@ -237,11 +326,45 @@ const init = async () => {
 onMounted(() => { init() })
 // No filter: load once at init or when needed
 onUnmounted(() => { if (map) map.remove() })
+
+// Recenter handler when clicking again on the global map tab
+watch(() => route.query.recenter, async (v) => {
+  if (!v) return
+  try {
+    const { once } = useGeolocation()
+    const c = await once().catch(() => null)
+    if (c && Number.isFinite(c.latitude) && Number.isFinite(c.longitude)) {
+      map.setView([c.latitude, c.longitude], 11, { animate: true })
+    }
+  } catch { /* ignore */ }
+})
 </script>
 
 <template>
   <div class="explore-layout">
     <div ref="mapEl" class="explore-map" />
+    
+    <!-- Commune search -->
+    <div class="search-panel" v-if="!loading">
+      <form class="search-form" @submit.prevent="onSearchSubmit">
+        <input
+          v-model="searchTerm"
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Commune ou code postal"
+          :disabled="searchState.loading"
+          aria-label="Rechercher une commune"
+        />
+        <button type="submit" :disabled="searchState.loading" title="Rechercher">
+          <span v-if="!searchState.loading">Rechercher</span>
+          <span v-else>…</span>
+        </button>
+      </form>
+      <div class="search-error" v-if="searchState.error">{{ searchState.error }}</div>
+    </div>
+    
     
     <div class="shape-progress" v-if="loading">
       <div class="label">Chargement des communes</div>
@@ -268,6 +391,8 @@ onUnmounted(() => { if (map) map.remove() })
 .explore-layout { position:relative; width:100%; height:100dvh; overflow:hidden; }
 .explore-map { position:absolute; inset:0; z-index:1; }
 
+/* basemap picker removed */
+
 .map-controls { position:absolute; top:12px; left:12px; z-index:5; background:rgba(15,23,42,.82); color:#e2e8f0; border:1px solid rgba(255,255,255,.12); padding:8px 10px; border-radius:10px; backdrop-filter:blur(6px); box-shadow:0 4px 12px rgba(0,0,0,0.35); }
 .map-controls .toggle { display:flex; align-items:center; gap:8px; font-size:.85rem; }
 .map-controls input { accent-color:#60a5fa; }
@@ -287,6 +412,15 @@ onUnmounted(() => { if (map) map.remove() })
   font-size: 10px;
   a { color: #cbd5e1; }
 }
+
+/* Search UI */
+.search-panel { position:absolute; top:12px; left:50%; transform:translateX(-50%); z-index:6; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.search-form { display:flex; align-items:stretch; gap:6px; background:rgba(15,23,42,.82); border:1px solid rgba(255,255,255,.12); padding:6px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.35); backdrop-filter:blur(6px); }
+.search-form input { width:min(72vw, 420px); color:#e2e8f0; background:transparent; border:none; outline:none; padding:8px 10px; font-size:14px; }
+.search-form input::placeholder { color:#94a3b8; }
+.search-form button { background:linear-gradient(135deg,#0ea5e9,#38bdf8); color:#0b1220; border:none; font-weight:700; border-radius:10px; padding:8px 12px; cursor:pointer; }
+.search-form button:disabled { filter:grayscale(.4) opacity(.75); cursor:not-allowed; }
+.search-error { background:#7f1d1d; color:#fee2e2; padding:4px 8px; font-size:12px; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,.35); }
 
 .scenario-popup { font-size:12px; line-height:1.35; }
 .scenario-popup ul { margin:4px 0 0; padding:0 0 0 16px; max-width:200px; }

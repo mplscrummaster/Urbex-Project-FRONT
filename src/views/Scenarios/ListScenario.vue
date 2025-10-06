@@ -1,10 +1,11 @@
 <script setup>
-import { useRouter } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { onMounted, ref, computed, nextTick, watch } from 'vue'
 import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioCard from '@/components/ScenarioCard.vue'
 
 const router = useRouter()
+const route = useRoute()
 const scenariosStore = useScenariosStore()
 
 // Auth gate (lightweight – relies on token presence only)
@@ -30,19 +31,69 @@ onMounted(load)
 
 const selectFilter = (name) => { activeFilter.value = name }
 
+// Selected scenario id: from URL ?scenario=, else from localStorage
+const persistedSelectedId = ref(null)
+onMounted(() => {
+  try {
+    const v = Number(localStorage.getItem('currentScenarioId'))
+    if (Number.isFinite(v)) persistedSelectedId.value = v
+  } catch { /* ignore */ }
+})
+const selectedScenarioId = computed(() => {
+  const raw = route.query?.scenario
+  const id = Number(raw)
+  if (Number.isFinite(id)) return id
+  return Number.isFinite(persistedSelectedId.value) ? persistedSelectedId.value : null
+})
+
+// Sorting rules: completed (recent first) > current started (explicitly selected if started, else most recent) > other started by startedAt desc > not_started by title
+const sortedBuckets = computed(() => {
+  const list = (scenariosStore.items || []).slice()
+  const parseTs = (s) => (s ? Date.parse(s) || 0 : 0)
+  const byTitle = (a, b) => (a.title || '').localeCompare(b.title || '')
+  const completed = list.filter((s) => s.status === 'completed').sort((a, b) => (parseTs(b.completedAt) - parseTs(a.completedAt)) || byTitle(a, b))
+  const started = list.filter((s) => s.status === 'started').sort((a, b) => parseTs(b.startedAt) - parseTs(a.startedAt))
+  let current = null
+  if (selectedScenarioId.value) {
+    current = started.find((s) => s.id === selectedScenarioId.value) || null
+  }
+  if (!current) current = started[0] || null
+  const othersStarted = current ? started.filter((s) => s.id !== current.id) : started.slice(1)
+  const notStarted = list.filter((s) => s.status === 'not_started').sort(byTitle)
+  const all = current ? [...completed, current, ...othersStarted, ...notStarted] : [...completed, ...started, ...notStarted]
+  return { all, completed, started, notStarted, currentId: current?.id || null, current, othersStarted }
+})
+
 const filteredScenarios = computed(() => {
-  const list = scenariosStore.items
   switch (activeFilter.value) {
     case 'terminés':
-      return list.filter((s) => s.status === 'completed')
+      return sortedBuckets.value.completed
     case 'commencés':
-      return list.filter((s) => s.status === 'started')
+      return sortedBuckets.value.started
     case 'pas encore':
-      return list.filter((s) => s.status === 'not_started')
+      return sortedBuckets.value.notStarted
     default:
-      return list
+      return sortedBuckets.value.all
   }
 })
+
+// Auto-scroll to the current (most recently started) scenario when visible in the list
+const scrollToCurrent = async () => {
+  await nextTick()
+  const currentId = sortedBuckets.value.currentId
+  if (!currentId) return
+  // Only scroll if current appears in the displayed array
+  const exists = filteredScenarios.value.some((s) => s.id === currentId)
+  if (!exists) return
+  const el = document.getElementById(`scenario-${currentId}`)
+  if (el) {
+    try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }) } catch { /* noop */ }
+  }
+}
+
+watch(() => uiLoading.value, (nv, ov) => { if (ov && !nv) scrollToCurrent() })
+watch(activeFilter, () => scrollToCurrent())
+watch(selectedScenarioId, () => scrollToCurrent())
 
 const scenarioClicked = (s) => {
   router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'list' } })
@@ -65,12 +116,85 @@ const scenarioClicked = (s) => {
     <div v-if="scenariosStore.loading" style="color:#aaa;">Chargement...</div>
     <div v-else-if="!filteredScenarios.length" style="color:#aaa;">Aucun scénario bookmarké pour l'instant.</div>
     <div v-else class="cards-list">
-      <ScenarioCard
-        v-for="scenario in filteredScenarios"
-        :key="scenario.id"
-        :scenario="scenario"
-        @select="scenarioClicked"
-      />
+      <!-- ALL: show all groups with separators -->
+      <template v-if="activeFilter === 'all'">
+        <div v-if="sortedBuckets.completed.length" class="group">
+          <div class="group__title">Terminés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.completed" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+        <div v-if="sortedBuckets.current" class="group">
+          <div class="group__title">En cours</div>
+          <div class="group__list">
+            <div class="cards-list__item" :id="`scenario-${sortedBuckets.current.id}`">
+              <ScenarioCard :scenario="sortedBuckets.current" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+        <div v-if="sortedBuckets.othersStarted.length" class="group">
+          <div class="group__title">Commencés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.othersStarted" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+        <div v-if="sortedBuckets.notStarted.length" class="group">
+          <div class="group__title">Pas encore commencés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.notStarted" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- TERMINÉS only -->
+      <template v-else-if="activeFilter === 'terminés'">
+        <div class="group">
+          <div class="group__title">Terminés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.completed" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- COMMENCÉS (current + others) -->
+      <template v-else-if="activeFilter === 'commencés'">
+        <div v-if="sortedBuckets.current" class="group">
+          <div class="group__title">En cours</div>
+          <div class="group__list">
+            <div class="cards-list__item" :id="`scenario-${sortedBuckets.current.id}`">
+              <ScenarioCard :scenario="sortedBuckets.current" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+        <div v-if="sortedBuckets.othersStarted.length" class="group">
+          <div class="group__title">Commencés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.othersStarted" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- PAS ENCORE -->
+      <template v-else-if="activeFilter === 'pas encore'">
+        <div class="group">
+          <div class="group__title">Pas encore commencés</div>
+          <div class="group__list">
+            <div v-for="s in sortedBuckets.notStarted" :key="s.id" class="cards-list__item" :id="`scenario-${s.id}`">
+              <ScenarioCard :scenario="s" @select="scenarioClicked" />
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -180,5 +304,11 @@ const scenarioClicked = (s) => {
   .loading-state, .error-state, .empty-state { padding:1rem; font-size:.85rem; color:#ccc; }
   .hidden { display:none; }
 .cards-list { display:flex; flex-direction:column; gap:14px; }
+.cards-list__item { scroll-margin-block: 40vh; }
+
+.group { display:flex; flex-direction:column; gap:10px; }
+.group + .group { margin-top: 12px; }
+.group__title { font-size: .9rem; font-weight: 700; letter-spacing: .4px; color: $color-text-dim; text-transform: uppercase; padding: 2px 4px; }
+.group__list { display:flex; flex-direction:column; gap:14px; }
 
 </style>

@@ -6,7 +6,7 @@ const store = useScenariosStore()
 onMounted(() => { store.refreshAll().catch(()=>{}) })
 </script>
 <template>
-  <main class="scenarios-view">
+  <main class="scenarios-view with-tabbar-padding">
     <h2 class="heading">Mes scénarios</h2>
     <div class="list" v-if="store.items.length">
       <ScenarioCard v-for="s in store.items" :key="s.id" :scenario="s" />

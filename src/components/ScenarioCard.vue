@@ -66,9 +66,13 @@ const statusClass = computed(() => {
 
 const toggleBookmark = async () => {
   try {
-    await store.toggleBookmark(props.scenario.id, {
+    const ok = await store.toggleBookmark(props.scenario.id, {
       confirmCallback: async () => window.confirm('Confirmer la suppression du favori et de la progression ?'),
     })
+    if (ok) {
+      // Optionally reflect immediate UI state: rely on props reactive update via store watchers
+      // No direct mutation of props.scenario here to avoid breaking uni-directional data flow
+    }
   } catch {
     // silent
   }
@@ -83,6 +87,7 @@ const handleSelect = () => {
     router.push({ name: 'scenario-detail', params: { id: props.scenario.id } }).catch(() => {})
   }
 }
+
 </script>
 <style scoped lang="scss">
 @use '@/styles/theme.scss' as *;
@@ -104,6 +109,7 @@ const handleSelect = () => {
 .title { flex:1; margin:0; font-size:15px; font-weight:600; color:$color-text; letter-spacing:.3px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .scenario-card.compact .title { font-size:14px; }
 .author { margin:0; font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:500; color:$color-text-dim; }
+
 
 .bookmark-btn { background:rgba(0,0,0,.25); border:1px solid $color-border; border-radius:8px; padding:.3rem .5rem .25rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .25s, border-color .25s; }
 .bookmark-btn:hover { background:$color-surface-alt; border-color:$color-accent; }
