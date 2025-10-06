@@ -1,11 +1,28 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
 const route = useRoute()
+const router = useRouter()
 const users = useUsersStore()
 // Optionally hide on auth pages only (reactive)
 const hidden = computed(() => ['login','register'].includes(route.name))
+
+// If user clicks again on the current map tab while already on it, force a recenter via query param
+const onClickMapCurrent = (e) => {
+  if (route.name === 'map-current') {
+    e.preventDefault()
+    router.push({ name: 'map-current', query: { recenter: Date.now() } }).catch(() => {})
+  }
+}
+
+// Same logic for global map: re-click recenters to user position
+const onClickMapGlobal = (e) => {
+  if (route.name === 'map-global') {
+    e.preventDefault()
+    router.push({ name: 'map-global', query: { recenter: Date.now() } }).catch(() => {})
+  }
+}
 </script>
 
 <template>
@@ -13,10 +30,10 @@ const hidden = computed(() => ['login','register'].includes(route.name))
   <RouterLink active-class="active" :to="{ name: 'scenarios-list' }" aria-label="Scénarios">
       <span class="material-symbols-outlined">format_list_bulleted</span>
     </RouterLink>
-  <RouterLink active-class="active" :to="{ name: 'map-global' }" aria-label="Carte globale">
+  <RouterLink active-class="active" :to="{ name: 'map-global' }" aria-label="Carte globale" @click="onClickMapGlobal">
       <span class="material-symbols-outlined">map</span>
     </RouterLink>
-  <RouterLink active-class="active" :to="{ name: 'map-current' }" aria-label="Carte actuelle / position">
+  <RouterLink active-class="active" :to="{ name: 'map-current' }" aria-label="Carte actuelle / position" @click="onClickMapCurrent">
       <span class="material-symbols-outlined">my_location</span>
     </RouterLink>
     <RouterLink active-class="active" to="/leaderboard" aria-label="Classement">

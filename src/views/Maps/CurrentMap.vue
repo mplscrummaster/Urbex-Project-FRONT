@@ -184,7 +184,7 @@ const createUserIcon = () => {
 const updateUserMarker = (latitude, longitude, initial = false) => {
   if (!map) return
   if (initial) {
-    map.setView([latitude, longitude], 14)
+    map.setView([latitude, longitude], 15)
   }
   if (userMarker.value) {
     userMarker.value.setLatLng([latitude, longitude])
@@ -206,9 +206,26 @@ const locateUser = () => {
     updateUserMarker(latitude, longitude, true)
     startGeo()
   }).catch(() => {
-    map.setView([50.64028, 4.66671], 8)
+    // If we already have a last known coordinate, use it for recenter, otherwise fallback
+    const lat = coords.value?.latitude
+    const lon = coords.value?.longitude
+    if (Number.isFinite(lat) && Number.isFinite(lon)) {
+      map.setView([lat, lon], 15)
+    } else {
+      map.setView([50.64028, 4.66671], 8)
+    }
     plotMissions()
   })
+}
+
+const recenterNow = () => {
+  const lat = coords.value?.latitude
+  const lon = coords.value?.longitude
+  if (Number.isFinite(lat) && Number.isFinite(lon)) {
+    map.setView([lat, lon], 15)
+  } else {
+    locateUser()
+  }
 }
 
 onMounted(async () => {
@@ -238,6 +255,10 @@ onMounted(async () => {
       await loadFullIfNeeded()
     }
   }, { immediate: true })
+  // Recenter when query param 'recenter' changes (e.g., user re-clicks tab)
+  watch(() => route.query.recenter, (v) => {
+    if (v) recenterNow()
+  })
 })
 
 onUnmounted(() => {
