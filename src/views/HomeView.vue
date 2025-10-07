@@ -18,7 +18,7 @@ const isAuthenticated = computed(() => !!users.tokenUser)
       </div>
     </div>
   </div>
- </template>
+</template>
 
 <style lang="scss" scoped>
 .background {
@@ -34,14 +34,107 @@ const isAuthenticated = computed(() => !!users.tokenUser)
   z-index: -1;
 }
 
-.home-container { display:flex; flex-direction:column; align-items:center; justify-content:center; height:80dvh; text-align:center; gap:16px; position:relative; }
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  text-align: center;
+  gap: 16px;
+  position: relative;
+}
 
-.slogan { font-size: 42px; font-weight: 700; color:#fff; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 0 10px rgba(255,255,255,.6); margin: 8px 0 0; }
+.slogan {
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, .6);
+  margin: 8px 0 0;
+}
 
-.ctas { display:flex; gap:14px; margin-top: 16px; flex-wrap: wrap; justify-content: center; }
-.btn { display:inline-flex; align-items:center; justify-content:center; padding:.6rem 1rem; border-radius:12px; text-decoration:none; font-weight:700; letter-spacing:.5px; transition: all .25s ease; }
-.btn.primary { background: linear-gradient(90deg,#2563eb,#1d4ed8); color:#fff; }
-.btn.primary:hover { filter: brightness(1.1); }
-.btn.outline { border:1px solid rgba(255,255,255,.35); color:#fff; }
-.btn.outline:hover { border-color:#fff; }
+.ctas {
+  display: flex;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .6rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .5px;
+  transition: all .25s ease;
+}
+
+.btn.primary {
+  position: relative;
+  background: linear-gradient(135deg, #4b4237, #2c2a26);
+  color: #f5f5f5;
+  border: 1px solid #6b6558;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 2px 5px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn.primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/img/crack-texture.png'); // create or find a subtle cracked texture
+  background-size: cover;
+  opacity: 0.2; // subtle cracks
+  pointer-events: none;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #5c5546, #3a362f);
+  transform: translateY(-2px);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6), 0 3px 7px rgba(0, 0, 0, 0.5);
+}
+
+.btn.outline {
+  position: relative;
+  border: 2px solid #7d7466;
+  color: #f5f5f5;
+  background: rgba(50, 45, 40, 0.3); // semi-dark background for contrast
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  z-index: 2;
+  backdrop-filter: blur(8px);
+}
+
+.btn.outline::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/img/crack-texture.png'); // your crack texture
+  background-size: cover;
+  opacity: 0.2; // make it more visible
+  mix-blend-mode: multiply; // blend with background
+  pointer-events: none;
+  z-index: 1; // behind the text automatically
+}
+
+
+.btn.outline:hover {
+  background: rgba(125, 116, 102, 0.2);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
 </style>
