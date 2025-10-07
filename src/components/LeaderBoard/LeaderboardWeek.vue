@@ -14,7 +14,7 @@ const week = Array.from({ length: 10 }, (_, i) => ({ rank: i + 1, name: `Joueur 
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/theme.scss' as *;
+@use '@/styles/abstracts' as *;
 .leaderboard-list { display:flex; flex-direction:column; gap:10px; padding:8px 0 80px; }
 .row { display:flex; align-items:center; gap:12px; background:$color-surface; border:1px solid $color-border; border-radius:14px; padding:10px 12px; box-shadow:0 3px 10px -4px rgba(0,0,0,.55); }
 .rank { width:34px; text-align:center; font-weight:700; color:$color-text; }

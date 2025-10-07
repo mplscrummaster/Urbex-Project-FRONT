@@ -14,7 +14,7 @@ export const apiFetch = async (
     const token = getAuthToken()
     if (token) headers.Authorization = `Bearer ${token}`
   }
-  console.log(body)
+  // no debug logs in production
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
@@ -24,7 +24,6 @@ export const apiFetch = async (
   let json = null
   try {
     json = await response.json()
-    console.log(json)
   } catch {
     /* non JSON */
   }

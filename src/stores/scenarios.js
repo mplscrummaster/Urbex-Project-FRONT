@@ -100,10 +100,14 @@ export const useScenariosStore = defineStore('scenarios', {
         this.fullLoading = false
       }
     },
-    async toggleBookmark(id, opts = { confirmCallback: null }) {
+    async toggleBookmark(id, opts = { confirmCallback: null, fromState: undefined }) {
+      // toggle bookmark (no verbose logs)
       const item = this.items.find((i) => i.id === id)
       const full = this.fullCache[id]
-      const isBookmarked = item?.bookmarked || full?.progress?.scenario.bookmarked
+      // Determine current bookmarked state in a way that's stable even if the caller performed
+      // optimistic updates on fullCache. Prefer explicit fromState, then items (authoritative list).
+      const isBookmarked =
+        typeof opts?.fromState === 'boolean' ? opts.fromState : item?.bookmarked === true
       // If unbookmarking & scenario has progress beyond not_started -> need confirmation
       if (isBookmarked) {
         const hasProgress =
@@ -116,9 +120,37 @@ export const useScenariosStore = defineStore('scenarios', {
         await ScenariosAPI.unbookmark(id)
         this.items = this.items.filter((s) => s.id !== id)
         delete this.fullCache[id]
+        // unbookmark done
       } else {
+        // bookmark flow
         await ScenariosAPI.bookmark(id)
+        // Optimistic add to list so UI reflects immediately
+        const exists = this.items.some((s) => s.id === id)
+        if (!exists) {
+          const cached = this.fullCache[id]
+          const title = cached?.scenario?.title || cached?.scenario?.title_scenario || '—'
+          const author = cached?.scenario?.author || '—'
+          const status = cached?.progress?.scenario?.status || 'not_started'
+          this.items.push({
+            id,
+            title,
+            status,
+            bookmarked: true,
+            startedAt: cached?.progress?.scenario?.started_at || null,
+            completedAt: cached?.progress?.scenario?.completed_at || null,
+            progressRatio: status === 'completed' ? 1 : status === 'started' ? 0.4 : 0,
+            author,
+          })
+          // inserted into list (optimistic)
+        } else {
+          // Ensure it's flagged as bookmarked
+          const ref = this.items.find((s) => s.id === id)
+          if (ref) ref.bookmarked = true
+          // flagged existing item as bookmarked
+        }
+        // Refresh from server to reconcile
         await this.fetchMine(true)
+        // fetchMine reconciled
       }
       return true
     },

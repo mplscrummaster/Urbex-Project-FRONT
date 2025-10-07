@@ -66,8 +66,8 @@ Named routes used across the app (kebab-case):
 - register → `/register`
 - scenarios-list → `/scenario`
 - scenario-detail → `/scenario/:id`
-- map-global → `/global-map`
-- map-current → `/current-map`
+- explore-map → `/explore-map` (legacy: `/global-map` redirects)
+- game-map → `/game-map` (legacy: `/current-map` redirects)
 - leaderboard → `/leaderboard` with children:
   - leaderboard-global → `/leaderboard`
   - leaderboard-weeks → `/leaderboard/weeks`
@@ -95,7 +95,7 @@ All API access is centralized under `src/services`:
 
 ## State and naming conventions
 
-- Components/views: PascalCase filenames (e.g. `GlobalMap.vue`, `ScenarioDetail.vue`).
+- Components/views: PascalCase filenames (e.g. `ExploreMapView.vue`, `ScenarioInfoView.vue`).
 - Routes: kebab-case names (see above).
 - Variables/functions: camelCase.
 - Constants: UPPER_SNAKE_CASE.
@@ -106,7 +106,7 @@ All API access is centralized under `src/services`:
 
 ## Maps quick notes
 
-- Global map in `src/views/Maps/GlobalMap.vue` renders commune polygons and clustered scenario markers.
+- Global map in `src/views/ExploreMapView.vue` renders commune polygons and clustered scenario markers.
 - `publishedOnly` toggle reloads markers via `ScenariosAPI.listScenarioCommunes({ published })`.
 - Drawer shows `ScenarioCard`s; selecting navigates to `scenario-detail` while preserving map state in query.
 

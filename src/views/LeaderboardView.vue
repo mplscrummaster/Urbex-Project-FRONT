@@ -10,12 +10,3 @@ import NavbarLeaderBoard from '@/components/NavbarLeaderBoard.vue'
     <RouterView />
   </div>
 </template>
-<style lang="scss" scoped>
-.listUsers {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-  align-items: center;
-}
-</style>

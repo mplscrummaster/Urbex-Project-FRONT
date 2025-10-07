@@ -1,0 +1,157 @@
+@use '../abstracts' as *;
+
+.c-scenario-card {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  inline-size: 100%;
+  padding: 1rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-surface-alt;
+  }
+
+  &--started:not(.c-scenario-card--completed) {
+    border-color: rgba(255, 200, 60, 1);
+  }
+
+  &--completed {
+    border-color: $color-success;
+  }
+
+  &--not-started {
+    border-color: rgba(148, 163, 184, 1);
+  }
+
+  &__media {
+    flex-shrink: 0;
+  }
+
+  &__thumb {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 100%;
+    aspect-ratio: 1 / 1;
+    background: #273340;
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  &__thumb-icon {
+    font-size: 2rem;
+    line-height: 1;
+    color: $color-accent;
+    font-variation-settings:
+      'FILL' 1,
+      'opsz' 24,
+      'wght' 400;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    inline-size: 100%;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    inline-size: 100%;
+  }
+
+  &__title {
+    flex: 1;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $color-text;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__author {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    color: $color-text-dim;
+  }
+
+  &__bookmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  &__bookmark:hover {
+    background: $color-surface-alt;
+    border-color: $color-accent;
+  }
+
+  &__bookmark-icon {
+    font-size: 2rem;
+    line-height: 1;
+    color: $color-text-dim;
+    transition: color 0.25s;
+  }
+
+  &__bookmark--active &__bookmark-icon {
+    color: $color-accent;
+  }
+
+  &__bookmark-icon--fill {
+    font-variation-settings: 'FILL' 1;
+  }
+
+  &__progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__progress-bar {
+    position: relative;
+    flex: 1;
+    block-size: 0.5rem;
+    background: #273340;
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    inline-size: 0;
+    transition: width 0.35s ease;
+  }
+
+  &__progress-meta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $color-text-dim;
+  }
+
+  &--not-started &__progress-fill {
+    background: #475569;
+  }
+}
