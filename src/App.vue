@@ -37,7 +37,11 @@ body {
 main {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  height: 100dvh;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 /* per-view spacing: handled inside each view to avoid global margins */

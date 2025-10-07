@@ -23,8 +23,6 @@ onMounted(() => {
     const seconds = now.getSeconds() < 10 ? "0" + now.getSeconds() : now.getSeconds();
     time.value = `${hours} : ${minutes} : ${seconds}`;
 
-    console.log(`${hours} : ${minutes} : ${seconds}`)
-    console.log("time.value", time.value)
   }, 1000);
 
   animIntervalId = setInterval(() => {
