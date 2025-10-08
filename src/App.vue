@@ -26,7 +26,7 @@
 </template>
 
 <style lang="scss">
-  @use '@/styles/theme.scss' as *;
+  @use '@/styles/abstracts' as *;
 
   body {
     margin: 0;
