@@ -8,7 +8,7 @@
 
 <template>
   <div class="home-view with-tabbar-padding">
-    <div class="background"></div>
+    <div class="backgroundHome"></div>
     <div class="home-container">
       <GlitchClock />
       <h1 class="slogan">Join us today</h1>

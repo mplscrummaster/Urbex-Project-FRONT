@@ -1,124 +1,206 @@
-// Login view styles
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/img/homepage.png'); // your base image
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: brightness(0.65) contrast(1) saturate(0.7);
+  z-index: -2;
+}
+
+.login_form_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Login form */
 .login_form {
-  background-color: #ffffff;
-  padding: 40px;
-  margin-block-start: 5rem;
+  background-color: #3a362f47;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: 'Courier New', monospace;
+  color: #ddd;
+  box-shadow: 0 0 12px 0px rgba(0, 0, 0, 0.85);
+  padding: 50px;
+  /* increased padding */
+  width: 100%;
+  max-width: 500px;
+  /* increased max width */
+  position: relative;
+}
+
+/* Form groups */
+.login_form__group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  &--password {
+    .login_form__input {
+      flex: 1;
+      padding-right: 3rem;
+    }
+  }
+}
+
+.login_form__input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: rgba(43, 43, 43, 0.8);
+  color: #ddd;
+  font-size: 1rem;
+  width: 100%;
   transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+    border 0.3s,
+    background 0.3s;
 
-  &__group {
-    margin-bottom: 0;
-    display: flex;
-    align-items: center;
-    width: 100%;
-
-    &--password {
-      .login_form__input {
-        flex: 1;
-        padding-right: 2.5rem;
-      }
-    }
+  &:focus {
+    outline: none;
+    border-color: #999;
+    background-color: rgba(51, 51, 51, 0.9);
   }
 
-  &__input {
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-    width: 100%;
-    background-color: #f5f5f5;
-    color: #333;
-    transition:
-      border 0.2s,
-      background 0.2s;
-    &:focus {
-      outline: none;
-      border-color: #888;
-      background-color: #eaeaea;
-    }
+  &::placeholder {
+    color: #aaa;
   }
+}
 
-  &__toggle_eye {
-    position: absolute;
-    right: 50px;
-    width: 24px;
-    height: 24px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
+.login_form__toggle_eye {
+  position: absolute;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
 
-    &:hover svg {
-      stroke: #6f0202;
-    }
-  }
-
-  &__submit {
-    padding: 14px;
-    background-color: #666;
+  &:hover {
     color: #fff;
-    border: none;
-    border-radius: 12px;
+  }
+}
+
+.login_form__submit {
+  position: relative;
+  background: linear-gradient(135deg, #4b4237, #2c2a26);
+  color: #f5f5f5;
+  border: 1px solid #6b6558;
+  box-shadow:
+    inset 0 0 5px rgba(0, 0, 0, 0.5),
+    0 2px 5px rgba(0, 0, 0, 0.4);
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/img/crack-texture.png');
+    background-size: cover;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, #5c5546, #3a362f);
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 8px rgba(0, 0, 0, 0.6),
+      0 3px 7px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.login_form__forgot_pass {
+  text-align: center;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #ccc;
+  }
+}
+
+/* Social login buttons */
+.social_login {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  &__button {
+    position: relative;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4b4237, #2c2a26);
+    color: #f5f5f5;
+    border: 1px solid #6b6558;
     font-size: 1rem;
     cursor: pointer;
-    transition:
-      background 0.3s,
-      transform 0.2s;
+    overflow: hidden;
+    box-shadow:
+      inset 0 0 5px rgba(0, 0, 0, 0.5),
+      0 2px 5px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('/img/crack-texture.png');
+      background-size: cover;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
     &:hover {
-      background-color: #555;
+      background: linear-gradient(135deg, #5c5546, #3a362f);
       transform: translateY(-2px);
+      box-shadow:
+        inset 0 0 8px rgba(0, 0, 0, 0.6),
+        0 3px 7px rgba(0, 0, 0, 0.5);
     }
   }
+}
 
-  &__forgot_pass {
-    margin-top: 12px;
-    text-align: center;
-    color: #666;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: color 0.2s;
-    &:hover {
-      color: #333;
-    }
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .login_form {
+    padding: 40px 25px;
   }
 
-  .social_login {
-    bottom: 20px;
-    width: 100%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-
-    &__button {
-      background-color: #e0e0e0;
-      color: #333;
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition:
-        background 0.3s,
-        transform 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      &:hover {
-        background-color: #ccc;
-        transform: translateY(-2px);
-      }
-    }
+  .social_login__button {
+    width: 60px;
+    height: 60px;
+    font-size: 0.8rem;
   }
 }
