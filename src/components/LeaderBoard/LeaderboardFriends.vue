@@ -1,15 +1,30 @@
 <script setup>
+  import { useUsersStore } from '@/stores/users'
+  import { onMounted, ref } from 'vue'
   import LeaderboardUser from './LeaderboardUserItem.vue'
-  const friends = Array.from({ length: 5 }, (_, i) => ({
-    nickname: `Joueur ${i + 1}`,
-    url_img_avatar: '/urbex-front/public/img/profile-placeholder.png',
-    score: 200 - i * 7,
-  }))
+
+  const usersStore = useUsersStore()
+
+  let friendsArray = ref(null)
+
+  onMounted(async () => {
+    //je récup les amis
+    let data = await usersStore.getAllFriends()
+    //Je me récupère moi
+    const me = await usersStore.getMeInfo();
+
+    data = [...data, me];
+    console.log("friends", data);
+    console.log("me", me);
+
+    //Tri decroissant des utilisateur en fonction du score
+    friendsArray.value = data.sort((a, b) => b.score - a.score)
+  })
 </script>
 
 <template>
-  <div v-for="(user, key) in friends" :key="key">
-    <LeaderboardUser :user="user" :id="key" class="friend" />
+  <div v-for="(user, key) in friendsArray" :key="key">
+    <LeaderboardUser :user="user" :id="key" />
   </div>
 </template>
 

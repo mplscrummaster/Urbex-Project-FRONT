@@ -10,6 +10,7 @@
       type: Number,
       required: true,
     },
+
   })
 
   //Si l'url est null, on met le placeholder
@@ -17,11 +18,17 @@
     props.user.url_img_avatar = '/urbex-front/public/img/profile-placeholder.png'
     // console.log(props.user.url_img_avatar)
   }
+
+  //Pour l'affichage de la classe "me"
+  let isMe = false;
+  console.log("props.user.user_id", props.user.user_id)
+  if (props.user.user_id)
+    isMe = true;
 </script>
 
 <template>
 
-  <div class="row" :class="{ first: props.id === 0, second: props.id === 1, third: props.id === 2 }">
+  <div class="row" :class="{ first: props.id === 0, second: props.id === 1, third: props.id === 2, me: isMe === true }">
     <div class="rank">{{ props.id + 1 }}</div>
     <img class="avatar" :src="props.user.url_img_avatar" aria-hidden="true" />
     <div class="name">{{ props.user.nickname }}</div>
@@ -66,6 +73,10 @@
     .xp {
       color: #a16207;
     }
+  }
+
+  .me {
+    background-color: red;
   }
 
   .rank {

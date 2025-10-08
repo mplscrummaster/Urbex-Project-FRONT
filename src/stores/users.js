@@ -92,5 +92,14 @@ export const useUsersStore = defineStore('storeUsers', {
         return null
       }
     },
+    getAllFriends: async () => {
+      try {
+        const response = await AuthAPI.friends()
+        return response
+      } catch (error) {
+        console.error('Impossible de récupérer les amis : ', error?.message || error)
+        return null
+      }
+    },
   },
 })

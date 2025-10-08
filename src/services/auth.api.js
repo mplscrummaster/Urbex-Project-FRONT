@@ -22,7 +22,11 @@ export const AuthAPI = {
   updatePlayer(data) {
     return apiFetch('/me/player', { method: 'PUT', auth: true, body: data })
   },
+  friends() {
+    return apiFetch('/me/friends', { auth: true })
+  },
   players() {
     return apiFetch('/players', { auth: true })
   },
+
 }
