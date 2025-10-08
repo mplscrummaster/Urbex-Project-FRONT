@@ -1,0 +1,27 @@
+@use '../abstracts' as *;
+
+.u-text-dim {
+  color: $color-text-dim;
+}
+.u-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2f3237 20%, #2f3237 80%, transparent);
+  margin: 0.75rem 0;
+}
+
+/* Removed global fade transition utility (no <Transition name="fade"> used) */
+
+/* Legacy alias utilities (kept for compatibility) */
+.text-dim {
+  color: $color-text-dim;
+}
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2f3237 20%, #2f3237 80%, transparent);
+  margin: 0.75rem 0;
+}
+
+/* Page content spacer to avoid bottom user bar overlap */
+.with-tabbar-padding {
+  padding-bottom: var(--user-bar-h, 64px);
+}

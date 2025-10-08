@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { CommunesAPI } from '@/services/api'
+import { CommunesAPI, ScenariosAPI } from '@/services/api'
 
 export const useCommunesStore = defineStore('communes', {
   state: () => ({
@@ -9,6 +9,11 @@ export const useCommunesStore = defineStore('communes', {
     byId: {},
     scenarioIndex: {},
     preloadedScenarios: false,
+    // Cached map data
+    shapesFc: null, // GeoJSON FeatureCollection
+    shapesLoaded: false,
+    pins: [], // scenario-communes links for map markers
+    pinsLoaded: false,
   }),
   actions: {
     async fetchAll(force = false) {
@@ -56,6 +61,65 @@ export const useCommunesStore = defineStore('communes', {
         await Promise.all(slice.map((id) => this.fetchOne(id).catch(() => {})))
         await new Promise((r) => setTimeout(r, delayMs))
       }
+    },
+    async prefetchShapes(force = false) {
+      if (this.shapesLoaded && !force) return this.shapesFc
+      try {
+        let fc = null
+        try {
+          fc = await CommunesAPI.shapesFeatureCollection()
+        } catch {
+          fc = null
+        }
+        let feats = fc?.features || []
+        if (!feats.length) {
+          try {
+            const rows = await CommunesAPI.shapesAll()
+            const built = []
+            for (const r of rows || []) {
+              if (!r?.geo_shape_geojson) continue
+              try {
+                const geom = JSON.parse(r.geo_shape_geojson)
+                built.push({ type: 'Feature', geometry: geom, properties: { id: r.id } })
+              } catch {
+                /* ignore malformed geom */
+              }
+            }
+            feats = built
+            fc = { type: 'FeatureCollection', features: feats }
+          } catch {
+            // keep empty
+          }
+        }
+        this.shapesFc = fc || { type: 'FeatureCollection', features: feats }
+        this.shapesLoaded = true
+        return this.shapesFc
+      } catch {
+        this.shapesFc = { type: 'FeatureCollection', features: [] }
+        this.shapesLoaded = true
+        return this.shapesFc
+      }
+    },
+    async getShapes() {
+      if (!this.shapesLoaded) await this.prefetchShapes()
+      return this.shapesFc?.features || []
+    },
+    async prefetchScenarioPins(force = false) {
+      if (this.pinsLoaded && !force) return this.pins
+      try {
+        const rows = await ScenariosAPI.listScenarioCommunes()
+        this.pins = Array.isArray(rows) ? rows : []
+        this.pinsLoaded = true
+        return this.pins
+      } catch {
+        this.pins = []
+        this.pinsLoaded = true
+        return this.pins
+      }
+    },
+    async getScenarioPins() {
+      if (!this.pinsLoaded) await this.prefetchScenarioPins()
+      return this.pins
     },
   },
 })

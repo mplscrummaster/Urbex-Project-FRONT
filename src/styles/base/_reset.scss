@@ -1,0 +1,59 @@
+@use '../abstracts' as *;
+
+/* Universal box-sizing and margin/padding reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base sizing for app container */
+html,
+body,
+#app {
+  height: 100%;
+}
+
+/* Body baseline */
+body {
+  background: linear-gradient(160deg, #141417, #1d1f23 55%, #17181b);
+  color: $color-text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Media elements */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form elements inherit typography and have no default spacing */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+}
+
+/* Links inherit color, remove default underline; components add their own */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}

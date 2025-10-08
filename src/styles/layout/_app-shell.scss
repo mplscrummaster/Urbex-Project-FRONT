@@ -1,0 +1,20 @@
+@use '../abstracts' as *;
+
+/* App shell: grid layout for main to allocate tab bar space */
+main {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden; /* prevent page scroll; content area should manage its own scroll if needed */
+}
+
+main > .content {
+  min-height: 0; /* allow child to shrink inside grid */
+  overflow: hidden; /* map/pages can manage internal scroll if necessary */
+}
+
+main > .bottom {
+  /* bottom area reserved for the tab bar; no fixed positioning needed */
+  min-height: 0; /* keeps linter happy without affecting layout */
+}
