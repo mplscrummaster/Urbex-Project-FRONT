@@ -1,21 +1,6 @@
 <script setup>
 /*
-  Détail d'un scénario (Vue 3)
-  --------------------------------------------------
-  Objectifs
-  - Afficher toutes les infos d'un scénario : intro, missions, conclusion, progression
-  - Permettre la navigation, le bookmarking, le démarrage et la validation du scénario
-  - Gérer l'état des missions (verrouillées, complétées, réponses, distance)
-
-  Principes
-  - Données gérées via Pinia (scenariosStore)
-  - Navigation contextuelle (retour vers la bonne vue)
-  - Collapsibles pour intro, missions, outro
-  - Géolocalisation pour missions à proximité
-  - Gestion des erreurs et des états UI
-*/
-/*
-  Détail d'un scénario (Vue 3)
+  Détail d'un scénario
   --------------------------------------------------
   Objectifs
   - Afficher toutes les infos d'un scénario : intro, missions, conclusion, progression
