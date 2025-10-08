@@ -4,11 +4,10 @@ import { AuthAPI } from '@/services/api'
 
 export const useUsersStore = defineStore('storeUsers', {
   state: () => ({
-    users: [],
+    users: null,
     currentIdUser: null,
     tokenUser: localStorage.getItem('tokenUser'),
   }),
-
   actions: {
     async loginUser(email, password) {
       try {
@@ -30,19 +29,33 @@ export const useUsersStore = defineStore('storeUsers', {
         localStorage.setItem('tokenUser', this.tokenUser)
         // Créer/mettre à jour le profil joueur si fourni
         if (nickname || bio) {
-          try { await AuthAPI.updatePlayer({ nickname, bio }) } catch (e) { console.warn('updatePlayer optional failed:', e?.message || e) }
+          try {
+            await AuthAPI.updatePlayer({ nickname, bio })
+          } catch (e) {
+            console.warn('updatePlayer optional failed:', e?.message || e)
+          }
         }
         router.replace('/scenario')
       } catch (error) {
         console.error('Erreur inscription:', error?.message || error)
-        alert("Enregistrement impossible. Veuillez réessayer.")
+        alert('Enregistrement impossible. Veuillez réessayer.')
       }
     },
     async getMeInfo() {
-      try { return await AuthAPI.player() } catch (e) { console.error('getMeInfo error:', e?.message || e); return null }
+      try {
+        return await AuthAPI.player()
+      } catch (e) {
+        console.error('getMeInfo error:', e?.message || e)
+        return null
+      }
     },
     async setMeInfo(username, bio, url_img_avatar) {
-      try { return await AuthAPI.updatePlayer({ nickname: username, bio, url_img_avatar }) } catch (e) { console.error('setMeInfo error:', e?.message || e); return null }
+      try {
+        return await AuthAPI.updatePlayer({ nickname: username, bio, url_img_avatar })
+      } catch (e) {
+        console.error('setMeInfo error:', e?.message || e)
+        return null
+      }
     },
     // Hydrate store from existing localStorage token at app bootstrap
     async hydrate() {
@@ -64,7 +77,20 @@ export const useUsersStore = defineStore('storeUsers', {
       this.tokenUser = null
       this.currentIdUser = null
       localStorage.removeItem('tokenUser')
-      try { router.replace('/login') } catch (e) { console.warn('Router replace failed during logout:', e?.message) }
+      try {
+        router.replace('/login')
+      } catch (e) {
+        console.warn('Router replace failed during logout:', e?.message)
+      }
+    },
+    getAllUsers: async () => {
+      try {
+        const response = await AuthAPI.players()
+        return response
+      } catch (error) {
+        console.error('Impossible de récupérer les utilisateurs : ', error?.message || error)
+        return null
+      }
     },
   },
 })

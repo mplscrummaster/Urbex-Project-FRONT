@@ -68,10 +68,11 @@ const router = createRouter({
       component: Leaderboard,
       meta: { requiresAuth: true },
       children: [
-        { path: '', name: 'leaderboard-global', component: LeaderboardGlobal },
-        { path: 'global', redirect: { name: 'leaderboard-global' } },
+        { path: 'global', name: 'leaderboard-global', component: LeaderboardGlobal },
         { path: 'weeks', name: 'leaderboard-weeks', component: LeaderboardWeek },
         { path: 'friends', name: 'leaderboard-friends', component: LeaderboardFriends },
+        //Redirect pour ne pas tomber sur une page sans rien
+        { path: '', redirect: { name: 'leaderboard-global' } },
       ],
     },
     { path: '/userProfile', redirect: '/user-profile' },

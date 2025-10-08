@@ -22,4 +22,7 @@ export const AuthAPI = {
   updatePlayer(data) {
     return apiFetch('/me/player', { method: 'PUT', auth: true, body: data })
   },
+  players() {
+    return apiFetch('/players', { auth: true })
+  },
 }
