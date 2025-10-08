@@ -223,34 +223,30 @@ const toggleBookmarkDetail = async () => {
   if (!full.value) return
   bookmarkError.value = null
   const currentlyBookmarked = isBookmarked.value
-  // No-op logging in production
   const needsConfirm = isBookmarked.value && full.value.progress?.scenario.status !== 'not_started'
-  const confirmCallback = async () => {
-    if (!needsConfirm) return true
-    return window.confirm(
+  // Demande de confirmation avant de modifier l'état local
+  if (needsConfirm) {
+    const confirmed = window.confirm(
       'Retirer ce scénario supprimera aussi toute votre progression. Confirmer ?',
     )
+    if (!confirmed) return
   }
   let prevBookmark = null
   let currentId = null
   let storeItem = null
   try {
     bookmarking.value = true
-    // Optimistic toggle for immediate UI feedback
     currentId = full.value.scenario.id
     storeItem = store.items.find((s) => s.id === currentId)
     prevBookmark = storeItem ? storeItem.bookmarked : null
     const nextState = !currentlyBookmarked
-    // optimistic state applied
+    // Applique le changement visuel seulement si confirmé
     if (storeItem) storeItem.bookmarked = nextState
-    // Ensure both progress.scenario and scenario fields reflect the optimistic state
     if (!full.value.progress) full.value.progress = { scenario: {} }
     if (!full.value.progress.scenario) full.value.progress.scenario = {}
     full.value.progress.scenario.bookmarked = nextState
     if (full.value.scenario) full.value.scenario.bookmarked = nextState
-    // state updated locally
     await store.toggleBookmark(full.value.scenario.id, {
-      confirmCallback,
       fromState: currentlyBookmarked,
     })
     try {
