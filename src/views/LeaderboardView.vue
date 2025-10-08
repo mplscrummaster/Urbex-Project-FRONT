@@ -11,7 +11,7 @@
   </div>
 </template>
 <style lang="scss" scoped>
-  @use '@/styles/theme.scss' as *;
+  @use '@/styles/abstracts' as *;
 
   .leaderboard-list {
     display: flex;
