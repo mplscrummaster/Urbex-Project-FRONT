@@ -1,4 +1,4 @@
-@use '../abstracts' as *;
+@use "../abstracts" as *;
 
 .c-scenario-card {
   position: relative;
@@ -38,7 +38,7 @@
     justify-content: center;
     block-size: 100%;
     aspect-ratio: 1 / 1;
-    background: #273340;
+    background: #53ba831a;
     border-radius: 1rem;
     overflow: hidden;
   }
@@ -48,9 +48,9 @@
     line-height: 1;
     color: $color-accent;
     font-variation-settings:
-      'FILL' 1,
-      'opsz' 24,
-      'wght' 400;
+      "FILL" 1,
+      "opsz" 24,
+      "wght" 400;
   }
 
   &__body {
@@ -119,7 +119,7 @@
   }
 
   &__bookmark-icon--fill {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 
   &__progress {
@@ -132,7 +132,7 @@
     position: relative;
     flex: 1;
     block-size: 0.5rem;
-    background: #273340;
+    background: #17482d48;
     border-radius: 0.25rem;
     overflow: hidden;
   }
@@ -140,7 +140,7 @@
   &__progress-fill {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    background: linear-gradient(90deg, #3b7a57, #27553c);
     inline-size: 0;
     transition: width 0.35s ease;
   }
