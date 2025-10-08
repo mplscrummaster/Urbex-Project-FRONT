@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
-import ListScenario from '@/views/Scenarios/ListScenario.vue'
-import GlobalMapView from '@/views/Maps/GlobalMap.vue'
-import CurrentMapView from '@/views/Maps/CurrentMap.vue'
-import ScenarioInfoView from '@/views/Scenarios/ScenarioInfo.vue'
+import ListScenario from '@/views/ScenariosListView.vue'
+import ExploreMap from '@/views/ExploreMapView.vue'
+import CurrentMapView from '@/views/GameMapView.vue'
+import ScenarioInfoView from '@/views/ScenarioDetailView.vue'
 import Leaderboard from '@/views/LeaderboardView.vue'
 import LeaderboardGlobal from '@/components/leaderboard/LeaderboardGlobal.vue'
 import LeaderboardFriends from '@/components/leaderboard/LeaderboardFriends.vue'
@@ -22,7 +22,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      beforeEnter: () => (isAuthenticated() ? { name: 'map-current' } : true),
+      beforeEnter: () => (isAuthenticated() ? { name: 'game-map' } : true),
     },
     {
       path: '/login',
@@ -41,19 +41,22 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
 
-    { path: '/globalmap', redirect: '/global-map' },
+    // Legacy redirects
+    { path: '/globalmap', redirect: '/explore-map' },
+    { path: '/global-map', redirect: '/explore-map' },
     {
-      path: '/global-map',
-      name: 'map-global',
-      component: GlobalMapView,
-      meta: { requiresAuth: true },
+      path: '/explore-map',
+      name: 'explore-map',
+      component: ExploreMap,
+      meta: { requiresAuth: true, keepAlive: true },
     },
-    { path: '/currentmap', redirect: '/current-map' },
+    { path: '/currentmap', redirect: '/game-map' },
+    { path: '/current-map', redirect: '/game-map' },
     {
-      path: '/current-map',
-      name: 'map-current',
+      path: '/game-map',
+      name: 'game-map',
       component: CurrentMapView,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, keepAlive: true },
     },
     {
       path: '/scenario/:id',
@@ -68,10 +71,11 @@ const router = createRouter({
       component: Leaderboard,
       meta: { requiresAuth: true },
       children: [
-        { path: '', name: 'leaderboard-global', component: LeaderboardGlobal },
-        { path: 'global', redirect: { name: 'leaderboard-global' } },
+        { path: 'global', name: 'leaderboard-global', component: LeaderboardGlobal },
         { path: 'weeks', name: 'leaderboard-weeks', component: LeaderboardWeek },
         { path: 'friends', name: 'leaderboard-friends', component: LeaderboardFriends },
+        //Redirect pour ne pas tomber sur une page sans rien
+        { path: '', redirect: { name: 'leaderboard-global' } },
       ],
     },
     { path: '/userProfile', redirect: '/user-profile' },

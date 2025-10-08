@@ -1,268 +1,107 @@
+<script setup>
+  /*
+    Carte scénario (ScenarioCard)
+    --------------------------------------------------
+    Objectifs
+    - Afficher les infos principales d'un scénario (titre, auteur, progression, favori)
+    - Permettre la navigation vers le détail au clic
+    - Gérer le bookmarking (ajout/retrait des favoris)
+    - Afficher la progression (barre et pourcentage)
+    - Accessibilité : aria-label, boutons
+  
+    Principes
+    - Props : scénario, affichage auteur, navigation auto
+    - Événements : select (sélection de la carte)
+  */
+  import { computed, getCurrentInstance } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useScenariosStore } from '@/stores/scenarios'
+  // Définition des props du composant
+  const props = defineProps({
+    scenario: { type: Object, required: true }, // Données du scénario
+    showAuthor: { type: Boolean, default: true }, // Afficher l'auteur
+    autoNavigate: { type: Boolean, default: true }, // Navigation auto au clic
+  })
+  // Événement émis lors de la sélection
+  const emit = defineEmits(['select'])
+  const router = useRouter()
+  const store = useScenariosStore()
+
+  // Calcul du pourcentage de progression
+  const progressPercent = computed(() => {
+    const r = props.scenario.progressRatio
+    if (r == null) return 0
+    return Math.round(r * 100)
+  })
+  // Indique si la progression est disponible
+  const hasProgress = computed(() => props.scenario.progressRatio != null)
+  // Classe CSS selon le statut du scénario
+  const statusClass = computed(() => {
+    const s = props.scenario.status
+    if (s === 'completed') return 'c-scenario-card--completed'
+    if (s === 'started') return 'c-scenario-card--started'
+    return 'c-scenario-card--not-started'
+  })
+
+  // Ajout ou retrait du favori
+  const toggleBookmark = async () => {
+    try {
+      const ok = await store.toggleBookmark(props.scenario.id, {
+        confirmCallback: async () =>
+          window.confirm('Confirmer la suppression du favori et de la progression ?'),
+        fromState: !!props.scenario.bookmarked,
+      })
+      if (ok) {
+        // L'état UI est mis à jour via le store (pas de mutation directe des props)
+      }
+    } catch {
+      // silencieux
+    }
+  }
+
+  // Sélection de la carte (clic) : émet l'événement et navigue si besoin
+  const handleSelect = () => {
+    const hasListener = !!getCurrentInstance()?.vnode?.props?.onSelect
+    emit('select', props.scenario)
+    if (props.autoNavigate && !hasListener && props.scenario?.id != null) {
+      // Navigation vers le détail du scénario
+      router.push({ name: 'scenario-detail', params: { id: props.scenario.id } }).catch(() => { })
+    }
+  }
+</script>
+
 <template>
-  <div class="scenario-card" :class="[statusClass, { compact, clickable }]" @click="handleSelect">
-    <div class="left" v-if="!compact">
-      <div class="thumb">
-        <div class="thumb-icon" />
+  <div class="c-scenario-card" :class="[statusClass]" @click="handleSelect">
+    <div class="c-scenario-card__media">
+      <div class="c-scenario-card__thumb">
+        <span class="material-symbols-outlined c-scenario-card__thumb-icon" aria-hidden="true">menu_book</span>
       </div>
     </div>
-    <div class="body">
-      <div class="top-row">
-        <h4 class="title" :title="scenario.title">{{ scenario.title }}</h4>
-        <button class="bookmark-btn" :class="{ active: scenario.bookmarked }" @click.stop="toggleBookmark"
-          :title="scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'" aria-label="Bookmark">
-          <span class="material-symbols-outlined" :class="{ fill: scenario.bookmarked }">{{ scenario.bookmarked ?
-            'bookmark' : 'bookmark_add' }}</span>
+    <div class="c-scenario-card__body">
+      <div class="c-scenario-card__header">
+        <div class="c-scenario-card__text">
+          <h4 class="c-scenario-card__title" :title="scenario.title">{{ scenario.title }}</h4>
+          <p class="c-scenario-card__author" v-if="showAuthor">
+            Scénario par {{ scenario.author || '—' }}
+          </p>
+        </div>
+        <button class="c-scenario-card__bookmark" :class="{ 'c-scenario-card__bookmark--active': scenario.bookmarked }"
+          @click.stop="toggleBookmark" :title="scenario.bookmarked ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+          aria-label="Bookmark">
+          <span class="material-symbols-outlined c-scenario-card__bookmark-icon"
+            :class="{ 'c-scenario-card__bookmark-icon--fill': scenario.bookmarked }">{{ scenario.bookmarked ? 'bookmark'
+              : 'bookmark' }}</span>
         </button>
       </div>
-      <p class="author" v-if="showAuthor">Scénario par {{ scenario.author || '—' }}</p>
-      <div v-if="hasProgress" class="progress-wrapper">
-        <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: progressPercent + '%' }" />
+      <div v-if="hasProgress" class="c-scenario-card__progress">
+        <div class="c-scenario-card__progress-bar">
+          <div class="c-scenario-card__progress-fill" :style="{ width: progressPercent + '%' }" />
         </div>
-        <div class="progress-meta" v-if="scenario.hasPreciseProgress">
+        <div class="c-scenario-card__progress-meta" v-if="scenario.hasPreciseProgress">
           {{ scenario.completedMissions }}/{{ scenario.totalMissions }} ({{ progressPercent }}%)
         </div>
-        <div class="progress-meta" v-else>
-          {{ progressPercent }}%
-        </div>
+        <div class="c-scenario-card__progress-meta" v-else>{{ progressPercent }}%</div>
       </div>
     </div>
   </div>
 </template>
-<script setup>
-import { computed, getCurrentInstance } from 'vue'
-import { useRouter } from 'vue-router'
-import { useScenariosStore } from '@/stores/scenarios'
-const props = defineProps({
-  scenario: { type: Object, required: true },
-  compact: { type: Boolean, default: false },
-  showAuthor: { type: Boolean, default: true },
-  clickable: { type: Boolean, default: true },
-  // When true, the card will navigate to detail on click (besides emitting 'select')
-  autoNavigate: { type: Boolean, default: true },
-})
-const emit = defineEmits(['select'])
-const router = useRouter()
-const store = useScenariosStore()
-
-const progressPercent = computed(() => {
-  const r = props.scenario.progressRatio
-  if (r == null) return 0
-  return Math.round(r * 100)
-})
-const hasProgress = computed(() => props.scenario.progressRatio != null)
-const statusClass = computed(() => {
-  const s = props.scenario.status
-  if (s === 'completed') return 'is-completed'
-  if (s === 'started') return 'is-started'
-  return 'is-not-started'
-})
-
-const toggleBookmark = async () => {
-  try {
-    await store.toggleBookmark(props.scenario.id, {
-      confirmCallback: async () => window.confirm('Confirmer la suppression du favori et de la progression ?'),
-    })
-  } catch {
-    // silent
-  }
-}
-
-const handleSelect = () => {
-  if (!props.clickable) return
-  const hasListener = !!getCurrentInstance()?.vnode?.props?.onSelect
-  emit('select', props.scenario)
-  if (props.autoNavigate && !hasListener && props.scenario?.id != null) {
-    // Navigate to scenario detail as a safe default
-    router.push({ name: 'scenario-detail', params: { id: props.scenario.id } }).catch(() => { })
-  }
-}
-</script>
-<style scoped lang="scss">
-@use '@/styles/theme.scss' as *;
-
-.scenario-card {
-  position: relative;
-  display: flex;
-  gap: 14px;
-  background: $color-surface;
-  border: 1px solid $color-border;
-  border-radius: 14px;
-  padding: 14px 16px 12px;
-  cursor: pointer;
-  transition: background .25s, border-color .25s, transform .25s;
-  box-shadow: 0 3px 8px -3px rgba(0, 0, 0, .55);
-
-  &:hover {
-    background: $color-surface-alt;
-    border-color: $color-accent;
-    transform: translateY(-2px);
-  }
-
-  &.compact {
-    padding: 10px 12px;
-    gap: 10px;
-  }
-
-  &.is-completed {
-    box-shadow: 0 0 0 1px rgba($color-success, .45), 0 3px 8px -3px rgba(0, 0, 0, .5);
-  }
-
-  &.is-started:not(.is-completed) {
-    box-shadow: 0 0 0 1px rgba(255, 200, 60, .45);
-  }
-
-  &.is-not-started {
-    box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.12);
-  }
-}
-
-.left {
-  flex-shrink: 0;
-}
-
-.thumb {
-  width: 60px;
-  height: 60px;
-  border-radius: 10px;
-  background: #273340;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.thumb-icon {
-  width: 34px;
-  height: 34px;
-  background: radial-gradient(circle at 35% 35%, #38bdf8, #0ea5e9);
-  opacity: .55;
-  border-radius: 50%;
-}
-
-.scenario-card.compact .thumb {
-  width: 46px;
-  height: 46px;
-}
-
-.body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.top-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.title {
-  flex: 1;
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: $color-text;
-  letter-spacing: .3px;
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.scenario-card.compact .title {
-  font-size: 14px;
-}
-
-.author {
-  margin: 0;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 500;
-  color: $color-text-dim;
-}
-
-.bookmark-btn {
-  background: rgba(0, 0, 0, .25);
-  border: 1px solid $color-border;
-  border-radius: 8px;
-  padding: .3rem .5rem .25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .25s, border-color .25s;
-}
-
-.bookmark-btn:hover {
-  background: $color-surface-alt;
-  border-color: $color-accent;
-}
-
-.bookmark-btn .material-symbols-outlined {
-  font-size: 20px;
-  line-height: 1;
-  color: $color-text-dim;
-  transition: color .25s;
-}
-
-.bookmark-btn.active .material-symbols-outlined {
-  color: $color-accent;
-}
-
-.bookmark-btn .material-symbols-outlined.fill {
-  font-variation-settings: 'FILL' 1;
-}
-
-.progress-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 2px;
-}
-
-.progress-bar {
-  position: relative;
-  flex: 1;
-  height: 8px;
-  background: #273340;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
-  width: 0;
-  transition: width .35s ease;
-}
-
-.progress-meta {
-  font-size: 11px;
-  font-weight: 600;
-  color: $color-text-dim;
-  letter-spacing: .5px;
-}
-
-.scenario-card.is-not-started .progress-fill {
-  background: #475569;
-}
-
-/* Compact variant adjustments */
-.scenario-card.compact .progress-wrapper {
-  gap: 6px;
-}
-
-.scenario-card.compact .progress-bar {
-  height: 6px;
-}
-
-.scenario-card.compact .progress-meta {
-  font-size: 10px;
-}
-</style>

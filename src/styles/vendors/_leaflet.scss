@@ -1,0 +1,10 @@
+@use '../abstracts' as *;
+
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.55);
+  color: #94a3b8;
+  font-size: 10px;
+  a {
+    color: #cbd5e1;
+  }
+}

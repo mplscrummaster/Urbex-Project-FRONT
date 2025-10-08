@@ -30,3 +30,7 @@ coverage
 *.tsbuildinfo
 
 .env
+
+# Ignore accidental Sass outputs checked into src
+/src/dist/
+/src/styles/dist/

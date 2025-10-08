@@ -1,0 +1,203 @@
+.p-scenario-detail {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  block-size: 100%;
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  &__header-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(90deg, #fff, #b5c9ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    flex: 1;
+  }
+
+  &__bookmark-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 2rem;
+    inline-size: 2rem;
+    padding: 0;
+    color: #d1d9e6;
+    font-size: 2rem;
+    line-height: 2rem;
+    background: none;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    cursor: pointer;
+
+    &--active {
+      color: #3b82f6; /* accent blue */
+    }
+  }
+
+  &__bookmark-icon--fill {
+    font-variation-settings:
+      'FILL' 1,
+      'wght' 400,
+      'opsz' 24;
+    color: #3b82f6; /* accent blue when filled */
+  }
+
+  &__body {
+    display: flex;
+    block-size: 100%;
+    overflow-y: auto;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    block-size: fit-content;
+    inline-size: 100%;
+    padding: 1rem;
+  }
+
+  &__missions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 2rem;
+    inline-size: 2rem;
+    padding: 0;
+    color: #d1d9e6;
+    font-size: 2rem;
+    line-height: 2rem;
+    background: none;
+    border: none;
+    outline: none;
+    border-radius: 1rem;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .material-symbols-outlined {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    inline-size: 100%;
+  }
+
+  &__meta {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  &__status {
+    font-size: 0.85rem;
+    color: #d3daf1;
+    opacity: 0.85;
+  }
+
+  &__badge {
+    background: #334155;
+    color: #cbd5e1;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  &__play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    inline-size: 100%;
+    padding: 0.5rem;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  &__play-btn .material-symbols-outlined {
+    font-size: 1.5rem;
+  }
+
+  &__play-label {
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+
+  &__block {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    padding: 0.55rem 0.6rem;
+    margin: 0.5rem 0;
+  }
+
+  &__block--image {
+    padding: 0.35rem;
+    overflow: hidden;
+  }
+  &__block--image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+  }
+  /* Outro state modifiers applied via classes */
+  &__outro-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  &__btn--primary {
+    background: linear-gradient(90deg, #4338ca, #6366f1);
+    border: none;
+    color: #fff;
+    padding: 0.55rem 0.9rem;
+  }
+  &__btn--primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  &__error-msg {
+    color: #ef4444;
+    margin: 0.2rem 0 0;
+  }
+  &__placeholder,
+  &__empty,
+  &__error {
+    padding: 1rem;
+    text-align: center;
+    color: #d1d5db;
+  }
+}
