@@ -35,17 +35,17 @@
   - Focus et navigation clavier (esc pour fermer)
   - BEM pour la structure CSS
 */
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 // Import des hooks Vue
 const props = defineProps({
   // Props : état d'ouverture et taille initiale
   modelValue: { type: Boolean, default: false },
-  initialSize: { type: String, default: 'full' },
+  initialSize: { type: String, default: 'peek' },
 })
 const open = ref(props.modelValue) // Déclaré avant tout usage
 const emit = defineEmits(['update:modelValue', 'close', 'size'])
 // Événements émis : fermeture, changement de taille, update du modèle
-const sizes = ['full']
+const sizes = ['peek', 'mid', 'full']
 // Tailles disponibles du tiroir
 const sizeIndex = ref(
   // Index de la taille courante
@@ -71,6 +71,12 @@ watch(
 )
 watch(open, (v) => emit('update:modelValue', v))
 // Mise à jour du modèle quand l'état local change
+const cycleSize = () => {
+  // Change la taille du tiroir par clic sur la poignée
+  sizeIndex.value = (sizeIndex.value + 1) % sizes.length
+  emit('size', sizes[sizeIndex.value])
+  snapToSize([sizeIndex.value])
+}
 const startDrag = (ev) => {
   // Drag pour redimensionner le tiroir (haut/bas)
   startY = ev.touches ? ev.touches[0].clientY : ev.clientY
@@ -104,8 +110,34 @@ const startDrag = (ev) => {
 //   if (root.value && root.value.contains(e.target)) return // allow scrolling inside drawer
 //   e.preventDefault()
 // }
+function snapToClosestHeight() {
+  // Trouve la taille la plus proche selon la position actuelle
+  const heights = {
+    peek: window.innerHeight * 0.6,
+    mid: window.innerHeight * 0.3,
+    full: 0,
+  }
 
+  const distances = Object.entries(heights).map(([key, val]) => ({
+    key,
+    dist: Math.abs(translateY.value - val),
+  }))
 
+  const closest = distances.reduce((a, b) => (a.dist < b.dist ? a : b)).key
+  sizeIndex.value = sizes.indexOf(closest)
+  emit('size', closest)
+  snapToSize(closest)
+}
+
+function snapToSize(size) {
+  // Anime vers la taille choisie
+  const heights = {
+    peek: window.innerHeight * 0.6,
+    mid: window.innerHeight * 0.3,
+    full: 0,
+  }
+  translateY.value = heights[size]
+}
 
 function openDrawerAnimation() {
   // Animation fluide à l'ouverture
