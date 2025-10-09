@@ -2,7 +2,11 @@
 .profile {
   padding: 2rem;
   color: white;
-
+  height: 100dvh;
+  position: relative;
+  overflow-y: auto; // active le scroll vertical
+  overflow-x: hidden;
+  padding-bottom: var(--tabbar-height, 100px);
   &__header {
     display: flex;
     align-items: center;
