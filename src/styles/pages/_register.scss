@@ -12,6 +12,21 @@
   z-index: -2;
 }
 
+.register_form_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  height: 100dvh; // conteneur plein viewport
+  overflow-y: auto; // active le scroll vertical
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
 .register_form {
   background-color: #3a362f47;
   backdrop-filter: blur(12px);

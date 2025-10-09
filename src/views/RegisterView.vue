@@ -45,7 +45,7 @@ const goToLogin = () => {
 
 <template>
   <div class="background"></div>
-  <div class="login_form_wrapper">
+  <div class="register_form_wrapper">
     <form class="register_form" id="registerForm" @submit.prevent="registerUser">
       <h2 class="register_form__greeting">Bienvenue, nouveau explorateur !</h2>
       <div class="register_form__group">
