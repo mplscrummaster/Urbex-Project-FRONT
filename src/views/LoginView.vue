@@ -1,23 +1,23 @@
 <script setup>
-import { useUsersStore } from '@/stores/users'
-import { ref } from 'vue'
+  import { useUsersStore } from '@/stores/users'
+  import { ref } from 'vue'
 
-const storeUsers = useUsersStore()
+  const storeUsers = useUsersStore()
 
-const email = ref('player05@example.com')
-const password = ref('password123')
-const showPassword = ref(false)
+  const email = ref('')
+  const password = ref('')
+  const showPassword = ref(false)
 
-const togglePassword = () => { showPassword.value = !showPassword.value }
+  const togglePassword = () => { showPassword.value = !showPassword.value }
 
-const loginUser = async () => {
-  if (!email.value || !password.value) { alert('Veuillez remplir tous les champs !'); return }
-  await storeUsers.loginUser(email.value, password.value)
-}
+  const loginUser = async () => {
+    if (!email.value || !password.value) { alert('Veuillez remplir tous les champs !'); return }
+    await storeUsers.loginUser(email.value, password.value)
+  }
 
-const goToRegister = () => {
-  storeUsers.SwitchPage('register')
-}
+  const goToRegister = () => {
+    storeUsers.SwitchPage('register')
+  }
 </script>
 
 <template>

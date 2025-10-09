@@ -1,0 +1,14 @@
+Options -MultiViews
+RewriteEngine On
+RewriteBase /urbex-front/
+
+# Laisser passer les fichiers/dossiers existants
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Ne pas réécrire le SW et le manifest
+RewriteRule ^(sw\.js|manifest\.webmanifest)$ - [L]
+
+# Rediriger toutes les autres routes SPA vers index.html
+RewriteRule . index.html [L]
