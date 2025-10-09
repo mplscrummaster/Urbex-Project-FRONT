@@ -1,48 +1,53 @@
 <script setup>
-  import { useUsersStore } from '@/stores/users'
-  import { ref } from 'vue'
+import { useUsersStore } from '@/stores/users'
+import { ref } from 'vue'
 
-  const storeUsers = useUsersStore()
+const storeUsers = useUsersStore()
 
-  const username = ref('')
-  const nickname = ref('')
-  const bio = ref('')
-  const email = ref('')
-  const password = ref('')
-  const showPassword = ref(false)
+const username = ref('')
+const nickname = ref('')
+const bio = ref('')
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
 
-  const togglePassword = () => {
-    showPassword.value = !showPassword.value
+const togglePassword = () => {
+  showPassword.value = !showPassword.value
+}
+
+// Écoute de la soumission du formulaire
+const registerUser = async () => {
+  // Vérification simple
+  if (!email.value || !password.value || !username.value || !nickname.value || !bio.value) {
+    alert('Veuillez remplir tous les champs !')
+    return
   }
 
-  // Écoute de la soumission du formulaire
-  const registerUser = async () => {
-    // Vérification simple
-    if (!email.value || !password.value || !username.value || !nickname.value || !bio.value) {
-      alert('Veuillez remplir tous les champs !')
-      return
-    }
+  // Préparation des données à envoyer
+  storeUsers.registerUser({
+    username: username.value,
+    nickname: nickname.value,
+    bio: bio.value,
+    email: email.value,
+    password: password.value,
+  })
+  username.value = ''
+  nickname.value = ''
+  bio.value = ''
+  email.value = ''
+  password.value = ''
+}
+const goToLogin = () => {
+  storeUsers.SwitchPage('login')
+}
 
-    // Préparation des données à envoyer
-    storeUsers.registerUser({
-      username: username.value,
-      nickname: nickname.value,
-      bio: bio.value,
-      email: email.value,
-      password: password.value,
-    })
-    username.value = ''
-    nickname.value = ''
-    bio.value = ''
-    email.value = ''
-    password.value = ''
-  }
 </script>
 
 <template>
   <div class="background"></div>
   <div class="login_form_wrapper">
     <form class="register_form" id="registerForm" @submit.prevent="registerUser">
+      <h2 class="register_form__greeting">Bienvenue, nouveau explorateur !</h2>
       <div class="register_form__group">
         <input class="register_form__input" type="text" v-model="username" placeholder="Ecrire votre username"
           required />
@@ -66,8 +71,10 @@
         </button>
       </div>
       <button type="submit" class="register_form__submit">S'inscrire</button>
+      <a class="register_form__switch_page" @click.prevent="goToLogin">Vous avez deja un compte ?</a>
     </form>
   </div>
+
 </template>
 
 <style lang="scss" scoped></style>

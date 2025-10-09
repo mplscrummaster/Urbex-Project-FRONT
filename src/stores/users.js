@@ -83,6 +83,9 @@ export const useUsersStore = defineStore('storeUsers', {
         console.warn('Router replace failed during logout:', e?.message)
       }
     },
+    SwitchPage(page) {
+      router.replace(`/${page}`)
+    },
     getAllUsers: async () => {
       try {
         const response = await AuthAPI.players()
