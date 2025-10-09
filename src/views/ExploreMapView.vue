@@ -59,11 +59,11 @@ const ui = reactive({ selectedId: null })
 
 // Styles des polygones (discret par défaut, plus visible en sélection)
 const baseStyle = () => ({
-  color: '#60a5fa',
+  color: 'green',
   weight: 1,
   opacity: 0.25,
   fillOpacity: 0.1,
-  fillColor: '#38bdf8',
+  fillColor: 'gray',
   stroke: true,
   fill: true,
 })
@@ -229,7 +229,7 @@ const prepareDrawerForCommune = async (id) => {
       scenariosStore
         .fetchMine()
         .then(() => syncDrawerWithStore())
-        .catch(() => {})
+        .catch(() => { })
   } catch {
     /* ignorer */
   }
@@ -389,75 +389,75 @@ const init = async () => {
     tempGroup.addTo(communesLayer)
     // Pas de fitBounds: on évite tout jump de zoom
     loading.value = false
-    // 4) En parallèle, construit les marqueurs à partir des "pins" en cache (opération non-bloquante)
-    ;(async () => {
-      scenarioMarkersLayer.clearLayers()
-      try {
-        const rows = await communesStore.getScenarioPins()
-        const byCommune = new Map()
-        for (const row of rows) {
-          const communeName = row.commune_name_fr || row.commune_name_nl || row.commune_name_de
-          if (!byCommune.has(row.commune_id)) {
-            byCommune.set(row.commune_id, {
-              id: row.commune_id,
-              name: communeName,
-              lat: row.lat,
-              lon: row.lon,
-              scenarios: [],
+      // 4) En parallèle, construit les marqueurs à partir des "pins" en cache (opération non-bloquante)
+      ; (async () => {
+        scenarioMarkersLayer.clearLayers()
+        try {
+          const rows = await communesStore.getScenarioPins()
+          const byCommune = new Map()
+          for (const row of rows) {
+            const communeName = row.commune_name_fr || row.commune_name_nl || row.commune_name_de
+            if (!byCommune.has(row.commune_id)) {
+              byCommune.set(row.commune_id, {
+                id: row.commune_id,
+                name: communeName,
+                lat: row.lat,
+                lon: row.lon,
+                scenarios: [],
+              })
+            }
+            const cEntry = byCommune.get(row.commune_id)
+            cEntry.scenarios.push({
+              id: row.scenario_id,
+              title: row.title,
+              published: !!row.is_published,
+              author: row.author,
             })
           }
-          const cEntry = byCommune.get(row.commune_id)
-          cEntry.scenarios.push({
-            id: row.scenario_id,
-            title: row.title,
-            published: !!row.is_published,
-            author: row.author,
-          })
-        }
-        for (const commune of byCommune.values()) {
-          if (commune.lat == null || commune.lon == null) continue
-          const scenarioCount = commune.scenarios.length
-          const displayCount = scenarioCount > 99 ? '99+' : String(scenarioCount)
-          const digits = displayCount.length
-          const size = digits === 1 ? 16 : digits === 2 ? 20 : 22
-          const fontSize = digits === 1 ? 10 : digits === 2 ? 11 : 12
-          const classMod = 'published'
-          const iconHtml = `<div class="scenario-dot ${classMod}" style="width:${size}px;height:${size}px;font-size:${fontSize}px;line-height:${size}px;">${displayCount}</div>`
-          const icon = L.divIcon({
-            className: 'scenario-dot-wrapper',
-            html: iconHtml,
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2],
-          })
-          try {
-            const marker = L.marker([commune.lat, commune.lon], { icon }).on('click', () =>
-              selectCommune(commune.id),
-            )
-            scenarioMarkersLayer.addLayer(marker)
-          } catch {
-            /* ignorer l'erreur lors de la création du marqueur */
+          for (const commune of byCommune.values()) {
+            if (commune.lat == null || commune.lon == null) continue
+            const scenarioCount = commune.scenarios.length
+            const displayCount = scenarioCount > 99 ? '99+' : String(scenarioCount)
+            const digits = displayCount.length
+            const size = digits === 1 ? 16 : digits === 2 ? 20 : 22
+            const fontSize = digits === 1 ? 10 : digits === 2 ? 11 : 12
+            const classMod = 'published'
+            const iconHtml = `<div class="scenario-dot ${classMod}" style="width:${size}px;height:${size}px;font-size:${fontSize}px;line-height:${size}px;">${displayCount}</div>`
+            const icon = L.divIcon({
+              className: 'scenario-dot-wrapper',
+              html: iconHtml,
+              iconSize: [size, size],
+              iconAnchor: [size / 2, size / 2],
+            })
+            try {
+              const marker = L.marker([commune.lat, commune.lon], { icon }).on('click', () =>
+                selectCommune(commune.id),
+              )
+              scenarioMarkersLayer.addLayer(marker)
+            } catch {
+              /* ignorer l'erreur lors de la création du marqueur */
+            }
           }
-        }
-      } catch {
-        /* ignorer l'erreur lors de la construction des pins */
-      }
-      const q = route.query
-      const hasExplicitView = q.lat && q.lon && q.zoom
-      // Si pas de vue explicite: recadre vers l'utilisateur une seule fois (mouvement intentionnel)
-      if (!hasExplicitView) {
-        try {
-          if (!userLoc && userLocPromise) await userLocPromise
         } catch {
-          /* ignorer */
+          /* ignorer l'erreur lors de la construction des pins */
         }
-        if (userLoc) map.setView(userLoc, USER_REFOCUS_ZOOM, { animate: true })
-      }
-      // Si une commune est précisée: sélectionne sans pan pour ne pas déplacer la carte
-      if (q.commune) {
-        const cid = Number(q.commune)
-        if (Number.isFinite(cid)) setTimeout(() => selectCommune(cid, { pan: false }), 70)
-      }
-    })()
+        const q = route.query
+        const hasExplicitView = q.lat && q.lon && q.zoom
+        // Si pas de vue explicite: recadre vers l'utilisateur une seule fois (mouvement intentionnel)
+        if (!hasExplicitView) {
+          try {
+            if (!userLoc && userLocPromise) await userLocPromise
+          } catch {
+            /* ignorer */
+          }
+          if (userLoc) map.setView(userLoc, USER_REFOCUS_ZOOM, { animate: true })
+        }
+        // Si une commune est précisée: sélectionne sans pan pour ne pas déplacer la carte
+        if (q.commune) {
+          const cid = Number(q.commune)
+          if (Number.isFinite(cid)) setTimeout(() => selectCommune(cid, { pan: false }), 70)
+        }
+      })()
   } catch (e) {
     errorMsg.value = e?.message || 'Erreur chargement géométries'
   } finally {
@@ -511,23 +511,10 @@ watch(
     <div class="p-explore-map__overlay">
       <div class="p-explore-map__search" v-if="!loading">
         <form class="p-explore-map__search-form" @submit.prevent="onSearchSubmit">
-          <input
-            v-model="searchTerm"
-            type="search"
-            inputmode="search"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder="Commune ou code postal"
-            :disabled="searchState.loading"
-            aria-label="Rechercher une commune"
-            class="p-explore-map__search-input"
-          />
-          <button
-            type="submit"
-            :disabled="searchState.loading"
-            title="Rechercher"
-            class="p-explore-map__search-btn"
-          >
+          <input v-model="searchTerm" type="search" inputmode="search" autocomplete="off" spellcheck="false"
+            placeholder="Commune ou code postal" :disabled="searchState.loading" aria-label="Rechercher une commune"
+            class="p-explore-map__search-input" />
+          <button type="submit" :disabled="searchState.loading" title="Rechercher" class="p-explore-map__search-btn">
             <span v-if="!searchState.loading" class="material-symbols-outlined">search</span>
             <span v-else>…</span>
           </button>
@@ -540,10 +527,8 @@ watch(
     <div class="p-explore-map__progress" v-if="loading">
       <div class="p-explore-map__progress-label">Chargement des communes</div>
       <div class="p-explore-map__progress-bar-wrapper">
-        <div
-          class="p-explore-map__progress-bar"
-          :style="{ width: total ? (progress / total) * 100 + '%' : '0%' }"
-        ></div>
+        <div class="p-explore-map__progress-bar" :style="{ width: total ? (progress / total) * 100 + '%' : '0%' }">
+        </div>
       </div>
       <div class="p-explore-map__progress-pct">{{ progress }} / {{ total }}</div>
     </div>
@@ -553,12 +538,7 @@ watch(
         <div class="p-explore-map__empty">Aucun scénario dans cette commune</div>
       </template>
       <template v-else>
-        <ScenarioCard
-          v-for="s in drawerScenarios"
-          :key="s.id"
-          :scenario="s"
-          @select="goToScenario"
-        />
+        <ScenarioCard v-for="s in drawerScenarios" :key="s.id" :scenario="s" @select="goToScenario" />
       </template>
     </BottomDrawer>
   </div>

@@ -12,6 +12,7 @@
   border-top-left-radius: $radius-md;
   border-top-right-radius: $radius-md;
   z-index: 3;
+  max-height: 84dvh;
 
   &__handle-area {
     position: relative;
@@ -59,15 +60,5 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  &--peek {
-    height: 24dvh;
-  }
-  &--mid {
-    height: 54dvh;
-  }
-  &--full {
-    height: 84dvh;
   }
 }

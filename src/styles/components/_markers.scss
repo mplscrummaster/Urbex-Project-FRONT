@@ -7,17 +7,17 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #38bdf8;
+  background: #38f85e85;
   box-shadow:
-    0 0 0 3px rgba(56, 189, 248, 0.25),
-    0 0 10px rgba(56, 189, 248, 0.6);
+    0 0 0 3px rgba(56, 248, 82, 0.25),
+    0 0 10px rgba(56, 248, 104, 0.6);
 }
 .user-marker::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background: #0ea5e9;
+  background: #075b20;
 }
 
 .mission-marker-wrapper {
@@ -38,9 +38,9 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(30, 41, 59, 0.85);
+  background: rgba(30, 59, 38, 0.85);
   backdrop-filter: blur(2px);
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid rgba(163, 186, 175, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,13 +51,13 @@
     opacity 0.3s;
 }
 .mission-marker.pending .mission-marker__inner {
-  border-color: rgba(96, 165, 250, 0.55);
+  border-color: rgba(96, 250, 152, 0.55);
 }
 .mission-marker.locked {
   opacity: 0.55;
 }
 .mission-marker.locked .mission-marker__inner {
-  border-color: rgba(148, 163, 184, 0.25);
+  border-color: rgba(148, 184, 163, 0.25);
 }
 .mission-marker.completed .mission-marker__inner {
   border-color: rgba(52, 211, 153, 0.7);
@@ -67,7 +67,7 @@
   font-size: 15px;
   line-height: 1;
   color: #e2e8f0;
-  font-variation-settings: 'wght' 500;
+  font-variation-settings: "wght" 500;
   opacity: 0.9;
   transition:
     opacity 0.3s,
@@ -77,8 +77,8 @@
   color: #d1fae5;
 }
 .mission-marker:hover .mission-marker__inner {
-  border-color: #60a5fa;
-  background: rgba(30, 41, 59, 0.92);
+  border-color: #60fa9e;
+  background: rgba(30, 59, 42, 0.329);
 }
 .mission-marker.completed:hover .mission-marker__inner {
   border-color: #34d399;
@@ -88,14 +88,14 @@
 }
 
 .mission-popup-wrapper .leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(15, 42, 22, 0.92);
   color: #e2e8f0;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 10px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
 }
 .mission-popup-wrapper .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.92);
+  background: rgba(15, 42, 20, 0.92);
   border: none;
 }
 .mission-popup {
@@ -116,7 +116,7 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(135deg, #179226, #5ed493bd);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
@@ -135,10 +135,10 @@
 }
 .mission-popup__btn.disabled,
 .mission-popup__btn[disabled] {
-  background: rgba(71, 85, 105, 0.5);
-  color: #94a3b8;
+  background: rgba(71, 105, 80, 0.5);
+  color: #94b89c;
   cursor: not-allowed;
-  border-color: rgba(148, 163, 184, 0.35);
+  border-color: rgba(148, 184, 153, 0.35);
 }
 
 /* Scenario markers for ExploreMap (commune counts) */
@@ -160,9 +160,9 @@
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
-    'Helvetica Neue',
+    "Helvetica Neue",
     Arial,
     sans-serif;
   transition:
@@ -173,10 +173,10 @@
   background: linear-gradient(135deg, #16a34a, #22c55e);
 }
 .scenario-dot.draft {
-  background: linear-gradient(135deg, #475569, #64748b);
+  background: linear-gradient(135deg, #476952, #648b6e);
 }
 .scenario-dot::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
@@ -199,12 +199,12 @@
     system-ui,
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
-    'Helvetica Neue',
+    "Helvetica Neue",
     Arial,
     sans-serif;
-  background: linear-gradient(135deg, #334155, #475569);
+  background: linear-gradient(135deg, #476952, #648b6e);
   color: #f1f5f9;
   text-align: center;
   border-radius: 50%;
@@ -218,13 +218,13 @@
     transform 0.15s ease;
 }
 .scenario-cluster-agg::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 50%;
   box-shadow:
     0 0 0 3px rgba(255, 255, 255, 0.08),
-    0 0 12px -2px rgba(59, 130, 246, 0.45);
+    0 0 12px -2px rgba(59, 246, 162, 0.45);
 }
 .scenario-cluster-agg:hover {
   filter: brightness(1.18) saturate(1.05);

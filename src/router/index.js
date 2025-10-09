@@ -8,7 +8,6 @@ import ScenarioInfoView from '@/views/ScenarioDetailView.vue'
 import Leaderboard from '@/views/LeaderboardView.vue'
 import LeaderboardGlobal from '@/components/leaderboard/LeaderboardGlobal.vue'
 import LeaderboardFriends from '@/components/leaderboard/LeaderboardFriends.vue'
-import LeaderboardWeek from '@/components/leaderboard/LeaderboardWeek.vue'
 import UserProfile from '@/views/UserProfile.vue'
 import RegisterView from '@/views/RegisterView.vue'
 
@@ -71,10 +70,10 @@ const router = createRouter({
       component: Leaderboard,
       meta: { requiresAuth: true },
       children: [
-        { path: '', name: 'leaderboard-global', component: LeaderboardGlobal },
-        { path: 'global', redirect: { name: 'leaderboard-global' } },
-        { path: 'weeks', name: 'leaderboard-weeks', component: LeaderboardWeek },
+        { path: 'global', name: 'leaderboard-global', component: LeaderboardGlobal },
         { path: 'friends', name: 'leaderboard-friends', component: LeaderboardFriends },
+        //Redirect pour ne pas tomber sur une page sans rien
+        { path: '', redirect: { name: 'leaderboard-global' } },
       ],
     },
     { path: '/userProfile', redirect: '/user-profile' },

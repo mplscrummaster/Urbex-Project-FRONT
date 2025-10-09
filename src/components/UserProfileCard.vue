@@ -82,7 +82,7 @@
       <button class="modifyForm__submit" @click.prevent="EndModifyProfil">Modifier</button>
     </form>
 
-    <main class="userCard__successList">
+    <main class="userCard__successList hidden">
       <h1 class="userCard__successList--title">Succès</h1>
       <SuccessCard />
       <SuccessCard />
@@ -94,6 +94,7 @@
 </template>
 
 <style lang="scss" scoped>
+  @use '@/styles/abstracts' as *;
 
   .userCard {
     border-radius: 1rem;
@@ -122,7 +123,7 @@
     &__progressBar {
       height: 2rem;
       border-radius: 2rem;
-      background-color: rgb(21, 0, 255);
+      background-color: #285b3f;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -139,10 +140,6 @@
       border-radius: 100rem;
       width: 10rem;
 
-      &::after {
-        content: 'modify';
-        color: red;
-      }
     }
 
     &__nickname {
@@ -169,9 +166,9 @@
     }
 
     &__modifyInfos {
-      transition: all .3s ease-out;
+      transition: all .2s ease-out;
       cursor: pointer;
-      background-color: rgb(21, 0, 255);
+      background-color: #3b7a57;
       color: white;
       width: fit-content;
       padding: .8rem 1.5rem;
@@ -179,7 +176,7 @@
       border-radius: 1rem;
 
       &:hover {
-        background-color: #0e00ab;
+        background-color: #2e4a2e;
 
       }
     }
@@ -202,11 +199,11 @@
       border-radius: 1rem;
       padding: .5rem;
       width: 100%;
-  box-shadow: inset 0 0 10px 0 #00000063;
+      box-shadow: inset 0 0 10px 0 #00000063;
 
       &:focus {
         outline: none;
-        border: 2px solid rgb(21, 0, 255);
+        border: 2px solid $color-accent;
 
       }
     }
@@ -214,7 +211,7 @@
     &__submit {
       transition: all .3s ease-out;
       cursor: pointer;
-      background-color: rgb(21, 0, 255);
+      background-color: $color-accent;
       color: white;
       width: fit-content;
       padding: .8rem 1.5rem;

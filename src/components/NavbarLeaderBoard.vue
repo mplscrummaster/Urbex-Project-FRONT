@@ -1,7 +1,6 @@
 <template>
   <div class="navbar leader-bar">
     <RouterLink active-class="active" :to="{ name: 'leaderboard-global' }">Global</RouterLink>
-    <RouterLink active-class="active" :to="{ name: 'leaderboard-weeks' }">Semaine</RouterLink>
     <RouterLink active-class="active" :to="{ name: 'leaderboard-friends' }">Amis</RouterLink>
   </div>
 </template>

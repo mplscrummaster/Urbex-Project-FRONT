@@ -28,3 +28,13 @@
   </header>
 </template>
 
+<style lang="scss" scoped>
+  .p-profile {
+    position: relative;
+    height: 100dvh; // conteneur plein viewport
+    overflow-y: auto; // active le scroll vertical
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--tabbar-height, 72px); // pour éviter que la TabBar masque le bas
+  }
+</style>
