@@ -8,7 +8,7 @@
   flex-direction: column;
   max-block-size: 84dvh;
   inline-size: 100%;
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(25, 25, 25, 0.95);
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   z-index: 3;
@@ -28,7 +28,7 @@
     block-size: 0.25rem;
     inline-size: 3rem;
     border-radius: 0.125rem;
-    background: #334250;
+    background: #365033;
     opacity: 0.9;
   }
 
@@ -42,7 +42,7 @@
     block-size: 2rem;
     inline-size: 2rem;
     padding: 0;
-    color: #94a3b8;
+    color: #97b894;
     font-size: 2rem;
     line-height: 2rem;
     background: none;
@@ -52,7 +52,7 @@
     touch-action: manipulation;
 
     &:hover {
-      background: #1e293b;
+      background: #292929;
       color: #e2e8f0;
     }
   }
