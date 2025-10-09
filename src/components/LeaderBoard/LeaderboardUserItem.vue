@@ -21,7 +21,7 @@
 
   //Pour l'affichage de la classe "me"
   let isMe = false;
-  console.log("props.user.user_id", props.user.user_id)
+  // console.log("props.user.user_id", props.user.user_id)
   if (props.user.user_id)
     isMe = true;
 </script>

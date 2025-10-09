@@ -1,7 +1,7 @@
 // Shared HTTP helper for API modules
 export const BASE_URL = (
-  import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:3000/api'
-  // import.meta?.env?.VITE_API_BASE_URL || 'https://michonmaximilien.dev/urbex-api/api'
+  // import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:3000/api'
+  import.meta?.env?.VITE_API_BASE_URL || 'https://michonmaximilien.dev/urbex-api/api'
 ).replace(/\/$/, '')
 
 const getAuthToken = () => localStorage.getItem('tokenUser') || null
@@ -16,7 +16,7 @@ export const apiFetch = async (
     if (token) headers.Authorization = `Bearer ${token}`
   }
   // no debug logs in production
-  console.log("`${BASE_URL}${path}`", `${BASE_URL}${path}`)
+  // console.log("`${BASE_URL}${path}`", `${BASE_URL}${path}`)
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
