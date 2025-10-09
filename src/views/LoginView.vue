@@ -33,10 +33,10 @@
       </div>
       <button type="submit" class="login_form__submit">Se connecter</button>
       <div class="login_form__forgot_pass">Mot de passe oublié ?</div>
-      <div class="social_login">
-        <button class="social_login__button">Google</button>
-        <button class="social_login__button">Facebook</button>
-        <button class="social_login__button">Twitter</button>
+      <div class="social_login hidden">
+        <div class="social_login__button">Google</div>
+        <div class="social_login__button">Facebook</div>
+        <div class="social_login__button">Twitter</div>
       </div>
     </form>
   </div>
