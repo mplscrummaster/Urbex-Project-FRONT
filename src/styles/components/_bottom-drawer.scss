@@ -1,4 +1,4 @@
-@use '../abstracts' as *;
+@use "../abstracts" as *;
 
 .c-bottom-drawer {
   position: absolute;
@@ -12,6 +12,7 @@
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   z-index: 3;
+  max-height: 84dvh;
 
   &__handle-area {
     position: relative;
@@ -65,16 +66,6 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-  }
-
-  &--peek {
-    height: 24dvh;
-  }
-  &--mid {
-    height: 54dvh;
-  }
-  &--full {
-    height: 84dvh;
   }
 }
 
