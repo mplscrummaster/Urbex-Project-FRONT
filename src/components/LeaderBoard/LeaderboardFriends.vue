@@ -1,11 +1,12 @@
 <script setup>
   import { useUsersStore } from '@/stores/users'
   import { onMounted, ref } from 'vue'
-  import LeaderboardUser from './LeaderboardUserItem.vue'
+  import LeaderboardUserItem from './LeaderboardUserItem.vue'
 
   const usersStore = useUsersStore()
 
-  let friendsArray = ref(null)
+  const friendsArray = ref(null)
+  const meId = ref(null)
 
   onMounted(async () => {
     //je récup les amis
@@ -13,10 +14,11 @@
     //Je me récupère moi
     const me = await usersStore.getMeInfo();
 
-    data = [...data, me];
     console.log("friends", data);
-    console.log("me", me);
 
+    //Ajout de mes infos dans le tableau
+    //(on ne récupère pas les infos du current user dans getAllFriends, donc on l'ajoute )
+    data = [...data, me]
     //Tri decroissant des utilisateur en fonction du score
     friendsArray.value = data.sort((a, b) => b.score - a.score)
   })
@@ -24,7 +26,7 @@
 
 <template>
   <div v-for="(user, key) in friendsArray" :key="key">
-    <LeaderboardUser :user="user" :id="key" />
+    <LeaderboardUserItem :user="user" :id="key" />
   </div>
 </template>
 
