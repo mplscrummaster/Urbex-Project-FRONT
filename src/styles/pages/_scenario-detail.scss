@@ -1,3 +1,5 @@
+@use '@/styles/abstracts' as *;
+
 .p-scenario-detail {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -23,7 +25,7 @@
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    background: linear-gradient(90deg, #fff, #b5c9ff);
+    background: linear-gradient(90deg, $color-accent, $color-success);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -53,9 +55,9 @@
 
   &__bookmark-icon--fill {
     font-variation-settings:
-      "FILL" 1,
-      "wght" 400,
-      "opsz" 24;
+      'FILL' 1,
+      'wght' 400,
+      'opsz' 24;
     color: #396941;
   }
 
