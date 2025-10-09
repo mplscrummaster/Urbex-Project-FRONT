@@ -1,3 +1,5 @@
+@use '@/styles/abstracts/variables' as *;
+
 // Home view styles
 .home-view {
   .background {
@@ -6,6 +8,7 @@
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: $color-bg;
     background-image: url('/img/homepage.png');
     background-size: cover;
     background-position: center center;
@@ -27,10 +30,10 @@
   .slogan {
     font-size: 42px;
     font-weight: 700;
-    color: #fff;
+    color: $color-text;
     text-transform: uppercase;
     letter-spacing: 4px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    text-shadow: none;
     margin: 8px 0 0;
   }
 
@@ -48,15 +51,15 @@
     align-items: center;
     justify-content: center;
     padding: 0.6rem 1rem;
-    border-radius: 12px;
+    border-radius: $radius-md;
     text-decoration: none;
     font-weight: 700;
     letter-spacing: 0.5px;
     transition: all 0.25s ease;
   }
   .btn.primary {
-    background: linear-gradient(90deg, #2563eb, #1d4ed8);
-    color: #fff;
+    background: $color-accent;
+    color: $color-text;
   }
   .btn.primary:hover {
     filter: brightness(1.1);

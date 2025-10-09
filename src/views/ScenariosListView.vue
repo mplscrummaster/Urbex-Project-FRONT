@@ -28,7 +28,7 @@ if (!localStorage.getItem('tokenUser')) router.replace('/')
 
 // Filtre actif et liste des filtres disponibles
 const activeFilter = ref('all')
-const filters = ['all', 'terminés', 'commencés', 'pas encore']
+const filters = ['all', 'terminés', 'commencés', 'pas encore commencés']
 // États UI pour le chargement et les erreurs
 const uiLoading = ref(true)
 const uiError = ref(null)
@@ -116,7 +116,7 @@ const filteredScenarios = computed(() => {
       return sortedBuckets.value.completed
     case 'commencés':
       return sortedBuckets.value.started
-    case 'pas encore':
+    case 'pas encore commencés':
       return sortedBuckets.value.notStarted
     default:
       return sortedBuckets.value.all
@@ -288,7 +288,7 @@ const scenarioClicked = (s) => {
       </template>
 
       <!-- PAS ENCORE -->
-      <template v-else-if="activeFilter === 'pas encore'">
+      <template v-else-if="activeFilter === 'pas encore commencés'">
         <div class="p-scenarios__section">
           <div class="p-scenarios__section-title">Pas encore commencés</div>
           <div class="p-scenarios__section-list">

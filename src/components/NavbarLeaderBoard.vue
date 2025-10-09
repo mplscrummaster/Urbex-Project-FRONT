@@ -4,7 +4,6 @@
     <RouterLink active-class="active" :to="{ name: 'leaderboard-weeks' }">Semaine</RouterLink>
     <RouterLink active-class="active" :to="{ name: 'leaderboard-friends' }">Amis</RouterLink>
   </div>
-
 </template>
 
 <style lang="scss" scoped>
@@ -25,12 +24,11 @@
   padding: 8px 14px;
   border-radius: $radius-md;
   position: relative;
-  transition: color $transition, background $transition;
 }
 
 .leader-bar :deep(a:hover) {
   color: $color-text;
-  background: rgba(255,255,255,.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .leader-bar :deep(a.active) {

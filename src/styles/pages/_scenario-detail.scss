@@ -1,3 +1,5 @@
+@use '@/styles/abstracts/variables' as *;
+
 .p-scenario-detail {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -7,26 +9,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     padding: 1rem;
+    background: $color-surface;
+    border-bottom: 1px solid $color-border;
   }
 
   &__header-top {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     inline-size: 100%;
   }
 
   &__title {
     margin: 0;
-    font-size: 1.05rem;
+    font-size: 1.5rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    background: linear-gradient(90deg, #fff, #b5c9ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: $color-text;
+    background: none;
     flex: 1;
   }
 
@@ -37,32 +39,33 @@
     block-size: 2rem;
     inline-size: 2rem;
     padding: 0;
-    color: #d1d9e6;
+    color: $color-accent;
     font-size: 2rem;
     line-height: 2rem;
     background: none;
     border: none;
     outline: none;
-    border-radius: 1rem;
+    border-radius: $radius-md;
     cursor: pointer;
 
     &--active {
-      color: #3b82f6; /* accent blue */
+      color: $color-accent;
     }
   }
 
   &__bookmark-icon--fill {
+    color: $color-accent;
     font-variation-settings:
       'FILL' 1,
       'wght' 400,
-      'opsz' 24;
-    color: #3b82f6; /* accent blue when filled */
+      'opsz' 24 !important;
   }
 
   &__body {
     display: flex;
     block-size: 100%;
     overflow-y: auto;
+    background: $color-bg;
   }
 
   &__content {
@@ -87,17 +90,17 @@
     block-size: 2rem;
     inline-size: 2rem;
     padding: 0;
-    color: #d1d9e6;
+    color: $color-accent;
     font-size: 2rem;
     line-height: 2rem;
     background: none;
     border: none;
     outline: none;
-    border-radius: 1rem;
+    border-radius: $radius-md;
     cursor: pointer;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: $color-border;
     }
 
     .material-symbols-outlined {
@@ -118,18 +121,16 @@
   }
 
   &__status {
-    font-size: 0.85rem;
-    color: #d3daf1;
-    opacity: 0.85;
+    color: $color-text-dim;
+    font-size: 0.75rem;
   }
 
   &__badge {
-    background: #334155;
-    color: #cbd5e1;
-    padding: 0.15rem 0.45rem;
-    border-radius: 999px;
+    background: $color-accent;
+    color: $color-text;
+    border-radius: $radius-md;
     font-size: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: none;
   }
 
   &__play-btn {
@@ -138,11 +139,11 @@
     justify-content: center;
     gap: 0.5rem;
     inline-size: 100%;
-    padding: 0.5rem;
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    color: $color-text;
+    background: $color-accent;
+    border: none;
+    border-radius: $radius-md;
     cursor: pointer;
   }
 
@@ -156,10 +157,10 @@
   }
 
   &__block {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
-    padding: 0.55rem 0.6rem;
+    background: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $radius-md;
+    padding: 1rem;
     margin: 0.5rem 0;
   }
 
@@ -168,10 +169,10 @@
     overflow: hidden;
   }
   &__block--image img {
+    border-radius: $radius-sm;
     width: 100%;
     height: auto;
     display: block;
-    border-radius: 8px;
   }
   /* Outro state modifiers applied via classes */
   &__outro-actions {
@@ -180,24 +181,28 @@
     align-items: center;
   }
   &__btn--primary {
-    background: linear-gradient(90deg, #4338ca, #6366f1);
+    background: $color-accent;
+    color: $color-text;
+    border-radius: $radius-md;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
     border: none;
-    color: #fff;
-    padding: 0.55rem 0.9rem;
   }
   &__btn--primary:disabled {
     opacity: 0.65;
     cursor: not-allowed;
   }
   &__error-msg {
-    color: #ef4444;
+    color: $color-danger;
     margin: 0.2rem 0 0;
+    font-size: 0.75rem;
   }
   &__placeholder,
   &__empty,
   &__error {
+    color: $color-text-dim;
     padding: 1rem;
     text-align: center;
-    color: #d1d5db;
+    font-size: 1rem;
   }
 }

@@ -1,5 +1,9 @@
+@use '@/styles/abstracts/variables' as *;
+
 // ScenariosView styles
 .scenarios-view {
+  background: $color-bg;
+  color: $color-text;
   padding: 80px 20px 40px;
   max-width: 640px;
   margin: 0 auto;
@@ -11,7 +15,7 @@
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #f1f5f9;
+  color: $color-text;
 }
 .list {
   display: flex;
@@ -21,5 +25,5 @@
 .empty {
   text-align: center;
   padding: 60px 0;
-  color: #64748b;
+  color: $color-text-dim;
 }

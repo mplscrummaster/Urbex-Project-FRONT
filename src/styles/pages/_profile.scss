@@ -1,7 +1,9 @@
+@use '@/styles/abstracts/variables' as *;
+
 // User profile view styles
 .profile {
   padding: 2rem;
-  color: white;
+  color: $color-text;
 
   &__header {
     display: flex;
@@ -27,18 +29,18 @@
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(239, 68, 68, 0.15);
-    color: #fecaca;
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: $color-danger;
+    color: $color-text;
+    border: 1px solid $color-danger;
     padding: 0.6rem 0.9rem;
-    border-radius: 10px;
+    border-radius: $radius-md;
     cursor: pointer;
     transition:
       background 0.25s,
       border-color 0.25s;
   }
   .btn-logout:hover {
-    background: rgba(239, 68, 68, 0.22);
-    border-color: rgba(239, 68, 68, 0.55);
+    background: $color-danger;
+    border-color: $color-danger;
   }
 }

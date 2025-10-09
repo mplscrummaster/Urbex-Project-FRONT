@@ -5,6 +5,7 @@
   background: rgba(15, 17, 26, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 1rem;
+
   &--completed {
     background: rgba(16, 185, 129, 0.1);
   }
@@ -83,6 +84,12 @@
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+  }
+
+  &__blocks {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   &__divider {

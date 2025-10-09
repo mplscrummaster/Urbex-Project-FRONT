@@ -517,40 +517,25 @@ onBeforeUnmount(stopGeolocation)
               <span class="material-symbols-outlined">check</span>
             </div>
           </template>
-          <div v-if="!full.introBlocks.length" class="c-collapsible-card__muted">
-            Aucune introduction.
-          </div>
-          <div
-            v-for="b in full.introBlocks"
-            :key="b.id"
-            class="c-collapsible-card__block"
-            :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
-          >
-            <p v-if="b.type === 'text'">{{ b.content_text }}</p>
-            <figure v-else-if="b.type === 'image'">
-              <img :src="b.url_media" :alt="b.caption || 'image'" />
-              <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
-            </figure>
-          </div>
-          <!-- Loader pour l'intro -->
           <div v-if="loading" class="c-collapsible-card__skeleton" aria-live="polite">
             Chargement…
           </div>
           <div v-else-if="!full.introBlocks.length" class="c-collapsible-card__muted">
             Aucune introduction.
           </div>
-          <div
-            v-else
-            v-for="b in full.introBlocks"
-            :key="b.id"
-            class="c-collapsible-card__block"
-            :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
-          >
-            <p v-if="b.type === 'text'">{{ b.content_text }}</p>
-            <figure v-else-if="b.type === 'image'">
-              <img :src="b.url_media" :alt="b.caption || 'image'" />
-              <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
-            </figure>
+          <div v-else class="c-collapsible-card__blocks">
+            <div
+              v-for="b in full.introBlocks"
+              :key="b.id"
+              class="c-collapsible-card__block"
+              :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
+            >
+              <p v-if="b.type === 'text'">{{ b.content_text }}</p>
+              <figure v-else-if="b.type === 'image'">
+                <img :src="b.url_media" :alt="b.caption || 'image'" />
+                <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
+              </figure>
+            </div>
           </div>
           <div class="c-collapsible-card__divider" />
           <div class="c-collapsible-card__intro-actions">
@@ -614,40 +599,25 @@ onBeforeUnmount(stopGeolocation)
               <span class="material-symbols-outlined">check</span>
             </div>
           </template>
-          <div v-if="!full.outroBlocks.length" class="p-scenario-detail__muted">
-            Aucune conclusion.
-          </div>
-          <div
-            v-for="b in full.outroBlocks"
-            :key="b.id"
-            class="c-collapsible-card__block"
-            :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
-          >
-            <p v-if="b.type === 'text'">{{ b.content_text }}</p>
-            <figure v-else-if="b.type === 'image'">
-              <img :src="b.url_media" :alt="b.caption || 'image'" />
-              <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
-            </figure>
-          </div>
-          <!-- Loader pour la conclusion -->
           <div v-if="loading" class="c-collapsible-card__skeleton" aria-live="polite">
             Chargement…
           </div>
           <div v-else-if="!full.outroBlocks.length" class="p-scenario-detail__muted">
             Aucune conclusion.
           </div>
-          <div
-            v-else
-            v-for="b in full.outroBlocks"
-            :key="b.id"
-            class="c-collapsible-card__block"
-            :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
-          >
-            <p v-if="b.type === 'text'">{{ b.content_text }}</p>
-            <figure v-else-if="b.type === 'image'">
-              <img :src="b.url_media" :alt="b.caption || 'image'" />
-              <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
-            </figure>
+          <div v-else>
+            <div
+              v-for="b in full.outroBlocks"
+              :key="b.id"
+              class="c-collapsible-card__block"
+              :class="b.type === 'image' ? 'c-collapsible-card__block--image' : ''"
+            >
+              <p v-if="b.type === 'text'">{{ b.content_text }}</p>
+              <figure v-else-if="b.type === 'image'">
+                <img :src="b.url_media" :alt="b.caption || 'image'" />
+                <figcaption v-if="b.caption">{{ b.caption }}</figcaption>
+              </figure>
+            </div>
           </div>
           <div class="c-collapsible-card__divider" />
           <div class="c-collapsible-card__outro-actions">
