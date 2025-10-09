@@ -1,4 +1,4 @@
-@use "../abstracts" as *;
+@use '../abstracts' as *;
 
 .c-mission-card {
   position: relative;
@@ -73,6 +73,9 @@
     line-height: 1.5rem;
     background: none;
     border: none;
+    &--rotated {
+      transform: rotate(180deg);
+    }
   }
 
   &__body {
