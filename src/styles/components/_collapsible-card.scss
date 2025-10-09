@@ -1,4 +1,4 @@
-@use "../abstracts" as *;
+@use '../abstracts' as *;
 
 .c-collapsible-card {
   position: relative;
@@ -113,5 +113,14 @@
   &--intro .p-scenario-detail__intro-indicator .material-symbols-outlined,
   &--outro .p-scenario-detail__outro-indicator .material-symbols-outlined {
     font-size: 16px;
+  }
+  &__btn {
+    background-color: $color-accent;
+    padding: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    &:hover {
+      background-color: $color-success;
+    }
   }
 }
