@@ -47,7 +47,7 @@
     cursor: pointer;
 
     &--active {
-      color: #3b82f6; /* accent blue */
+      color: #3b82f6;
     }
   }
 
@@ -56,7 +56,7 @@
       "FILL" 1,
       "wght" 400,
       "opsz" 24;
-    color: #396941; /* accent blue when filled */
+    color: #396941;
   }
 
   &__body {
@@ -124,7 +124,7 @@
   }
 
   &__badge {
-    background: #334155;
+    background: #33553b;
     color: #cbd5e1;
     padding: 0.15rem 0.45rem;
     border-radius: 999px;
@@ -180,7 +180,7 @@
     align-items: center;
   }
   &__btn--primary {
-    background: linear-gradient(90deg, #4338ca, #6366f1);
+    background: linear-gradient(90deg, #1e5b18, #2a8022);
     border: none;
     color: #fff;
     padding: 0.55rem 0.9rem;

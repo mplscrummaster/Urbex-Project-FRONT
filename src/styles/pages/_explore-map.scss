@@ -28,7 +28,7 @@
     left: 50%;
     transform: translateX(-50%);
     min-width: 260px;
-    background: rgba(15, 23, 42, 0.82);
+    background: rgba(15, 42, 17, 0.82);
     color: #f1f5f9;
     padding: 10px 14px;
     font-size: 12px;
@@ -48,14 +48,14 @@
 
   &__progress-bar-wrapper {
     height: 8px;
-    background: #334155;
+    background: #335539;
     border-radius: 4px;
     overflow: hidden;
   }
 
   &__progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+    background: linear-gradient(90deg, #3b7a57, #27553c);
     transition: width 0.12s ease-out;
   }
 
@@ -105,7 +105,7 @@
     align-items: stretch;
     inline-size: 100%;
     padding: 0.5rem;
-    background: rgba(15, 23, 42, 1);
+    background: rgb(15, 42, 24);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 1rem;
   }
@@ -114,7 +114,7 @@
     display: flex;
     inline-size: 100%;
     padding: 0.5rem;
-    color: #e2e8f0;
+    color: #e2f0e7;
     font-size: 1rem;
     background: transparent;
     border: none;
@@ -132,7 +132,7 @@
     block-size: 2rem;
     inline-size: 2rem;
     background: none;
-    color: #38bdf8;
+    color: #38f84e;
     font-size: 2rem;
     line-height: 2rem;
     border: none;
