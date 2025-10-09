@@ -15,7 +15,7 @@
 
   //Si l'url est null, on met le placeholder
   if (props.user.url_img_avatar === null) {
-    props.user.url_img_avatar = '/urbex-front/public/img/profile-placeholder.png'
+    props.user.url_img_avatar = '/urbex-front/img/profile-placeholder.png'
     // console.log(props.user.url_img_avatar)
   }
 

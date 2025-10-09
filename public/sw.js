@@ -1,40 +1,39 @@
 /* Minimal PWA Service Worker for Urbex Project */
 
-const CACHE_VERSION = 'v2'
+const CACHE_VERSION = 'v3' // bump version
 const STATIC_CACHE = `urbex-static-${CACHE_VERSION}`
 const RUNTIME_CACHE = `urbex-runtime-${CACHE_VERSION}`
 
+const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, '')
+const withBase = (p) => `${BASE_PATH}${p.startsWith('/') ? p : '/' + p}`
+
 const CORE_ASSETS = [
-  '/',
-  '/index.html',
-  '/favicon.ico',
-  '/manifest.webmanifest',
-  // Note: Vite emits hashed assets; we do runtime caching for them below
+  withBase('/index.html'),
+  withBase('/favicon.ico'),
+  withBase('/manifest.webmanifest'),
 ]
 
+// Unique "install"
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(STATIC_CACHE)
+    caches.open(STATIC_CACHE)
       .then((cache) => cache.addAll(CORE_ASSETS))
-      .then(() => self.skipWaiting()),
+      .then(() => self.skipWaiting())
   )
 })
 
+// "activate" pour nettoyer et prendre le contrôle
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys.map((key) => {
-            if (!key.includes(CACHE_VERSION)) {
-              return caches.delete(key)
-            }
-          }),
-        ),
+    (async () => {
+      const keys = await caches.keys()
+      await Promise.all(
+        keys
+          .filter((k) => ![STATIC_CACHE, RUNTIME_CACHE].includes(k))
+          .map((k) => caches.delete(k))
       )
-      .then(() => self.clients.claim()),
+      await self.clients.claim()
+    })()
   )
 })
 
@@ -47,72 +46,63 @@ const isSameOrigin = (url) => {
   }
 }
 
-const isApiRequest = (url) => {
-  // Treat typical API patterns; adjust if needed
-  return /\/api\//.test(url) || /91\.134\.99\.3:3000/.test(url)
-}
-
+const isApiRequest = (url) => /\/api\//.test(url) || /91\.134\.99\.3:3000/.test(url)
 const isMapTile = (url) => /tile|openstreetmap|mapbox|googleapis\.com\/maps/.test(url)
 const isFont = (url) => /fonts\.gstatic\.com|fonts\.googleapis\.com/.test(url)
 
 self.addEventListener('fetch', (event) => {
   const { request } = event
-
-  if (request.method !== 'GET') {
-    // Never cache non-GET (auth writes, etc.)
-    return
-  }
-
+  if (request.method !== 'GET') return
   const url = request.url
 
-  // SPA navigation fallback: serve cached index.html when offline
+  // Fallback SPA
   if (request.mode === 'navigate' && isSameOrigin(url)) {
-    event.respondWith(fetch(request).catch(() => caches.match('/index.html')))
+    event.respondWith(fetch(request).catch(() => caches.match(withBase('/index.html'))))
     return
   }
 
-  // Strategy: network-first for API; cache-first for static assets; stale-while-revalidate for tiles/fonts/images
+  // API: network-first
   if (isApiRequest(url)) {
     event.respondWith(
       fetch(request)
         .then((response) => {
           const copy = response.clone()
-          if (copy.ok && request.method === 'GET') {
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy))
-          }
+          if (copy.ok) caches.open(RUNTIME_CACHE).then((c) => c.put(request, copy))
           return response
         })
-        .catch(() => caches.match(request)),
+        .catch(() => caches.match(request))
     )
     return
   }
 
+  // Tiles, fonts, images: stale-while-revalidate
   if (isMapTile(url) || isFont(url) || request.destination === 'image') {
     event.respondWith(
       caches.match(request).then((cached) => {
         const networkFetch = fetch(request)
           .then((response) => {
             const copy = response.clone()
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy))
+            caches.open(RUNTIME_CACHE).then((c) => c.put(request, copy))
             return response
           })
           .catch(() => cached)
         return cached || networkFetch
-      }),
+      })
     )
     return
   }
 
+  // Assets same-origin: cache-first
   if (isSameOrigin(url)) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) return cached
         return fetch(request).then((response) => {
           const copy = response.clone()
-          caches.open(STATIC_CACHE).then((cache) => cache.put(request, copy))
+          caches.open(STATIC_CACHE).then((c) => c.put(request, copy))
           return response
         })
-      }),
+      })
     )
   }
 })

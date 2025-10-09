@@ -18,10 +18,10 @@ usersStore.hydrate()
 // Preload heavy map data early to avoid first-visit latency on Explore map
 const communesStore = useCommunesStore()
 Promise.all([
-  communesStore.fetchAll().catch(() => {}),
-  communesStore.prefetchShapes().catch(() => {}),
-  communesStore.prefetchScenarioPins().catch(() => {}),
-]).catch(() => {})
+  communesStore.fetchAll().catch(() => { }),
+  communesStore.prefetchShapes().catch(() => { }),
+  communesStore.prefetchScenarioPins().catch(() => { }),
+]).catch(() => { })
 
 // Global 401 handler: when API helper emits 'api:unauthorized', logout and redirect
 if (typeof window !== 'undefined') {
@@ -38,7 +38,8 @@ app.mount('#app')
 
 // Register service worker (production only)
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {
+  const swUrl = `${import.meta.env.BASE_URL}sw.js`
+  navigator.serviceWorker.register(swUrl).catch(() => {
     // fail silently
   })
 }
