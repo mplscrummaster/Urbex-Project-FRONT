@@ -39,6 +39,7 @@
 
 <style lang="scss" scoped>
   @use '@/styles/abstracts' as *;
+  @use 'sass:color';
 
   .row {
     display: flex;
@@ -76,7 +77,7 @@
   }
 
   .me {
-    background-color: red;
+    background-color: color.adjust($color-success, $alpha: -.75);
   }
 
   .rank {

@@ -36,8 +36,4 @@
   </div>
 </template>
 
-<style scoped lang="scss">
-  .me {
-    background-color: red;
-  }
-</style>
+<style scoped lang="scss"></style>
