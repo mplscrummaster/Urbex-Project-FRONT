@@ -16,6 +16,7 @@ export const useUsersStore = defineStore('storeUsers', {
         this.tokenUser = result.token
         localStorage.setItem('tokenUser', this.tokenUser)
         router.replace('/scenario')
+        localStorage.setItem('StartTutorial', 'true')
       } catch (error) {
         console.error('Erreur connexion:', error?.message || error)
         alert('Connexion échouée. Vérifiez vos identifiants.')
@@ -36,6 +37,7 @@ export const useUsersStore = defineStore('storeUsers', {
           }
         }
         router.replace('/scenario')
+        localStorage.setItem('StartTutorial', 'true')
       } catch (error) {
         console.error('Erreur inscription:', error?.message || error)
         alert('Enregistrement impossible. Veuillez réessayer.')

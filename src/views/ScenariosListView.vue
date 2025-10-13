@@ -18,10 +18,16 @@ import { useRouter, useRoute } from 'vue-router'
 import { onMounted, ref, computed, nextTick, watch } from 'vue'
 import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioCard from '@/components/ScenarioCard.vue'
+import { useTutorial } from '@/composables/useTutorial'
 
 const router = useRouter()
 const route = useRoute()
 const scenariosStore = useScenariosStore()
+const { autoTutorial } = useTutorial()
+
+onMounted(() => {
+  autoTutorial('scenarios')
+})
 
 // Authentification basique : redirige si pas de token local
 if (!localStorage.getItem('tokenUser')) router.replace('/')
@@ -160,15 +166,9 @@ const scenarioClicked = (s) => {
 <template>
   <div class="p-scenarios">
     <div class="p-scenarios__filters">
-      <button
-        v-for="name in filters"
-        :key="name"
-        class="p-scenarios__filter"
-        :class="{ active: activeFilter === name }"
-        :aria-label="`Filtrer les scénarios : ${name}`"
-        :disabled="activeFilter === name"
-        @click.prevent="selectFilter(name)"
-      >
+      <button v-for="name in filters" :key="name" class="p-scenarios__filter" :class="{ active: activeFilter === name }"
+        :aria-label="`Filtrer les scénarios : ${name}`" :disabled="activeFilter === name"
+        @click.prevent="selectFilter(name)">
         {{ name }}
       </button>
     </div>
@@ -188,14 +188,8 @@ const scenarioClicked = (s) => {
         <div v-if="sortedBuckets.completed.length" class="p-scenarios__section">
           <div class="p-scenarios__section-title">Terminés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.completed"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-              role="listitem"
-              :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined"
-            >
+            <div v-for="s in sortedBuckets.completed" :key="s.id" class="p-scenarios__item" :id="`scenario-${s.id}`"
+              role="listitem" :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
@@ -203,12 +197,8 @@ const scenarioClicked = (s) => {
         <div v-if="sortedBuckets.current" class="p-scenarios__section">
           <div class="p-scenarios__section-title">En cours</div>
           <div class="p-scenarios__section-list">
-            <div
-              class="p-scenarios__item"
-              :id="`scenario-${sortedBuckets.current.id}`"
-              role="listitem"
-              aria-current="true"
-            >
+            <div class="p-scenarios__item" :id="`scenario-${sortedBuckets.current.id}`" role="listitem"
+              aria-current="true">
               <ScenarioCard :scenario="sortedBuckets.current" @select="scenarioClicked" />
             </div>
           </div>
@@ -216,14 +206,8 @@ const scenarioClicked = (s) => {
         <div v-if="sortedBuckets.othersStarted.length" class="p-scenarios__section">
           <div class="p-scenarios__section-title">Commencés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.othersStarted"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-              role="listitem"
-              :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined"
-            >
+            <div v-for="s in sortedBuckets.othersStarted" :key="s.id" class="p-scenarios__item" :id="`scenario-${s.id}`"
+              role="listitem" :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
@@ -231,14 +215,8 @@ const scenarioClicked = (s) => {
         <div v-if="sortedBuckets.notStarted.length" class="p-scenarios__section">
           <div class="p-scenarios__section-title">Pas encore commencés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.notStarted"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-              role="listitem"
-              :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined"
-            >
+            <div v-for="s in sortedBuckets.notStarted" :key="s.id" class="p-scenarios__item" :id="`scenario-${s.id}`"
+              role="listitem" :aria-current="sortedBuckets.currentId === s.id ? 'true' : undefined">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
@@ -250,12 +228,7 @@ const scenarioClicked = (s) => {
         <div class="p-scenarios__section">
           <div class="p-scenarios__section-title">Terminés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.completed"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-            >
+            <div v-for="s in sortedBuckets.completed" :key="s.id" class="p-scenarios__item" :id="`scenario-${s.id}`">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
@@ -275,12 +248,8 @@ const scenarioClicked = (s) => {
         <div v-if="sortedBuckets.othersStarted.length" class="p-scenarios__section">
           <div class="p-scenarios__section-title">Commencés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.othersStarted"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-            >
+            <div v-for="s in sortedBuckets.othersStarted" :key="s.id" class="p-scenarios__item"
+              :id="`scenario-${s.id}`">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
@@ -292,12 +261,7 @@ const scenarioClicked = (s) => {
         <div class="p-scenarios__section">
           <div class="p-scenarios__section-title">Pas encore commencés</div>
           <div class="p-scenarios__section-list">
-            <div
-              v-for="s in sortedBuckets.notStarted"
-              :key="s.id"
-              class="p-scenarios__item"
-              :id="`scenario-${s.id}`"
-            >
+            <div v-for="s in sortedBuckets.notStarted" :key="s.id" class="p-scenarios__item" :id="`scenario-${s.id}`">
               <ScenarioCard :scenario="s" @select="scenarioClicked" />
             </div>
           </div>
