@@ -64,7 +64,7 @@ export function useTutorial() {
     if (page === 'global_map') {
       steps = [
         {
-          element: '.p-explore-map__map', // main map container
+          element: '.p-explore-map__map',
           popover: {
             title: 'Carte interactive',
             description:
@@ -74,7 +74,7 @@ export function useTutorial() {
         },
 
         {
-          element: '.p-explore-map__overlay', // the map overlay with search
+          element: '.p-explore-map__overlay',
           popover: {
             title: 'Recherche',
             description:
@@ -83,19 +83,37 @@ export function useTutorial() {
           },
         },
         {
-          element: '.p-explore-map__map', // bottom drawer (or .bottom-drawer if you have a stable selector)
+          element: '.p-explore-map__map',
           popover: {
-            title: 'Tiroir de scénarios',
+            title: 'Chercher de scénario',
             description:
-              'Quand tu sélectionnes une commune, les scénarios apparaissent dans une liste. Clique sur une commune pour l’ouvrir.',
+              'Sélectionnes une commune, pour voir les scénarios qui apparaissent dans une liste.',
             side: 'top',
+            align: 'center',
           },
         },
         {
-          element: '.p-explore-map__map', // final message
+          element: '.c-bottom-drawer__content',
           popover: {
-            title: 'À toi de jouer !',
-            description: 'Explore la carte et découvre des scénarios autour de toi. 🌍',
+            title: 'Liste des scénarios',
+            description: 'Voici la liste des scénarios de la commune choisie.',
+            side: 'right',
+          },
+        },
+        {
+          element: '.c-scenario-card__bookmark-icon',
+          popover: {
+            title: 'Bookmark',
+            description:
+              'Tu peux bookmarker un scénario et souregarder dans tes scénarios favoris.',
+            side: 'right',
+          },
+        },
+        {
+          element: '.c-bottom-drawer__content', // final message
+          popover: {
+            title: 'Choisir un scénario',
+            description: 'Choisis un scénario et commence ton exploration !',
             side: 'center',
           },
         },
@@ -139,7 +157,6 @@ export function useTutorial() {
       showProgress: true,
       nextBtnText: 'Suivant',
       prevBtnText: 'Precedent',
-      doneBtnText: 'tamere',
       overlayOpacity: 0.75,
       stagePadding: 6,
       steps,
@@ -148,6 +165,13 @@ export function useTutorial() {
         if (index === steps.length - 1) {
           // ici c'est le dernier popover
           popover.nextButton.style.display = 'none'
+        }
+        if (index === 2 && page === 'global_map') {
+          popover.style.position = 'fixed'
+          popover.style.top = '40px' // adjust vertical position
+          popover.style.left = '50%'
+          popover.style.transform = 'translateX(-50%)'
+          popover.style.zIndex = '999999' // make sure it’s above everything
         }
         index++
       },
