@@ -123,7 +123,7 @@
     &__progressBar {
       height: 2rem;
       border-radius: 2rem;
-      background-color: #285b3f;
+      background-color: $color-accent;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -168,7 +168,7 @@
     &__modifyInfos {
       transition: all .2s ease-out;
       cursor: pointer;
-      background-color: #3b7a57;
+      background-color: $color-accent;
       color: white;
       width: fit-content;
       padding: .8rem 1.5rem;
@@ -176,7 +176,7 @@
       border-radius: 1rem;
 
       &:hover {
-        background-color: #2e4a2e;
+        background-color: $color-success;
 
       }
     }
