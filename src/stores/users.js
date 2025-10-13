@@ -78,7 +78,7 @@ export const useUsersStore = defineStore('storeUsers', {
     logout() {
       this.tokenUser = null
       this.currentIdUser = null
-      localStorage.removeItem('tokenUser')
+      localStorage.clear()
       try {
         router.replace('/login')
       } catch (e) {

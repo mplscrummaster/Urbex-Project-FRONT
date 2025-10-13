@@ -18,16 +18,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { onMounted, ref, computed, nextTick, watch } from 'vue'
 import { useScenariosStore } from '@/stores/scenarios'
 import ScenarioCard from '@/components/ScenarioCard.vue'
-import { useTutorial } from '@/composables/useTutorial'
+import { useTutorial } from '@/composables/useTutorial.js'
 
 const router = useRouter()
 const route = useRoute()
 const scenariosStore = useScenariosStore()
 const { autoTutorial } = useTutorial()
-
-onMounted(() => {
-  autoTutorial('scenarios')
-})
 
 // Authentification basique : redirige si pas de token local
 if (!localStorage.getItem('tokenUser')) router.replace('/')
@@ -68,6 +64,8 @@ onMounted(() => {
   } catch {
     /* ignorer */
   }
+  //start tutorial
+
 })
 const selectedScenarioId = computed(() => {
   const raw = route.query?.scenario
@@ -161,6 +159,11 @@ watch(selectedScenarioId, () => scrollToCurrent())
 const scenarioClicked = (s) => {
   router.push({ name: 'scenario-detail', params: { id: s.id }, query: { from: 'list' } })
 }
+onMounted(async () => {
+  await nextTick()
+  setTimeout(() => autoTutorial('scenarios'), 300)
+})
+
 </script>
 
 <template>

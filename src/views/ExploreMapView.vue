@@ -28,6 +28,9 @@ import { useRouter, useRoute } from 'vue-router'
 import { useScenariosStore } from '@/stores/scenarios'
 import { createBaseMap, withLayerGroup } from '@/composables/useLeafletMap'
 import { useGeolocation } from '@/composables/useGeolocation'
+import { useTutorial } from '@/composables/useTutorial'
+
+
 
 // Constantes (centralisation des valeurs "magiques")
 // DEFAULT_CENTER/DEFAULT_ZOOM: vue par défaut
@@ -50,6 +53,7 @@ const drawerOpen = ref(false)
 const drawerScenarios = ref([])
 const router = useRouter()
 const route = useRoute()
+const { autoTutorial } = useTutorial()
 
 // Note: les instances Leaflet (map, layers) ne sont pas réactives et c'est voulu.
 // On les stocke dans des variables simples pour éviter tout surcoût de réactivité inutile.
@@ -468,7 +472,9 @@ const init = async () => {
 // Montage/démontage: init une seule fois, détruit la carte si le composant est réellement démonté
 onMounted(() => {
   if (!mountedOnce) init()
-})
+  autoTutorial('global_map')
+}
+)
 onUnmounted(() => {
   if (map) {
     map.remove()
