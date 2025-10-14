@@ -15,7 +15,7 @@
     usersArray.value = data.sort((a, b) => b.score - a.score)
 
     //==
-    // Modification de notre user dans le tableau pour matcher la structure du friends
+    // Modification de notre user dans le tableau pour matcher la structure du leaderboardFriends
     // ==
 
     console.log("usersArray", usersArray.value);
