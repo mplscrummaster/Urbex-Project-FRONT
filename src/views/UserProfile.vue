@@ -37,9 +37,7 @@
 
       await users.setFriend(users.currentIdUser, friendSearch._id_player)
       //S'il n'y a pas d'erreur de note store, alors on cache le form ajouter et on affiche qu'on a bien ajouté l'ami
-      addFriendForm.classList.add("hidden")
 
-      showAddFriendBtn.classList.remove("hidden")
       btnLogout.classList.remove("hidden")
       addFriendSuccess.classList.remove("hidden")
 
