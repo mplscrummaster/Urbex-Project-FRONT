@@ -20,21 +20,45 @@
     btnLogout.classList.add("hidden")
   }
 
-  const addFriend = () => {
+  const addFriend = async () => {
+
     const addFriendForm = document.querySelector("#addFriendForm")
     const showAddFriendBtn = document.querySelector("#showAddFriendBtn")
     const btnLogout = document.querySelector("#btnLogout")
     const nicknameFriend = document.querySelector("#nicknameFriend")
+    const addFriendSuccess = document.querySelector("#addFriendSuccess")
+    const addFriendFail = document.querySelector("#addFriendFail")
 
     //Faire une requête vers l'api
 
-    //Récupérer la réponse
+    //On récupère l'ami
+    try {
+      const friendSearch = await users.getFriend(nicknameFriend.value)
 
-    //Si c'est ok, afficher un message et fermer l'interface
-    addFriendForm.classList.add("hidden")
-    showAddFriendBtn.classList.remove("hidden")
-    btnLogout.classList.remove("hidden")
-    console.log(`${nicknameFriend.value} à été ajouté à votre liste d'amis`);
+      await users.setFriend(users.currentIdUser, friendSearch._id_player)
+      //S'il n'y a pas d'erreur de note store, alors on cache le form ajouter et on affiche qu'on a bien ajouté l'ami
+      addFriendForm.classList.add("hidden")
+
+      showAddFriendBtn.classList.remove("hidden")
+      btnLogout.classList.remove("hidden")
+      addFriendSuccess.classList.remove("hidden")
+
+      //après 3sec, la div disparait
+      setTimeout(() => {
+        addFriendSuccess.classList.add("hidden")
+
+      }, 3000)
+
+    } catch (error) {
+      // console.log("Erreur : Impossible d'ajouter l'amis")
+      //On affiche a l'user pendant 3 sec que c'est un fail
+      addFriendFail.classList.remove("hidden")
+      setTimeout(() => {
+        addFriendFail.classList.add("hidden")
+      }, 3000)
+
+    }
+    //Récupérer la réponse
 
     //Si c'est pas ok, demander de recommencer
 
@@ -69,6 +93,10 @@
         </div>
 
       </form>
+
+      <div class="profile__addFriendSuccess hidden" id="addFriendSuccess">Amis ajouté</div>
+      <div class="profile__addFriendFail hidden" id="addFriendFail">Impossible d'ajouter l'ami</div>
+
       <button type="button" class="profile__addFriendBtn" id="showAddFriendBtn" @click="showAddFriend">Ajouter un
         ami</button>
       <button type="button" class="btn-logout" id="btnLogout" @click="logout">

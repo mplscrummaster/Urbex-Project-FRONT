@@ -15,7 +15,7 @@ export const apiFetch = async (
     if (token) headers.Authorization = `Bearer ${token}`
   }
   // no debug logs in production
-  // console.log("`${BASE_URL}${path}`", `${BASE_URL}${path}`)
+  // console.log('`${BASE_URL}${path}`', `${BASE_URL}${path}`)
   const response = await fetch(`${BASE_URL}${path}`, {
     method,
     headers,
