@@ -34,8 +34,23 @@
     { "src": "icons/icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
   ],
   "screenshots": [
-    { "src": "icons/screenshot-1.png", "sizes": "380x762", "type": "image/png" },
-    { "src": "icons/screenshot-2.png", "sizes": "379x763", "type": "image/png" },
-    { "src": "icons/screenshot-3.png", "sizes": "401x763", "type": "image/png" }
+    {
+      "src": "icons/screenshot-1.png",
+      "sizes": "380x762",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "icons/screenshot-2.png",
+      "sizes": "379x763",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "icons/screenshot-3.png",
+      "sizes": "401x763",
+      "type": "image/png",
+      "form_factor": "wide"
+    }
   ]
 }

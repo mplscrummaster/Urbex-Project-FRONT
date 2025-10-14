@@ -169,4 +169,8 @@ onMounted(() => {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
   transform: translateY(-2px);
 }
+
+.hidden {
+  display: none;
+}
 </style>
