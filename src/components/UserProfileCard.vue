@@ -10,6 +10,7 @@
   let percentXp = ref(null);
   let xp = ref(null)
   let urlImg = ref(null)
+  let level = ref(null)
 
   const maxXp = 3000;
   const headerProfile = ref(null)
@@ -21,11 +22,14 @@
 
   onMounted(async () => {
     const playerDatas = ref(await storeUsers.getMeInfo());
+
     username.value = playerDatas.value.nickname;
     bio.value = playerDatas.value.bio;
     xp.value = playerDatas.value.xp;
     percentXp.value = (xp.value / maxXp) * 100;
-    urlImg.value = playerDatas.value.url_img_avatar ?? "/img/profile-placeholder.png";
+    urlImg.value = playerDatas.value.url_img_avatar ?? "uberx-front/img/profile-placeholder.png";
+    level.value = playerDatas.value.level;
+
     // Initialize editable fields with current values
     usernameModify.value = username.value || ''
     bioModify.value = bio.value || ''
@@ -64,6 +68,7 @@
         <div class="userCard__nickname"> {{ username }} </div>
         <div class="userCard__description">{{ bio ?? "Pas de bio" }}</div>
       </div>
+      <div class="userCard__level">level {{ level }}</div>
       <div class="userCard__progress">
         <span class="userCard__progressText">{{ xp + "/" + maxXp + " xp" }}</span>
         <div class="userCard__progressBar" :style="{ width: percentXp + '%' }"></div>
