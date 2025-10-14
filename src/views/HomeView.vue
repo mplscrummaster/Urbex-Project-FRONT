@@ -1,41 +1,38 @@
 <script setup>
 import GlitchClock from '@/components/GlitchClock.vue';
 import { useUsersStore } from '@/stores/users'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 const users = useUsersStore()
 const isAuthenticated = computed(() => !!users.tokenUser)
 
-let deferredPrompt = null;
+let deferredPrompt = null
+const showInstall = ref(false)
+
+const installApp = async () => {
+  if (!deferredPrompt) return
+
+  deferredPrompt.prompt()
+  const { outcome } = await deferredPrompt.userChoice
+  console.log('User choice:', outcome)
+
+  deferredPrompt = null
+  showInstall.value = false
+}
 
 onMounted(() => {
-  const installBtn = document.querySelector('.install');
-  installBtn.classList.add('hidden');
-
-  // Listen for beforeinstallprompt event
+  // Detect PWA install availability
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.classList.remove('hidden');
-  });
+    e.preventDefault()
+    deferredPrompt = e
+    showInstall.value = true
+  })
 
-  // When the button is clicked, show the install prompt
-  installBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-    installBtn.classList.add('hidden');
-
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-    const choiceResult = await deferredPrompt.userChoice;
-    console.log('User choice:', choiceResult);
-    deferredPrompt = null;
-  });
-
-  // When app is installed
+  // Hide button after successful installation
   window.addEventListener('appinstalled', () => {
-    installBtn.classList.add('hidden');
-  });
-});
+    console.log('✅ App installed!')
+    showInstall.value = false
+  })
+})
 </script>
 
 <template>
@@ -48,7 +45,7 @@ onMounted(() => {
         <RouterLink class="btn primary" to="/login">Se connecter</RouterLink>
         <RouterLink class="btn outline" to="/register">S'inscrire</RouterLink>
       </div>
-      <button class="btn install" @click="installApp">Install me</button>
+      <button v-if="showInstall" class="btn install" @click.prevent="installApp">Install me</button>
     </div>
   </div>
 </template>
@@ -170,7 +167,48 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-.hidden {
-  display: none;
+.btn.install {
+  position: relative;
+  background: linear-gradient(135deg, #2d3b30, #191f1b);
+  color: #f5f5f5;
+  border: 2px solid #586d5a;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  backdrop-filter: blur(6px);
+  z-index: 2;
+
+  // Subtle cracked texture overlay
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('/img/crack-texture.png');
+    background-size: cover;
+    opacity: 0.25;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  // Glowing effect for attention
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    transform: translate(-50%, -50%) rotate(25deg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
 }
 </style>
