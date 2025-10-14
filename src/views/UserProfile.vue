@@ -1,68 +1,73 @@
 <script setup>
-  import UserProfileCard from '@/components/UserProfileCard.vue'
-  import { useRouter } from 'vue-router'
-  import { useUsersStore } from '@/stores/users'
-  const router = useRouter()
-  const users = useUsersStore()
+import UserProfileCard from '@/components/UserProfileCard.vue'
+import { useRouter } from 'vue-router'
+import { useUsersStore } from '@/stores/users'
+const router = useRouter()
+const users = useUsersStore()
 
-  if (localStorage.getItem("tokenUser") === null) router.replace("/")
+if (localStorage.getItem("tokenUser") === null) router.replace("/")
 
-  const logout = () => {
-    try { users.logout() } finally { router.replace('/') }
-  }
+const logout = () => {
+  try { users.logout() } finally { router.replace('/') }
+}
 
-  const showAddFriend = () => {
-    const addFriendForm = document.querySelector("#addFriendForm")
-    const showAddFriendBtn = document.querySelector("#showAddFriendBtn")
-    const btnLogout = document.querySelector("#btnLogout")
-    addFriendForm.classList.remove("hidden")
-    showAddFriendBtn.classList.add("hidden")
-    btnLogout.classList.add("hidden")
-  }
+const showAddFriend = () => {
+  const addFriendForm = document.querySelector("#addFriendForm")
+  const showAddFriendBtn = document.querySelector("#showAddFriendBtn")
+  const btnLogout = document.querySelector("#btnLogout")
+  addFriendForm.classList.remove("hidden")
+  showAddFriendBtn.classList.add("hidden")
+  btnLogout.classList.add("hidden")
+}
 
-  const addFriend = async () => {
+const addFriend = async () => {
 
-    const addFriendForm = document.querySelector("#addFriendForm")
-    const showAddFriendBtn = document.querySelector("#showAddFriendBtn")
-    const btnLogout = document.querySelector("#btnLogout")
-    const nicknameFriend = document.querySelector("#nicknameFriend")
-    const addFriendSuccess = document.querySelector("#addFriendSuccess")
-    const addFriendFail = document.querySelector("#addFriendFail")
+  const btnLogout = document.querySelector("#btnLogout")
+  const nicknameFriend = document.querySelector("#nicknameFriend")
+  const addFriendSuccess = document.querySelector("#addFriendSuccess")
+  const addFriendFail = document.querySelector("#addFriendFail")
 
-    try {
-      //On récupère l'ami
-      const friendSearch = await users.getFriend(nicknameFriend.value)
-      //On ajoute l'ami en api
-      await users.setFriend(users.currentIdUser, friendSearch._id_player)
-      //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
+  try {
+    //On récupère l'ami
+    const friendSearch = await users.getFriend(nicknameFriend.value)
+    //On ajoute l'ami en api
+    await users.setFriend(users.currentIdUser, friendSearch._id_player)
+    //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
 
-      btnLogout.classList.remove("hidden")
-      addFriendSuccess.classList.remove("hidden")
+    btnLogout.classList.remove("hidden")
+    addFriendSuccess.classList.remove("hidden")
 
-      //après 3sec, la div disparait
-      setTimeout(() => {
-        addFriendSuccess.classList.add("hidden")
+    //après 3sec, la div disparait
+    setTimeout(() => {
+      addFriendSuccess.classList.add("hidden")
 
-      }, 3000)
+    }, 3000)
 
-    } catch (error) {
-      // console.log("Erreur : Impossible d'ajouter l'amis")
-      //On affiche a l'user pendant 3 sec que c'est un fail
-      addFriendFail.classList.remove("hidden")
-      setTimeout(() => {
-        addFriendFail.classList.add("hidden")
-      }, 3000)
-
-    }
+  } catch (error) {
+    console.log("Erreur : Impossible d'ajouter l'amis || ", error?.message || error)
+    //On affiche a l'user pendant 3 sec que c'est un fail
+    addFriendFail.classList.remove("hidden")
+    setTimeout(() => {
+      addFriendFail.classList.add("hidden")
+    }, 3000)
 
   }
 
-  const unshowAddFriendForm = () => {
-    const addFriendForm = document.querySelector("#addFriendForm")
-    addFriendForm.classList.add("hidden")
-    showAddFriendBtn.classList.remove("hidden")
+}
 
-  }
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Hide the add friend form.
+ */
+/*******  6a3bba0e-26ed-498d-8dcb-eaf0456fc74f  *******/const unshowAddFriendForm = () => {
+  const addFriendForm = document.querySelector("#addFriendForm")
+  const showAddFriendBtn = document.querySelector("#showAddFriendBtn")
+  const btnLogout = document.querySelector("#btnLogout")
+  addFriendForm.classList.add("hidden")
+  showAddFriendBtn.classList.remove("hidden")
+  btnLogout.classList.remove("hidden")
+
+}
 </script>
 
 <template>
@@ -102,12 +107,12 @@
 </template>
 
 <style lang="scss" scoped>
-  .p-profile {
-    position: relative;
-    height: 100dvh; // conteneur plein viewport
-    overflow-y: auto; // active le scroll vertical
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: var(--tabbar-height, 72px); // pour éviter que la TabBar masque le bas
-  }
+.p-profile {
+  position: relative;
+  height: 100dvh; // conteneur plein viewport
+  overflow-y: auto; // active le scroll vertical
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--tabbar-height, 72px); // pour éviter que la TabBar masque le bas
+}
 </style>
