@@ -32,7 +32,7 @@
     <div class="rank">{{ props.id + 1 }}</div>
     <img class="avatar" :src="props.user.url_img_avatar" aria-hidden="true" />
     <div class="name">{{ props.user.nickname }}</div>
-    <div class="xp">{{ props.user.score }} xp</div>
+    <div class="xp">{{ props.user.score }}</div>
   </div>
 
 </template>

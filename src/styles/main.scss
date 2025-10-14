@@ -1,5 +1,10 @@
 // Main SCSS entry: import order matters
+<<<<<<< HEAD
 @use "./abstracts" as *;
+=======
+
+@use '@/styles/abstracts' as *;
+>>>>>>> dev
 
 // Vendors first so we can override later
 @use "./vendors";
