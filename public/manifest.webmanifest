@@ -1,11 +1,11 @@
 {
   "name": "Urbex Project",
   "short_name": "Urbex",
-  "description": "Explore scenarios and missions on the Urbex map.",
   "start_url": "/urbex-front/",
   "display": "standalone",
   "background_color": "#0b0b0f",
   "theme_color": "#0b0b0f",
+  "description": "Explore scenarios and missions on the Urbex map.",
   "scope": "/urbex-front/",
   "icons": [
     {
@@ -32,5 +32,10 @@
       "purpose": "any maskable"
     },
     { "src": "icons/icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ],
+  "screenshots": [
+    { "src": "icons/screenshot-1.png", "sizes": "380x762", "type": "image/png" },
+    { "src": "icons/screenshot-2.png", "sizes": "379x763", "type": "image/png" },
+    { "src": "icons/screenshot-3.png", "sizes": "401x763", "type": "image/png" }
   ]
 }
