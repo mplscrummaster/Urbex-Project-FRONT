@@ -32,6 +32,6 @@ export const AuthAPI = {
     return apiFetch(`/friends/${nickname}`, { auth: true })
   },
   addFriend(ids) {
-    return apiFetch(`/addfriends`, { method: 'POST', auth: true, body: ids })
+    return apiFetch(`/friends/add`, { method: 'POST', auth: true, body: ids })
   },
 }

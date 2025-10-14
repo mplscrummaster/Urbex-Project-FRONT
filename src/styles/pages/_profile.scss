@@ -47,6 +47,38 @@
       background-color: $color-success;
     }
   }
+  &__addFriendSuccess {
+    transition: all 0.3s ease-out;
+    position: absolute;
+    top: 50px;
+    display: flex;
+    justify-content: center;
+    color: rgb(187, 211, 187);
+    background-color: #0080007e;
+    border: 1px solid #3fa83f;
+    border-radius: 1rem;
+    padding: 1rem 0.6rem;
+    width: 80%;
+    font-size: 2rem;
+    font-weight: 900;
+    backdrop-filter: blur(8px);
+  }
+  &__addFriendFail {
+    transition: all 0.3s ease-out;
+    position: absolute;
+    top: 50px;
+    display: flex;
+    justify-content: center;
+    color: #d3bbbb;
+    background-color: #8000007e;
+    border: 1px solid #a83f3f;
+    border-radius: 1rem;
+    padding: 1rem 0.6rem;
+    width: 80%;
+    font-size: 2rem;
+    font-weight: 900;
+    backdrop-filter: blur(8px);
+  }
 }
 .userCard {
   border-radius: 1rem;
