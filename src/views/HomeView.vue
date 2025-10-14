@@ -1,9 +1,41 @@
 <script setup>
 import GlitchClock from '@/components/GlitchClock.vue';
 import { useUsersStore } from '@/stores/users'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 const users = useUsersStore()
 const isAuthenticated = computed(() => !!users.tokenUser)
+
+let deferredPrompt = null;
+
+onMounted(() => {
+  const installBtn = document.querySelector('.install');
+  installBtn.classList.add('hidden');
+
+  // Listen for beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.remove('hidden');
+  });
+
+  // When the button is clicked, show the install prompt
+  installBtn.addEventListener('click', async (e) => {
+    e.preventDefault();
+    installBtn.classList.add('hidden');
+
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const choiceResult = await deferredPrompt.userChoice;
+    console.log('User choice:', choiceResult);
+    deferredPrompt = null;
+  });
+
+  // When app is installed
+  window.addEventListener('appinstalled', () => {
+    installBtn.classList.add('hidden');
+  });
+});
 </script>
 
 <template>
@@ -16,6 +48,7 @@ const isAuthenticated = computed(() => !!users.tokenUser)
         <RouterLink class="btn primary" to="/login">Se connecter</RouterLink>
         <RouterLink class="btn outline" to="/register">S'inscrire</RouterLink>
       </div>
+      <button class="btn install" @click="installApp">Install me</button>
     </div>
   </div>
 </template>
