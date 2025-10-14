@@ -1,25 +1,21 @@
 // Main SCSS entry: import order matters
-<<<<<<< HEAD
-@use "./abstracts" as *;
-=======
 
-@use '@/styles/abstracts' as *;
->>>>>>> dev
+@use './abstracts' as *;
 
 // Vendors first so we can override later
-@use "./vendors";
+@use './vendors';
 
 // Base styles
-@use "./base";
+@use './base';
 
 // Layout
-@use "./layout";
+@use './layout';
 
 // Components
-@use "./components";
+@use './components';
 
 // Pages / Views
-@use "./pages";
+@use './pages';
 
 .hidden {
   display: none;
