@@ -29,14 +29,12 @@
     const addFriendSuccess = document.querySelector("#addFriendSuccess")
     const addFriendFail = document.querySelector("#addFriendFail")
 
-    //Faire une requête vers l'api
-
-    //On récupère l'ami
     try {
+      //On récupère l'ami
       const friendSearch = await users.getFriend(nicknameFriend.value)
-
+      //On ajoute l'ami en api
       await users.setFriend(users.currentIdUser, friendSearch._id_player)
-      //S'il n'y a pas d'erreur de note store, alors on cache le form ajouter et on affiche qu'on a bien ajouté l'ami
+      //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
 
       btnLogout.classList.remove("hidden")
       addFriendSuccess.classList.remove("hidden")
@@ -56,9 +54,6 @@
       }, 3000)
 
     }
-    //Récupérer la réponse
-
-    //Si c'est pas ok, demander de recommencer
 
   }
 

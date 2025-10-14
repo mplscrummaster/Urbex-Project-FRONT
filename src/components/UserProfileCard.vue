@@ -65,7 +65,7 @@
         <div class="userCard__description">{{ bio ?? "Pas de bio" }}</div>
       </div>
       <div class="userCard__progress">
-        <span class="userCard__progressText">{{ xp + "/" + maxXp }}</span>
+        <span class="userCard__progressText">{{ xp + "/" + maxXp + " xp" }}</span>
         <div class="userCard__progressBar" :style="{ width: percentXp + '%' }"></div>
       </div>
       <button class="userCard__modifyInfos" @click.prevent="ModifyProfil">Modifier le profil</button>
