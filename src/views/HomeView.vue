@@ -45,13 +45,14 @@
         <RouterLink class="btn primary" to="/login">Se connecter</RouterLink>
         <RouterLink class="btn outline" to="/register">S'inscrire</RouterLink>
       </div>
+      <div class="spacer" />
       <button v-if="showInstall" class="btn install" @click.prevent="installApp">Install me</button>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-  .background {
+  .backgroundHome {
     position: fixed;
     top: 0;
     left: 0;
@@ -169,7 +170,7 @@
 
   .btn.install {
     position: relative;
-    background: linear-gradient(135deg, #2d3b30, #191f1b);
+    background: linear-gradient(135deg, #2d3b30, #191f1b, #444e47);
     color: #f5f5f5;
     border: 2px solid #586d5a;
     border-radius: 12px;
@@ -182,9 +183,15 @@
     transition: all 0.35s ease;
     backdrop-filter: blur(6px);
     z-index: 2;
-    width: 50%;
-    min-width: 100px;
-    height: 100px;
+    width: 80%;
+    height: 200px;
+    min-width: fit-content;
+    min-height: fit-content;
+    font-size: 2rem;
+    margin-block-start: 100px;
+    background-size: 1000% 1000%;
+    animation: gradient-move 6s ease-in-out infinite;
+    will-change: background-position;
 
     // Subtle cracked texture overlay
     &::before {
@@ -212,6 +219,20 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
+    }
+  }
+
+  @keyframes gradient-move {
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
     }
   }
 </style>
