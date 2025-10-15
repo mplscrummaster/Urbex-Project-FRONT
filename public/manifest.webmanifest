@@ -51,6 +51,24 @@
       "sizes": "380x762",
       "type": "image/png",
       "form_factor": "narrow"
+    },
+    {
+      "src": "icons/screenshot-1.png",
+      "sizes": "380x762",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "icons/screenshot-2.png",
+      "sizes": "380x762",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "icons/screenshot-3.png",
+      "sizes": "380x762",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ]
 }
