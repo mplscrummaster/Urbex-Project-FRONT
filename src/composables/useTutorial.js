@@ -1,5 +1,6 @@
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
+import '@/styles/base/tutorial.scss'
 
 export function useTutorial() {
   const startTutorial = (page) => {
