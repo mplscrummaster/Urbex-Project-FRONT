@@ -120,37 +120,6 @@ export function useTutorial() {
       ]
     }
 
-    if (page === 'leaderboard') {
-      steps = [
-        {
-          element: '.leaderboard-bar', // main container
-          popover: {
-            title: 'Bar de navigation',
-            description: 'Ici tu peux voir le classement des meilleurs joueurs global et amis.',
-            side: 'bottom',
-            align: 'center',
-          },
-        },
-        {
-          element: '.leaderboard', // fallback
-          popover: {
-            title: 'Navigation',
-            description: 'Vous pouvez scroller pour voir les autres joueurs dans le classement.',
-            side: 'left',
-            align: 'center',
-          },
-        },
-        {
-          element: '.user-profile',
-          popover: {
-            title: 'Ton profil',
-            description: 'Cliquez ici pour voir ton profil personnel et les détails',
-            side: 'center',
-          },
-        },
-      ]
-    }
-
     if (page === 'scenario_detail') {
       steps = [
         {
@@ -283,6 +252,37 @@ export function useTutorial() {
       ]
     }
 
+    if (page === 'leaderboard') {
+      steps = [
+        {
+          element: '.leaderboard-bar', // main container
+          popover: {
+            title: 'Bar de navigation',
+            description: 'Ici tu peux voir le classement des meilleurs joueurs global et amis.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+        {
+          element: '.leaderboard', // fallback
+          popover: {
+            title: 'Navigation',
+            description: 'Vous pouvez scroller pour voir les autres joueurs dans le classement.',
+            side: 'left',
+            align: 'center',
+          },
+        },
+        {
+          element: '.user-profile',
+          popover: {
+            title: 'Ton profil',
+            description: 'Cliquez ici pour voir ton profil personnel et les détails',
+            side: 'center',
+          },
+        },
+      ]
+    }
+
     if (page === 'user_profile') {
       steps = [
         {
@@ -367,6 +367,7 @@ export function useTutorial() {
         } else if (popover.title.textContent === 'Fin du tutoriel') {
           popover.nextButton.style.display = 'block'
           popover.nextButton.textContent = 'Terminer' // змінюємо текст
+          localStorage.setItem('StartTutorial', 'false')
           //demander a users.setStartTutorial(false)
         }
       },
