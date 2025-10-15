@@ -1,9 +1,7 @@
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
-import L from 'leaflet'
 
 export function useTutorial() {
-  let index = 0
   const startTutorial = (page) => {
     // define steps here
     let steps = []
@@ -134,21 +132,20 @@ export function useTutorial() {
           },
         },
         {
-          element: '.p-leaderboard__item',
-          popover: {
-            title: 'Top joueur',
-            description: 'Cliquez ici pour voir le profil et les détails du top joueur.',
-            side: 'top',
-            align: 'center',
-          },
-        },
-        {
           element: '.leaderboard', // fallback
           popover: {
             title: 'Navigation',
             description: 'Vous pouvez scroller pour voir les autres joueurs dans le classement.',
             side: 'left',
             align: 'center',
+          },
+        },
+        {
+          element: '.user-profile',
+          popover: {
+            title: 'Ton profil',
+            description: 'Cliquez ici pour voir ton profil personnel et les détails',
+            side: 'center',
           },
         },
       ]
@@ -275,11 +272,11 @@ export function useTutorial() {
           },
         },
         {
-          element: '.user-profile',
+          element: '.leaderboard',
           popover: {
             title: 'Experience system',
             description:
-              "Pour chaques missions, tu peux voir ton niveau de progression. Ton progress tu peux regarder sur ton profil d'utilisateur.",
+              "Pour chaques missions, tu peux recevoir de l'exp. Plus tu avances, plus tu gagnes d'exp ! Tu peux aussi voir les meilleurs joueurs de chaque scénario.",
             side: 'center',
           },
         },
@@ -303,6 +300,24 @@ export function useTutorial() {
             title: 'Ta carte de profil',
             description:
               'Ici s’affichent ton nom, ton photo de profil et ton niveau de progression liées à ton compte.',
+            side: 'top',
+            align: 'center',
+          },
+        },
+        {
+          element: '.profile__addFriendBtn',
+          popover: {
+            title: 'Ajouter un ami',
+            description: 'Clique ici pour ajouter un ami de l’application.',
+            side: 'top',
+            align: 'center',
+          },
+        },
+        {
+          element: '.profile__deleteFriendBtn',
+          popover: {
+            title: 'Supprimer un ami',
+            description: 'Clique ici pour supprimer un ami de l’application.',
             side: 'top',
             align: 'center',
           },
@@ -339,27 +354,21 @@ export function useTutorial() {
       steps,
       allowClose: true,
       onPopoverRender: (popover) => {
-        if (index === steps.length - 1) {
-          // ici c'est le dernier popover
+        if (popover.title.textContent === 'Carte globale') {
           popover.nextButton.style.display = 'none'
-        }
-        /* if (index === 2 && page === 'global_map') {
-          popover.style.position = 'fixed'
-          popover.style.top = '40px' // adjust vertical position
-          popover.style.left = '50%'
-          popover.style.transform = 'translateX(-50%)'
-          popover.style.zIndex = '999999' // make sure it’s above everything
-        }*/
-        if (popover.title === 'Fin du tutoriel' && index === steps.length - 1) {
-          localStorage.setItem('StartTutorial', 'false')
-          popover.nextButton.style.display = 'inline-block'
+        } else if (popover.title.textContent === 'Choisir un scénario') {
+          popover.nextButton.style.display = 'none'
+        } else if (popover.title.textContent === 'Commencer/Continuer') {
+          popover.nextButton.style.display = 'none'
+        } else if (popover.title.textContent === 'Experience system') {
+          popover.nextButton.style.display = 'none'
+        } else if (popover.title.textContent === 'Ton profil') {
+          popover.nextButton.style.display = 'none'
+        } else if (popover.title.textContent === 'Fin du tutoriel') {
+          popover.nextButton.style.display = 'block'
           popover.nextButton.textContent = 'Terminer' // змінюємо текст
-          popover.nextButton.onclick = () => {
-            localStorage.setItem('StartTutorial', 'false')
-            d.destroy() // закриває туторіал
-          }
+          //demander a users.setStartTutorial(false)
         }
-        index++
       },
     })
 
@@ -370,9 +379,7 @@ export function useTutorial() {
     const newUser = localStorage.getItem('StartTutorial')
     if (newUser === 'true') {
       startTutorial(page)
-    }
-    if (page === 'user_profile' && newUser === 'true') {
-      localStorage.setItem('StartTutorial', 'false')
+      //demander a users.setStartTutorial(true)
     }
   }
 

@@ -8,7 +8,6 @@ const router = useRouter()
 const users = useUsersStore()
 const { autoTutorial } = useTutorial()
 
-
 onMounted(() => {
   autoTutorial("user_profile")
 })
@@ -167,7 +166,8 @@ const unshowDeleteFriendForm = () => {
       <!--⏬ Boutons-->
       <button type="button" class="profile__addFriendBtn" id="showAddFriendBtn" @click="showAddFriend">Ajouter un
         ami</button>
-      <button type="button" class="profile__addFriendBtn" id="showDeleteFriendBtn" @click="showDeleteFriend">Supprimer
+      <button type="button" class="profile__deleteFriendBtn" id="showDeleteFriendBtn"
+        @click="showDeleteFriend">Supprimer
         un
         ami</button>
       <button type="button" class="btn-logout" id="btnLogout" @click="logout">

@@ -7,6 +7,7 @@ export const useUsersStore = defineStore('storeUsers', {
     users: null,
     currentIdUser: null,
     tokenUser: localStorage.getItem('tokenUser'),
+    startTutorial: true,
   }),
   actions: {
     async loginUser(email, password) {
@@ -74,6 +75,8 @@ export const useUsersStore = defineStore('storeUsers', {
         this.tokenUser = null
         localStorage.removeItem('tokenUser')
       }
+
+      //demander a l'api pour le startTutorial
     },
     logout() {
       this.tokenUser = null
