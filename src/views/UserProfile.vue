@@ -8,128 +8,123 @@ const router = useRouter()
 const users = useUsersStore()
 const { autoTutorial } = useTutorial()
 
-<<<<<<< HEAD
-if (localStorage.getItem("tokenUser") === null) router.replace("/")
 
-const logout = () => {
-  try { users.logout() } finally { router.replace('/') }
-}
 onMounted(() => {
   autoTutorial("user_profile")
 })
-=======
-  if (localStorage.getItem('tokenUser') === null) router.replace('/')
 
-  const logout = () => {
-    try {
-      users.logout()
-    } finally {
-      router.replace('/')
-    }
+if (localStorage.getItem('tokenUser') === null) router.replace('/')
+
+const logout = () => {
+  try {
+    users.logout()
+  } finally {
+    router.replace('/')
   }
+}
 
-  //⏬ Ajout d'ami
-  const addFriend = async () => {
-    const btnLogout = document.querySelector('#btnLogout')
-    const nicknameFriendAdd = document.querySelector('#nicknameFriendAdd')
-    const addFriendSuccess = document.querySelector('#addFriendSuccess')
-    const addFriendFail = document.querySelector('#addFriendFail')
+//⏬ Ajout d'ami
+const addFriend = async () => {
+  const btnLogout = document.querySelector('#btnLogout')
+  const nicknameFriendAdd = document.querySelector('#nicknameFriendAdd')
+  const addFriendSuccess = document.querySelector('#addFriendSuccess')
+  const addFriendFail = document.querySelector('#addFriendFail')
 
-    try {
-      //On récupère l'ami
-      const friendSearch = await users.getFriend(nicknameFriendAdd.value)
-      console.log("friendSearch._id_player", friendSearch._id_player);
+  try {
+    //On récupère l'ami
+    const friendSearch = await users.getFriend(nicknameFriendAdd.value)
+    console.log("friendSearch._id_player", friendSearch._id_player);
 
-      //On ajoute l'ami en api
-      await users.addFriend(users.currentIdUser, friendSearch._id_player)
-      //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
+    //On ajoute l'ami en api
+    await users.addFriend(users.currentIdUser, friendSearch._id_player)
+    //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
 
-      btnLogout.classList.remove('hidden')
-      addFriendSuccess.classList.remove('hidden')
-
-      //après 3sec, la div disparait
-      setTimeout(() => {
-        addFriendSuccess.classList.add('hidden')
-      }, 3000)
-    } catch (error) {
-      console.log("Erreur : Impossible d'ajouter l'ami || ", error?.message || error)
-      //On affiche a l'user pendant 3 sec que c'est un fail
-      addFriendFail.classList.remove('hidden')
-      setTimeout(() => {
-        addFriendFail.classList.add('hidden')
-      }, 3000)
-    }
-  }
-  //⏫ Fin ajout d'ami
-
-  //⏬ Suppresion d'ami
-  const deleteFriend = async () => {
-    const btnLogout = document.querySelector('#btnLogout')
-    const nicknameFriendDelete = document.querySelector('#nicknameFriendDelete')
-    const deleteFriendSuccess = document.querySelector('#deleteFriendSuccess')
-    const deleteFriendFail = document.querySelector('#deleteFriendFail')
-
-    try {
-      //On récupère l'ami
-      const friendSearch = await users.getFriend(nicknameFriendDelete.value)
-      //On ajoute l'ami en api
-      await users.deleteFriend(users.currentIdUser, friendSearch._id_player)
-      //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
-
-      btnLogout.classList.remove('hidden')
-      deleteFriendSuccess.classList.remove('hidden')
-
-      //après 3sec, la div disparait
-      setTimeout(() => {
-        deleteFriendSuccess.classList.add('hidden')
-      }, 3000)
-    } catch (error) {
-      console.log("Erreur : Impossible de supprimer l'ami || ", error?.message || error)
-      //On affiche a l'user pendant 3 sec que c'est un fail
-      deleteFriendFail.classList.remove('hidden')
-      setTimeout(() => {
-        deleteFriendFail.classList.add('hidden')
-      }, 3000)
-    }
-  }
-  //⏫ Fin suppresion d'ami
-
-  //⏬ Affichage/cachage des formulaires d'ajout/suppression d'ami
-  const showAddFriend = () => {
-    const addFriendForm = document.querySelector('#addFriendForm')
-    const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
-    const btnLogout = document.querySelector('#btnLogout')
-    addFriendForm.classList.remove('hidden')
-    showAddFriendBtn.classList.add('hidden')
-    btnLogout.classList.add('hidden')
-  }
-  const showDeleteFriend = () => {
-    const deleteFriendForm = document.querySelector('#deleteFriendForm')
-    const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
-    const btnLogout = document.querySelector('#btnLogout')
-    deleteFriendForm.classList.remove('hidden')
-    showDeleteFriendBtn.classList.add('hidden')
-    btnLogout.classList.add('hidden')
-  }
-  const unshowAddFriendForm = () => {
-    const addFriendForm = document.querySelector('#addFriendForm')
-    const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
-    const btnLogout = document.querySelector('#btnLogout')
-    addFriendForm.classList.add('hidden')
-    showAddFriendBtn.classList.remove('hidden')
     btnLogout.classList.remove('hidden')
-  }
-  const unshowDeleteFriendForm = () => {
-    const deleteFriendForm = document.querySelector('#deleteFriendForm')
-    const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
-    const btnLogout = document.querySelector('#btnLogout')
-    deleteFriendForm.classList.add('hidden')
-    showDeleteFriendBtn.classList.remove('hidden')
-    btnLogout.classList.remove('hidden')
-  }
-  //⏫ Fin affichage/cachage des formulaires d'ajout/suppression d'ami
+    addFriendSuccess.classList.remove('hidden')
 
->>>>>>> dev
+    //après 3sec, la div disparait
+    setTimeout(() => {
+      addFriendSuccess.classList.add('hidden')
+    }, 3000)
+  } catch (error) {
+    console.log("Erreur : Impossible d'ajouter l'ami || ", error?.message || error)
+    //On affiche a l'user pendant 3 sec que c'est un fail
+    addFriendFail.classList.remove('hidden')
+    setTimeout(() => {
+      addFriendFail.classList.add('hidden')
+    }, 3000)
+  }
+}
+//⏫ Fin ajout d'ami
+
+//⏬ Suppresion d'ami
+const deleteFriend = async () => {
+  const btnLogout = document.querySelector('#btnLogout')
+  const nicknameFriendDelete = document.querySelector('#nicknameFriendDelete')
+  const deleteFriendSuccess = document.querySelector('#deleteFriendSuccess')
+  const deleteFriendFail = document.querySelector('#deleteFriendFail')
+
+  try {
+    //On récupère l'ami
+    const friendSearch = await users.getFriend(nicknameFriendDelete.value)
+    //On ajoute l'ami en api
+    await users.deleteFriend(users.currentIdUser, friendSearch._id_player)
+    //S'il n'y a pas d'erreur de note store, alors on affiche qu'on a bien ajouté l'ami
+
+    btnLogout.classList.remove('hidden')
+    deleteFriendSuccess.classList.remove('hidden')
+
+    //après 3sec, la div disparait
+    setTimeout(() => {
+      deleteFriendSuccess.classList.add('hidden')
+    }, 3000)
+  } catch (error) {
+    console.log("Erreur : Impossible de supprimer l'ami || ", error?.message || error)
+    //On affiche a l'user pendant 3 sec que c'est un fail
+    deleteFriendFail.classList.remove('hidden')
+    setTimeout(() => {
+      deleteFriendFail.classList.add('hidden')
+    }, 3000)
+  }
+}
+//⏫ Fin suppresion d'ami
+
+//⏬ Affichage/cachage des formulaires d'ajout/suppression d'ami
+const showAddFriend = () => {
+  const addFriendForm = document.querySelector('#addFriendForm')
+  const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
+  const btnLogout = document.querySelector('#btnLogout')
+  addFriendForm.classList.remove('hidden')
+  showAddFriendBtn.classList.add('hidden')
+  btnLogout.classList.add('hidden')
+}
+const showDeleteFriend = () => {
+  const deleteFriendForm = document.querySelector('#deleteFriendForm')
+  const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
+  const btnLogout = document.querySelector('#btnLogout')
+  deleteFriendForm.classList.remove('hidden')
+  showDeleteFriendBtn.classList.add('hidden')
+  btnLogout.classList.add('hidden')
+}
+const unshowAddFriendForm = () => {
+  const addFriendForm = document.querySelector('#addFriendForm')
+  const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
+  const btnLogout = document.querySelector('#btnLogout')
+  addFriendForm.classList.add('hidden')
+  showAddFriendBtn.classList.remove('hidden')
+  btnLogout.classList.remove('hidden')
+}
+const unshowDeleteFriendForm = () => {
+  const deleteFriendForm = document.querySelector('#deleteFriendForm')
+  const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
+  const btnLogout = document.querySelector('#btnLogout')
+  deleteFriendForm.classList.add('hidden')
+  showDeleteFriendBtn.classList.remove('hidden')
+  btnLogout.classList.remove('hidden')
+}
+//⏫ Fin affichage/cachage des formulaires d'ajout/suppression d'ami
+
+
 </script>
 
 <template>
