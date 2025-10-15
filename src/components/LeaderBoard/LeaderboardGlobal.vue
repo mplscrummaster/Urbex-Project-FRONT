@@ -32,21 +32,9 @@
 
 <template>
 
-  <div class="leaderboard__columnScore">Score</div>
   <div v-for="(user, key) in usersArray" :key="key">
     <LeaderboardUserItem :user="user" :id="key" />
   </div>
 </template>
 
-<style scoped lang="scss">
-  .leaderboard {
-    width: 100%;
-
-    &__columnScore {
-      display: flex;
-      justify-self: right;
-      background-color: red;
-      width: fit-content;
-    }
-  }
-</style>
+<style scoped lang="scss"></style>

@@ -12,8 +12,8 @@ export function useTutorial() {
       steps = [
         {
           popover: {
-            title: 'Bievenue',
-            description: 'Bienvenue dans application de exploration urban !',
+            title: 'Bienvenue',
+            description: 'Bienvenue dans Urbex Chronicles, votre application d\'urbex préférée !',
             side: 'bottom',
           },
         },
@@ -21,7 +21,7 @@ export function useTutorial() {
           element: '.scenarios',
           popover: {
             title: 'Scenarios',
-            description: 'Ici tu peux trouver la liste des scénarios bookmarkés.',
+            description: 'Tu peux trouver la liste des scénarios bookmarkés ici.',
             side: 'bottom',
           },
         },
@@ -30,7 +30,7 @@ export function useTutorial() {
           popover: {
             title: 'Filtres',
             description:
-              'Ici, tu peux filtrer les scénarios selon leur statut (terminés, commencés, etc.).',
+              'Tu peux filtrer les scénarios selon leur statut (terminés, commencés, etc.).',
             side: 'bottom',
             align: 'start',
           },
@@ -55,7 +55,7 @@ export function useTutorial() {
           element: '.global-map',
           popover: {
             title: 'Carte globale',
-            description: 'Allons sur la carte globale pour trouver un scénario !',
+            description: '🖱️ Maintenant clic sur la carte globale pour trouver un scénario !',
             side: 'bottom',
           },
         },
@@ -87,9 +87,9 @@ export function useTutorial() {
         {
           element: '.p-explore-map__map',
           popover: {
-            title: 'Chercher de scénario',
+            title: 'Chercher un scénario',
             description:
-              'Sélectionnes une commune, pour voir les scénarios qui apparaissent dans une liste.',
+              '🖱️ Maintenant, sélectionne une commune pour voir les scénarios.',
             side: 'top',
             align: 'center',
           },
@@ -107,7 +107,7 @@ export function useTutorial() {
           popover: {
             title: 'Bookmark',
             description:
-              'Tu peux bookmarker un scénario et souregarder dans tes scénarios favoris.',
+              'Tu peux bookmarker un scénario et le sauvegarder dans tes scénarios favoris.',
             side: 'right',
           },
         },
@@ -115,7 +115,7 @@ export function useTutorial() {
           element: '.c-bottom-drawer__content', // final message
           popover: {
             title: 'Choisir un scénario',
-            description: 'Choisis un scénario et commence ton exploration !',
+            description: '🖱️ Maintenant choisis un scénario et commence ton exploration',
             side: 'center',
           },
         },
@@ -127,8 +127,8 @@ export function useTutorial() {
         {
           element: '.p-scenario-detail__title',
           popover: {
-            title: 'Titre du scénario',
-            description: 'Voici le titre du scénario actuellement sélectionné.',
+            title: 'Scénario',
+            description: 'Voici ton scénario.',
             side: 'bottom',
             align: 'center',
           },
@@ -137,7 +137,7 @@ export function useTutorial() {
           element: '.p-scenario-detail__bookmark-btn',
           popover: {
             title: 'Favoris',
-            description: 'Cliquez ici pour ajouter ou retirer le scénario de vos favoris.',
+            description: 'tu peux cliquer ici pour ajouter ou retirer le scénario de vos favoris.',
             side: 'left',
           },
         },
@@ -153,7 +153,7 @@ export function useTutorial() {
           element: '.c-collapsible-card__btn--primary',
           popover: {
             title: 'Button',
-            description: 'Commencer le scénario !',
+            description: '🖱️ Maintenant, commence le scénario',
             side: 'bottom',
           },
         },
@@ -162,7 +162,7 @@ export function useTutorial() {
           popover: {
             title: 'Missions',
             description:
-              'Voici la liste des missions du scénario. Certaines peuvent être verrouillées jusqu’à ce que vous complétiez les précédentes.',
+              'Voici la liste des missions du scénario. Certaines peuvent être verrouillées jusqu\'à ce que vous complétiez les précédentes.',
             side: 'top',
           },
         },
@@ -179,7 +179,7 @@ export function useTutorial() {
           element: '.p-scenario-detail__play-btn',
           popover: {
             title: 'Commencer/Continuer',
-            description: 'Clique ici pour démarrer ou reprendre le scénario sur la carte.',
+            description: '🖱️ Maintenant clique ici pour démarrer ou reprendre le scénario sur la carte.',
             side: 'bottom',
           },
         },
@@ -199,9 +199,9 @@ export function useTutorial() {
         {
           element: '.p-game-map__map',
           popover: {
-            title: 'Carte interactive',
+            title: 'Carte intéractive',
             description:
-              'Voici la carte principale du scénario. Dezoomer le map et trouvez les markers de missions',
+              '🖱️ Voici la carte principale du scénario. Dézoomer le map et trouvez les markers de missions',
             side: 'top',
             align: 'center',
           },
@@ -220,7 +220,7 @@ export function useTutorial() {
           popover: {
             title: 'Mission',
             description:
-              'Clique sur une mission pour ouvrir sa fiche et commencer ou continuer ta progression.',
+              'tu peux cliquer sur une mission pour ouvrir sa fiche et commencer ou continuer ta progression.',
             side: 'top',
           },
         },
@@ -238,16 +238,16 @@ export function useTutorial() {
           popover: {
             title: 'Fiche du scénario',
             description:
-              'Tu peux voir ici un résumé du scénario en cours ainsi que la progression de tes missions',
+              'Tu peux voir ici la fiche du scénario en cours, ainsi que la progression de tes missions',
             side: 'left',
           },
         },
         {
           element: '.leaderboard',
           popover: {
-            title: 'Experience system',
+            title: 'Le leaderboard',
             description:
-              "Pour chaques missions, tu peux recevoir de l'exp. Plus tu avances, plus tu gagnes d'exp ! Tu peux aussi voir les meilleurs joueurs de chaque scénario.",
+              "🖱️ Maintenant clic sur le leaderboard",
             side: 'center',
           },
         },
@@ -260,7 +260,7 @@ export function useTutorial() {
           element: '.leaderboard-bar', // main container
           popover: {
             title: 'Bar de navigation',
-            description: 'Ici tu peux voir le classement des meilleurs joueurs global et amis.',
+            description: 'Tu peux voir le classement des meilleurs joueurs au monde et tes amis.',
             side: 'bottom',
             align: 'center',
           },
@@ -269,7 +269,7 @@ export function useTutorial() {
           element: '.leaderboard', // fallback
           popover: {
             title: 'Navigation',
-            description: 'Vous pouvez scroller pour voir les autres joueurs dans le classement.',
+            description: 'Pour chaques scénarios finis, tu peux recevoir de l\'exp et plus tu avances, plus tu gagnes d\'exp !',
             side: 'left',
             align: 'center',
           },
@@ -278,7 +278,7 @@ export function useTutorial() {
           element: '.user-profile',
           popover: {
             title: 'Ton profil',
-            description: 'Cliquez ici pour voir ton profil personnel et les détails',
+            description: '🖱️ Maintenant clique ici pour voir ton profil personnel et les détails',
             side: 'center',
           },
         },
@@ -291,7 +291,7 @@ export function useTutorial() {
           popover: {
             title: 'Bienvenue sur ton profil !',
             description:
-              'Ici, tu peux consulter les informations de ton compte et voir ton niveau de progression.',
+              'Tu peux consulter les informations de ton compte et voir ton niveau de progression.',
             side: 'bottom',
             align: 'center',
           },
@@ -301,7 +301,7 @@ export function useTutorial() {
           popover: {
             title: 'Ta carte de profil',
             description:
-              'Ici s’affichent ton nom, ton photo de profil et ton niveau de progression liées à ton compte.',
+              'Tu peux regarder tes informations ou bien modifier celles qui sont modifiables.',
             side: 'top',
             align: 'center',
           },
@@ -310,7 +310,7 @@ export function useTutorial() {
           element: '.profile__addFriendBtn',
           popover: {
             title: 'Ajouter un ami',
-            description: 'Clique ici pour ajouter un ami de l’application.',
+            description: 'Tu peux ajouter des amis, via leur nickname.',
             side: 'top',
             align: 'center',
           },
@@ -319,7 +319,7 @@ export function useTutorial() {
           element: '.profile__deleteFriendBtn',
           popover: {
             title: 'Supprimer un ami',
-            description: 'Clique ici pour supprimer un ami de l’application.',
+            description: 'Et les supprimer via ce même nickname',
             side: 'top',
             align: 'center',
           },
@@ -329,7 +329,7 @@ export function useTutorial() {
           popover: {
             title: 'Se déconnecter',
             description:
-              'Clique ici pour te déconnecter de l’application et revenir à la page d’accueil.',
+              'Tu peux cliquer ici pour te déconnecter de l’application et revenir à la page d’accueil.',
             side: 'top',
             align: 'center',
           },
@@ -338,7 +338,7 @@ export function useTutorial() {
           popover: {
             title: 'Fin du tutoriel',
             description:
-              'Tu connais maintenant les bases de la page de profil. Continue ton exploration ! 🚀',
+              '🎉 Tu connais maintenant les bases de l\'application. Continue ton exploration ! 🚀',
             side: 'center',
             align: 'center',
           },
@@ -354,7 +354,7 @@ export function useTutorial() {
       overlayOpacity: 0.75,
       stagePadding: 6,
       steps,
-      allowClose: true,
+      allowClose: false,
       onPopoverRender: (popover) => {
         if (popover.title.textContent === 'Carte globale') {
           popover.nextButton.style.display = 'none'
@@ -362,7 +362,7 @@ export function useTutorial() {
           popover.nextButton.style.display = 'none'
         } else if (popover.title.textContent === 'Commencer/Continuer') {
           popover.nextButton.style.display = 'none'
-        } else if (popover.title.textContent === 'Experience system') {
+        } else if (popover.title.textContent === 'Le leaderboard') {
           popover.nextButton.style.display = 'none'
         } else if (popover.title.textContent === 'Ton profil') {
           popover.nextButton.style.display = 'none'
