@@ -22,6 +22,7 @@ import { ScenariosAPI } from '@/services/api'
 import ScenarioCard from '@/components/ScenarioCard.vue'
 import { useGeolocation } from '@/composables/useGeolocation'
 import { createBaseMap, withLayerGroup } from '@/composables/useLeafletMap'
+import { useTutorial } from '@/composables/useTutorial'
 
 // Constantes (centralisation des valeurs "magiques")
 // USER_ZOOM: zoom utilisé pour recadrer sur l'utilisateur
@@ -31,6 +32,7 @@ const USER_ZOOM = 15
 const DEFAULT_ZOOM = 8
 const DEFAULT_CENTER = [50.64028, 4.66671]
 const MISSIONS_BOUNDS_PAD = 0.2
+const { autoTutorial } = useTutorial()
 // Options de style des popups centralisées
 // className applique les styles BEM définis dans src/styles/components/_markers.scss
 const POPUP_OPTS = {
@@ -107,6 +109,7 @@ const initMap = () => {
   })
   map = m
   missionLayer.value = withLayerGroup(map)
+  window.gameMap = map
   // Ferme les popups au début d'un déplacement/zoom (sauf si on vient d'ouvrir une popup)
   map.on('dragstart', () => {
     if (!suppressCloseOnMove) {
@@ -311,6 +314,7 @@ onMounted(async () => {
   }
   initMap()
   locateUser()
+  autoTutorial('game_map')
   await loadFullIfNeeded()
   // Watchers regroupés
   watch(coords, (c) => {
@@ -381,25 +385,14 @@ const goToScenario = (s) => {
       <div class="p-game-map__nosce" v-if="!currentScenario">
         Aucun scénario en cours ou bookmarké.
       </div>
-      <button
-        class="p-game-map__locate"
-        :class="{ 'p-game-map__locate--searching': locating, disabled: locating }"
-        @click="locateUser"
-        type="button"
-        :disabled="locating"
-        aria-label="Me localiser de nouveau"
-      >
+      <button class="p-game-map__locate" :class="{ 'p-game-map__locate--searching': locating, disabled: locating }"
+        @click="locateUser" type="button" :disabled="locating" aria-label="Me localiser de nouveau">
         <span class="material-symbols-outlined">my_location</span>
       </button>
     </div>
     <div class="p-game-map__overlay" v-if="currentScenario">
-      <ScenarioCard
-        :scenario="currentScenario"
-        :compact="true"
-        :showAuthor="true"
-        :clickable="true"
-        @select="goToScenario"
-      />
+      <ScenarioCard :scenario="currentScenario" :compact="true" :showAuthor="true" :clickable="true"
+        @select="goToScenario" />
     </div>
   </div>
 </template>
