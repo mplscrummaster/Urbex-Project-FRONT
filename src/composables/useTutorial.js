@@ -1,6 +1,7 @@
 import { driver } from 'driver.js'
 import 'driver.js/dist/driver.css'
 import '@/styles/base/tutorial.scss'
+import { useUsersStore } from '@/stores/users'
 
 export function useTutorial() {
   const startTutorial = (page) => {
@@ -368,8 +369,10 @@ export function useTutorial() {
         } else if (popover.title.textContent === 'Fin du tutoriel') {
           popover.nextButton.style.display = 'block'
           popover.nextButton.textContent = 'Terminer' // змінюємо текст
-          localStorage.setItem('StartTutorial', 'false')
           //demander a users.setStartTutorial(false)
+          const users = useUsersStore()
+          users.setStartTutorialToFalseApi()
+          localStorage.removeItem('StartTutorial')
         }
       },
     })
@@ -377,9 +380,14 @@ export function useTutorial() {
     d.drive() // start the tutorial
   }
 
-  const autoTutorial = (page) => {
-    const newUser = localStorage.getItem('StartTutorial')
-    if (newUser === 'true') {
+  const autoTutorial = async (page) => {
+    const newUser = Number(localStorage.getItem('StartTutorial'))
+    console.log('newUser', newUser)
+    console.log('newUser === 1', newUser === 1)
+
+    if (newUser === 1) {
+      console.log('start tutorial')
+
       startTutorial(page)
       //demander a users.setStartTutorial(true)
     }
