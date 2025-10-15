@@ -34,4 +34,7 @@ export const AuthAPI = {
   addFriend(ids) {
     return apiFetch(`/friends/add`, { method: 'POST', auth: true, body: ids })
   },
+  deleteFriend(ids) {
+    return apiFetch(`/friends/delete`, { method: 'DELETE', auth: true, body: ids })
+  },
 }

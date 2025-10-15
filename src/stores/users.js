@@ -117,7 +117,7 @@ export const useUsersStore = defineStore('storeUsers', {
         return null
       }
     },
-    setFriend: async (id1, id2) => {
+    addFriend: async (id1, id2) => {
       let ids = null
       if (id1 < id2) {
         ids = {
@@ -134,6 +134,32 @@ export const useUsersStore = defineStore('storeUsers', {
 
       try {
         const response = await AuthAPI.addFriend(ids)
+        console.log(response)
+
+        return response
+      } catch (error) {
+        console.error('Impossible de récupérer les amis : ', error?.message || error)
+        //Important pour le userProfile.vue dans l'ajoute d'amis
+        throw error
+      }
+    },
+    deleteFriend: async (id1, id2) => {
+      let ids = null
+      if (id1 < id2) {
+        ids = {
+          id1,
+          id2,
+        }
+      } else {
+        ids = {
+          id1: id2,
+          id2: id1,
+        }
+      }
+      console.log(ids)
+
+      try {
+        const response = await AuthAPI.deleteFriend(ids)
         console.log(response)
 
         return response
