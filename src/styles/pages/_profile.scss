@@ -1,4 +1,4 @@
-@use '@/styles/abstracts' as *;
+@use "@/styles/abstracts" as *;
 // User profile view styles
 .profile {
   padding: 2rem;
@@ -34,6 +34,19 @@
   }
 
   &__addFriendBtn {
+    transition: all 0.2s ease-out;
+    cursor: pointer;
+    background-color: $color-accent;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 1rem;
+
+    &:hover {
+      background-color: $color-success;
+    }
+  }
+  &__deleteFriendBtn {
     transition: all 0.2s ease-out;
     cursor: pointer;
     background-color: $color-accent;
