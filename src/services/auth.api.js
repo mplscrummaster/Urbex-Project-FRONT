@@ -28,5 +28,13 @@ export const AuthAPI = {
   players() {
     return apiFetch('/players', { auth: true })
   },
-
+  findFriend(nickname) {
+    return apiFetch(`/friends/${nickname}`, { auth: true })
+  },
+  addFriend(ids) {
+    return apiFetch(`/friends/add`, { method: 'POST', auth: true, body: ids })
+  },
+  deleteFriend(ids) {
+    return apiFetch(`/friends/delete`, { method: 'DELETE', auth: true, body: ids })
+  },
 }
