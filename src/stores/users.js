@@ -38,7 +38,6 @@ export const useUsersStore = defineStore('storeUsers', {
           }
         }
         router.replace('/scenario')
-        this.addStartTutorialToApi()
         this.setStartTutorialLocalStorage()
       } catch (error) {
         console.error('Erreur inscription:', error?.message || error)
