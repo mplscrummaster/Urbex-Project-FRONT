@@ -2,8 +2,15 @@
   import UserProfileCard from '@/components/UserProfileCard.vue'
   import { useRouter } from 'vue-router'
   import { useUsersStore } from '@/stores/users'
+  import { useTutorial } from '@/composables/useTutorial'
+  import { onMounted } from 'vue'
   const router = useRouter()
   const users = useUsersStore()
+  const { autoTutorial } = useTutorial()
+
+  onMounted(() => {
+    autoTutorial("user_profile")
+  })
 
   if (localStorage.getItem('tokenUser') === null) router.replace('/')
 
@@ -135,7 +142,7 @@
     <div class="profile__header">
       <h1 class="profile__title">Mon Profil</h1>
     </div>
-    <UserProfileCard />
+    <UserProfileCard class="profile__content" />
     <div class="profile__actions">
       <!--⏬ Formulaire d'ajout d'ami -->
       <form class="addFriend hidden" id="addFriendForm">
@@ -170,7 +177,8 @@
       <!--⏬ Boutons-->
       <button type="button" class="profile__addFriendBtn" id="showAddFriendBtn" @click="showAddFriend">Ajouter un
         ami</button>
-      <button type="button" class="profile__addFriendBtn" id="showDeleteFriendBtn" @click="showDeleteFriend">Supprimer
+      <button type="button" class="profile__deleteFriendBtn" id="showDeleteFriendBtn"
+        @click="showDeleteFriend">Supprimer
         un
         ami</button>
       <button type="button" class="btn-logout" id="btnLogout" @click="logout">

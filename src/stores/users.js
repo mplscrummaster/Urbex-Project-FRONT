@@ -7,6 +7,7 @@ export const useUsersStore = defineStore('storeUsers', {
     users: null,
     currentIdUser: null,
     tokenUser: localStorage.getItem('tokenUser'),
+    startTutorial: null,
   }),
   actions: {
     async loginUser(email, password) {
@@ -16,7 +17,7 @@ export const useUsersStore = defineStore('storeUsers', {
         this.tokenUser = result.token
         localStorage.setItem('tokenUser', this.tokenUser)
         router.replace('/scenario')
-        localStorage.setItem('StartTutorial', 'true')
+        this.setStartTutorialLocalStorage()
       } catch (error) {
         console.error('Erreur connexion:', error?.message || error)
         alert('Connexion échouée. Vérifiez vos identifiants.')
@@ -37,7 +38,8 @@ export const useUsersStore = defineStore('storeUsers', {
           }
         }
         router.replace('/scenario')
-        localStorage.setItem('StartTutorial', 'true')
+        this.addStartTutorialToApi()
+        this.setStartTutorialLocalStorage()
       } catch (error) {
         console.error('Erreur inscription:', error?.message || error)
         alert('Enregistrement impossible. Veuillez réessayer.')
@@ -73,6 +75,45 @@ export const useUsersStore = defineStore('storeUsers', {
         console.warn('Hydrate failed, clearing token:', e.message)
         this.tokenUser = null
         localStorage.removeItem('tokenUser')
+      }
+      console.log('ask api for start tutorial')
+
+      //demander a l'api pour le startTutorial
+      this.setStartTutorialLocalStorage()
+    },
+    async setStartTutorialLocalStorage() {
+      try {
+        const startTutorial = await AuthAPI.getStartTutorial(this.currentIdUser)
+        console.log('startTutorial', await startTutorial)
+        localStorage.setItem('StartTutorial', await startTutorial.startTutorial)
+      } catch (e) {
+        console.warn('startTutorial error:', e.message)
+        return null
+      }
+    },
+    async setStartTutorialToApi() {
+      //A MODIFIER ICI QUAND UN USER S'ENREGISTRE, IL FAUT LUI CREER UN START TUTORIAL ET LE METTRE A 1
+      // OU BIEN LE FAIRE DANS L'API PLUTOT
+      try {
+        const startTutorial = await AuthAPI.getStartTutorial(this.currentIdUser)
+        console.log('startTutorial', await startTutorial)
+        localStorage.setItem('StartTutorial', await startTutorial.startTutorial)
+      } catch (e) {
+        console.warn('startTutorial error:', e.message)
+        return null
+      }
+    },
+    async setStartTutorialToFalseApi() {
+      const datas = {
+        _id_user: this.currentIdUser,
+        startTutorial: 0,
+      }
+      try {
+        const startTutorial = await AuthAPI.setStartTutorial(datas)
+        console.log('startTutorial', startTutorial)
+      } catch (e) {
+        console.warn('startTutorial error:', e.message)
+        return null
       }
     },
     logout() {

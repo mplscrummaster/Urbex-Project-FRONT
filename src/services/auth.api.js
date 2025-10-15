@@ -37,4 +37,10 @@ export const AuthAPI = {
   deleteFriend(ids) {
     return apiFetch(`/friends/delete`, { method: 'DELETE', auth: true, body: ids })
   },
+  getStartTutorial(_id_user) {
+    return apiFetch(`/me/tutorial/${_id_user}`, { auth: true })
+  },
+  setStartTutorial(datas) {
+    return apiFetch(`/me/tutorial`, { method: 'PUT', auth: true, body: datas })
+  },
 }
