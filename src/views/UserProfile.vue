@@ -1,16 +1,21 @@
 <script setup>
-  import UserProfileCard from '@/components/UserProfileCard.vue'
-  import { useRouter } from 'vue-router'
-  import { useUsersStore } from '@/stores/users'
-  const router = useRouter()
-  const users = useUsersStore()
+import UserProfileCard from '@/components/UserProfileCard.vue'
+import { useRouter } from 'vue-router'
+import { useUsersStore } from '@/stores/users'
+import { useTutorial } from '@/composables/useTutorial'
+import { onMounted } from 'vue'
+const router = useRouter()
+const users = useUsersStore()
+const { autoTutorial } = useTutorial()
 
-  if (localStorage.getItem("tokenUser") === null) router.replace("/")
+if (localStorage.getItem("tokenUser") === null) router.replace("/")
 
-  const logout = () => {
-    try { users.logout() } finally { router.replace('/') }
-  }
-
+const logout = () => {
+  try { users.logout() } finally { router.replace('/') }
+}
+onMounted(() => {
+  autoTutorial("user_profile")
+})
 </script>
 
 <template>
@@ -18,7 +23,7 @@
     <div class="profile__header">
       <h1 class="profile__title">Mon Profil</h1>
     </div>
-    <UserProfileCard />
+    <UserProfileCard class="profile__content" />
     <div class="profile__actions">
       <button type="button" class="btn-logout" @click="logout">
         <span class="material-symbols-outlined">logout</span>
@@ -29,12 +34,12 @@
 </template>
 
 <style lang="scss" scoped>
-  .p-profile {
-    position: relative;
-    height: 100dvh; // conteneur plein viewport
-    overflow-y: auto; // active le scroll vertical
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: var(--tabbar-height, 72px); // pour éviter que la TabBar masque le bas
-  }
+.p-profile {
+  position: relative;
+  height: 100dvh; // conteneur plein viewport
+  overflow-y: auto; // active le scroll vertical
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--tabbar-height, 72px); // pour éviter que la TabBar masque le bas
+}
 </style>

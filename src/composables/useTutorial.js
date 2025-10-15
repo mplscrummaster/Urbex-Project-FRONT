@@ -162,6 +162,7 @@ export function useTutorial() {
             title: 'Titre du scénario',
             description: 'Voici le titre du scénario actuellement sélectionné.',
             side: 'bottom',
+            align: 'center',
           },
         },
         {
@@ -232,22 +233,13 @@ export function useTutorial() {
           popover: {
             title: 'Carte interactive',
             description:
-              'Voici la carte principale du scénario. Tu peux te déplacer, zoomer et cliquer sur les missions.',
+              'Voici la carte principale du scénario. Dezoomer le map et trouvez les markers de missions',
             side: 'top',
             align: 'center',
           },
         },
         {
-          element: '.p-game-map__locate',
-          popover: {
-            title: 'Localisation',
-            description:
-              'Ce bouton te permet de te recentrer sur ta position actuelle à tout moment.',
-            side: 'left',
-          },
-        },
-        {
-          element: '.mission-marker-wrapper',
+          element: '.mission-marker',
           popover: {
             title: 'Marqueurs de missions',
             description:
@@ -256,7 +248,7 @@ export function useTutorial() {
           },
         },
         {
-          element: '.mission-popup__btn',
+          element: '.p-game-map__map',
           popover: {
             title: 'Mission',
             description:
@@ -265,20 +257,73 @@ export function useTutorial() {
           },
         },
         {
-          element: '.p-game-map__overlay',
+          element: '.p-game-map__locate',
           popover: {
-            title: 'Fiche du scénario',
+            title: 'Localisation',
             description:
-              'Tu peux voir ici un résumé du scénario en cours. Clique dessus pour accéder à plus de détails.',
+              'Ce bouton te permet de te recentrer sur ta position actuelle à tout moment',
             side: 'left',
           },
         },
         {
+          element: '.p-game-map__overlay',
           popover: {
-            title: 'Prêt à jouer ?',
+            title: 'Fiche du scénario',
             description:
-              'Explore la carte, accomplis les missions et avance dans ton scénario ! Bonne aventure !',
+              'Tu peux voir ici un résumé du scénario en cours ainsi que la progression de tes missions',
+            side: 'left',
+          },
+        },
+        {
+          element: '.user-profile',
+          popover: {
+            title: 'Experience system',
+            description:
+              "Pour chaques missions, tu peux voir ton niveau de progression. Ton progress tu peux regarder sur ton profil d'utilisateur.",
             side: 'center',
+          },
+        },
+      ]
+    }
+
+    if (page === 'user_profile') {
+      steps = [
+        {
+          popover: {
+            title: 'Bienvenue sur ton profil !',
+            description:
+              'Ici, tu peux consulter les informations de ton compte et voir ton niveau de progression.',
+            side: 'bottom',
+            align: 'center',
+          },
+        },
+        {
+          element: '.profile__content',
+          popover: {
+            title: 'Ta carte de profil',
+            description:
+              'Ici s’affichent ton nom, ton photo de profil et ton niveau de progression liées à ton compte.',
+            side: 'top',
+            align: 'center',
+          },
+        },
+        {
+          element: '.btn-logout',
+          popover: {
+            title: 'Se déconnecter',
+            description:
+              'Clique ici pour te déconnecter de l’application et revenir à la page d’accueil.',
+            side: 'top',
+            align: 'center',
+          },
+        },
+        {
+          popover: {
+            title: 'Fin du tutoriel',
+            description:
+              'Tu connais maintenant les bases de la page de profil. Continue ton exploration ! 🚀',
+            side: 'center',
+            align: 'center',
           },
         },
       ]
@@ -298,14 +343,22 @@ export function useTutorial() {
           // ici c'est le dernier popover
           popover.nextButton.style.display = 'none'
         }
-        /*  if (index === 2 && page === 'global_map') {
+        /* if (index === 2 && page === 'global_map') {
           popover.style.position = 'fixed'
           popover.style.top = '40px' // adjust vertical position
           popover.style.left = '50%'
           popover.style.transform = 'translateX(-50%)'
           popover.style.zIndex = '999999' // make sure it’s above everything
         }*/
-
+        if (popover.title === 'Fin du tutoriel' && index === steps.length - 1) {
+          localStorage.setItem('StartTutorial', 'false')
+          popover.nextButton.style.display = 'inline-block'
+          popover.nextButton.textContent = 'Terminer' // змінюємо текст
+          popover.nextButton.onclick = () => {
+            localStorage.setItem('StartTutorial', 'false')
+            d.destroy() // закриває туторіал
+          }
+        }
         index++
       },
     })
