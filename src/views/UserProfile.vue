@@ -85,32 +85,44 @@
   const showAddFriend = () => {
     const addFriendForm = document.querySelector('#addFriendForm')
     const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
+    const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
     const btnLogout = document.querySelector('#btnLogout')
-    addFriendForm.classList.remove('hidden')
+
     showAddFriendBtn.classList.add('hidden')
+    showDeleteFriendBtn.classList.add('hidden')
     btnLogout.classList.add('hidden')
+    addFriendForm.classList.remove('hidden')
   }
   const showDeleteFriend = () => {
     const deleteFriendForm = document.querySelector('#deleteFriendForm')
+    const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
     const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
     const btnLogout = document.querySelector('#btnLogout')
-    deleteFriendForm.classList.remove('hidden')
+
+    showAddFriendBtn.classList.add('hidden')
     showDeleteFriendBtn.classList.add('hidden')
     btnLogout.classList.add('hidden')
+    deleteFriendForm.classList.remove('hidden')
   }
   const unshowAddFriendForm = () => {
     const addFriendForm = document.querySelector('#addFriendForm')
     const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
+    const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
     const btnLogout = document.querySelector('#btnLogout')
+
     addFriendForm.classList.add('hidden')
     showAddFriendBtn.classList.remove('hidden')
+    showDeleteFriendBtn.classList.remove('hidden')
     btnLogout.classList.remove('hidden')
   }
   const unshowDeleteFriendForm = () => {
     const deleteFriendForm = document.querySelector('#deleteFriendForm')
+    const showAddFriendBtn = document.querySelector('#showAddFriendBtn')
     const showDeleteFriendBtn = document.querySelector('#showDeleteFriendBtn')
     const btnLogout = document.querySelector('#btnLogout')
+
     deleteFriendForm.classList.add('hidden')
+    showAddFriendBtn.classList.remove('hidden')
     showDeleteFriendBtn.classList.remove('hidden')
     btnLogout.classList.remove('hidden')
   }
