@@ -12,7 +12,7 @@
   let urlImg = ref(null)
   let level = ref(null)
 
-  const maxXp = 3000;
+  const maxXp = 2000;
   const headerProfile = ref(null)
   const modifyInputs = ref(null)
   // Editable fields
@@ -64,17 +64,24 @@
 <template>
   <div class="userCard">
     <header class="userCard__header" ref="headerProfile">
-      <img class="userCard__picture" :src="urlImg" alt="userImg" />
+      <div class="userCard__nickname"> {{ username }} </div>
+      <div class="userCard__picture">
+        <img :src="urlImg" alt="userImg" />
+      </div>
       <div class="userCard__infos">
-        <div class="userCard__nickname"> {{ username }} </div>
+        <label class="userCard__bioLabel">bio</label>
         <div class="userCard__description">{{ bio ?? "Pas de bio" }}</div>
+        <div class="userCard__levelProgress">
+          <div class="userCard__level">
+            <span for="">level{{ ` ${level}` }}</span>
+            <span class="userCard__progressText">{{ `${Math.floor(percentXp * 100) / 100}%` }}</span>
+          </div>
+          <div class="userCard__progress">
+            <div class="userCard__progressBar" :style="{ width: percentXp + 10 + '%' }"></div>
+          </div>
+        </div>
+        <button class="userCard__modifyInfos" @click.prevent="ModifyProfil">Modifier le profil</button>
       </div>
-      <div class="userCard__level">level {{ level }}</div>
-      <div class="userCard__progress">
-        <span class="userCard__progressText">{{ xp + "/" + maxXp + " xp" }}</span>
-        <div class="userCard__progressBar" :style="{ width: percentXp + '%' }"></div>
-      </div>
-      <button class="userCard__modifyInfos" @click.prevent="ModifyProfil">Modifier le profil</button>
     </header>
 
     <form class="modifyForm hidden" ref="modifyInputs">
